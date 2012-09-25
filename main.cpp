@@ -1,4 +1,4 @@
-// Подключение заголовков
+// РџРѕРґРєР»СЋС‡РµРЅРёРµ Р·Р°РіРѕР»РѕРІРєРѕРІ
 #define _CRT_SECURE_NO_WARNINGS
 #define _USE_MATH_DEFINES
 
@@ -13,58 +13,58 @@
 #define M_2PI 2*M_PI
 using namespace std;
 
-// Типы
-	struct indexes
-	{
-		int i,j,k;
-	};
-	typedef indexes matrix_ind[25];
+// РўРёРїС‹
+struct indexes
+{
+	int i,j,k;
+};
+typedef indexes matrix_ind[25];
 
-// Глобальные переменные
+// Р“Р»РѕР±Р°Р»СЊРЅС‹Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ
 long double
-	x_L, y_L, z_L, r_L, // размеры канала
-	x1_L, x2_L, x3_L, x4_L, x5_L, 
-	*Hx, *Hy, *Hz, // шаги
-	*Cx, *Cy, *Cz, // координаты
-	nu, // кинематическая вязкость
-	rho, // плотность
-	Rn, R0, 
-	Rn_1, Rn_2,
-	eps,
-	p_left, p_right, // давление
-	***U, // Вектор неизвестных
-	***U_1, ***U_2, // для ускорения
-	***R, // Невязка
-	***Z; // для метода н/а
+x_L, y_L, z_L, r_L, // СЂР°Р·РјРµСЂС‹ РєР°РЅР°Р»Р°
+	 x1_L, x2_L, x3_L, x4_L, x5_L,
+	 *Hx, *Hy, *Hz, // С€Р°РіРё
+	 *Cx, *Cy, *Cz, // РєРѕРѕСЂРґРёРЅР°С‚С‹
+	 nu, // РєРёРЅРµРјР°С‚РёС‡РµСЃРєР°СЏ РІСЏР·РєРѕСЃС‚СЊ
+	 rho, // РїР»РѕС‚РЅРѕСЃС‚СЊ
+	 Rn, R0,
+	 Rn_1, Rn_2,
+	 eps,
+	 p_left, p_right, // РґР°РІР»РµРЅРёРµ
+	 ***U, // Р’РµРєС‚РѕСЂ РЅРµРёР·РІРµСЃС‚РЅС‹С…
+	 ***U_1, ***U_2, // РґР»СЏ СѓСЃРєРѕСЂРµРЅРёСЏ
+	 ***R, // РќРµРІСЏР·РєР°
+	 ***Z; // РґР»СЏ РјРµС‚РѕРґР° РЅ/Р°
 
 int
-	Nx, Ny, Nz, dNz, Rd, Rd_2, Rd_4, // Количество узлов
+Nx, Ny, Nz, dNz, Rd, Rd_2, Rd_4, // РљРѕР»РёС‡РµСЃС‚РІРѕ СѓР·Р»РѕРІ
 	Nx1, Nx2, Nx3, Nx4, Nx5,
 	Nz1, Nz2, Nz3,
 	iters,
-	***G; // Маска узлов
+	***G; // РњР°СЃРєР° СѓР·Р»РѕРІ
 
-// Работа с группами и матрицы влияния	
+// Р Р°Р±РѕС‚Р° СЃ РіСЂСѓРїРїР°РјРё Рё РјР°С‚СЂРёС†С‹ РІР»РёСЏРЅРёСЏ
 matrix_ind ***arg, ***func;
 int ***carg, ***cfunc;
 int ***groups;
 int num;
 
 
-// Методы проекта
-inline long double norm(long double*** v);
-inline long double norm(long double*** v1, long double*** v2);
-inline void residual();
-inline void residual(int i, int j, int k);
-inline void alloc(int ***&a, int x, int y, int z);
-inline void alloc(matrix_ind ***&a, int x, int y, int z);
-inline void alloc(long double ***&a, int x, int y, int z);
-inline void del(int ***&a, int x, int y, int z);
-inline void del(long double ***&a, int x, int y, int z);
-inline void del(matrix_ind ***&a, int x, int y, int z);
+// РњРµС‚РѕРґС‹ РїСЂРѕРµРєС‚Р°
+long double norm(long double*** v);
+long double norm(long double*** v1, long double*** v2);
+void residual();
+void residual(int i, int j, int k);
+void alloc(int ***&a, int x, int y, int z);
+void alloc(matrix_ind ***&a, int x, int y, int z);
+void alloc(long double ***&a, int x, int y, int z);
+void del(int ***&a, int x, int y, int z);
+void del(long double ***&a, int x, int y, int z);
+void del(matrix_ind ***&a, int x, int y, int z);
 long double A1(long double ***U1, long double ***U2, int i, int j, int k);
 long double A2(long double ***U, int i, int j, int k);
-inline long double A(long double ***U1, long double ***U2, int i, int j, int k);
+long double A(long double ***U1, long double ***U2, int i, int j, int k);
 void set_gr();
 void print_gr();
 double random_gr();
@@ -78,12 +78,12 @@ void print_info();
 void print_texplot_matrix();
 
 
-// Норма вектора
+// РќРѕСЂРјР° РІРµРєС‚РѕСЂР°
 
 
 
-// Реализации методов
-inline long double norm(long double*** v)
+// Р РµР°Р»РёР·Р°С†РёРё РјРµС‚РѕРґРѕРІ
+long double norm(long double*** v)
 {
 	long double s = 0;
 	for(int i=0; i<Nx; ++i)
@@ -93,7 +93,7 @@ inline long double norm(long double*** v)
 	return sqrt(s);
 }
 
-inline long double norm(long double*** v1, long double*** v2)
+long double norm(long double*** v1, long double*** v2)
 {
 	long double s = 0, a;
 	for(int i=0; i<Nx; ++i)
@@ -107,8 +107,8 @@ inline long double norm(long double*** v1, long double*** v2)
 	return sqrt(s);
 }
 
-// Пересчет невязки
-inline void residual()
+// РџРµСЂРµСЃС‡РµС‚ РЅРµРІСЏР·РєРё
+void residual()
 {
 	for(int i=0; i<Nx; ++i)
 		for(int j=0; j<Ny; ++j)
@@ -117,7 +117,7 @@ inline void residual()
 					R[i][j][k] = A(U,U,i,j,k);
 }
 
-inline void residual(int i, int j, int k)
+void residual(int i, int j, int k)
 {
 	int c = carg[i][j][k];
 	for(int oc=0; oc<c; ++oc)
@@ -131,8 +131,8 @@ inline void residual(int i, int j, int k)
 	}
 }
 
-// Выделение памяти под динамический массив
-inline void alloc(int ***&a, int x, int y, int z)
+// Р’С‹РґРµР»РµРЅРёРµ РїР°РјСЏС‚Рё РїРѕРґ РґРёРЅР°РјРёС‡РµСЃРєРёР№ РјР°СЃСЃРёРІ
+void alloc(int ***&a, int x, int y, int z)
 {
 	a = new int **[x];
 	for(int i=0; i<x; ++i)
@@ -147,7 +147,7 @@ inline void alloc(int ***&a, int x, int y, int z)
 	}
 }
 
-inline void alloc(matrix_ind ***&a, int x, int y, int z)
+void alloc(matrix_ind ***&a, int x, int y, int z)
 {
 	a = new matrix_ind **[x];
 	for(int i=0; i<x; ++i)
@@ -158,7 +158,7 @@ inline void alloc(matrix_ind ***&a, int x, int y, int z)
 	}
 }
 
-inline void alloc(long double ***&a, int x, int y, int z)
+void alloc(long double ***&a, int x, int y, int z)
 {
 	a = new long double **[x];
 	for(int i=0; i<x; ++i)
@@ -172,8 +172,8 @@ inline void alloc(long double ***&a, int x, int y, int z)
 		}
 	}
 }
-// Удаление памяти под динамический массив
-inline void del(int ***&a, int x, int y, int z)
+// РЈРґР°Р»РµРЅРёРµ РїР°РјСЏС‚Рё РїРѕРґ РґРёРЅР°РјРёС‡РµСЃРєРёР№ РјР°СЃСЃРёРІ
+void del(int ***&a, int x, int y, int z)
 {
 	for(int i=0; i<x; ++i)
 	{
@@ -184,7 +184,7 @@ inline void del(int ***&a, int x, int y, int z)
 	delete [] a;
 }
 
-inline void del(long double ***&a, int x, int y, int z)
+void del(long double ***&a, int x, int y, int z)
 {
 	for(int i=0; i<x; ++i)
 	{
@@ -194,7 +194,7 @@ inline void del(long double ***&a, int x, int y, int z)
 	}
 	delete [] a;
 }
-inline void del(matrix_ind ***&a, int x, int y, int z)
+void del(matrix_ind ***&a, int x, int y, int z)
 {
 	for(int i=0; i<x; ++i)
 	{
@@ -207,7 +207,7 @@ inline void del(matrix_ind ***&a, int x, int y, int z)
 
 
 /////////////////////////////////////////////////////////////////////////////////
-//  нелинейная часть оператора
+//  РЅРµР»РёРЅРµР№РЅР°СЏ С‡Р°СЃС‚СЊ РѕРїРµСЂР°С‚РѕСЂР°
 long double A1(long double ***U1, long double ***U2, int i, int j, int k)
 {
 	int g = G[i][j][k];
@@ -233,12 +233,12 @@ long double A1(long double ***U1, long double ***U2, int i, int j, int k)
 			ddx = (U2[i+1][j][uk]-U2[i-1][j][uk])*2/(Hx[i+1]+2*Hx[i]+Hx[i-1])*U1[i][j][uk];
 		}
 
-		appv = 0.5*( Hy[j]/(Hy[j]+Hy[j+1])*(U1[i][j+1][vk]+U1[i-1][j+1][vk]) + 
-			Hy[j+1]/(Hy[j]+Hy[j+1])*(U1[i][j][vk]+U1[i-1][j][vk]) );
+		appv = 0.5*( Hy[j]/(Hy[j]+Hy[j+1])*(U1[i][j+1][vk]+U1[i-1][j+1][vk]) +
+					 Hy[j+1]/(Hy[j]+Hy[j+1])*(U1[i][j][vk]+U1[i-1][j][vk]) );
 		ddy = (U2[i][j+1][uk]-U2[i][j-1][uk])/(Hy[j+1]+Hy[j])*appv;
 
-		appw = 0.5*( Hz[k]/(Hz[k]+Hz[k+1])*(U1[i][j][wk+1]+U1[i-1][j][wk+1]) + 
-			Hz[k+1]/(Hz[k]+Hz[k+1])*(U1[i][j][wk]+U1[i-1][j][wk]) );
+		appw = 0.5*( Hz[k]/(Hz[k]+Hz[k+1])*(U1[i][j][wk+1]+U1[i-1][j][wk+1]) +
+					 Hz[k+1]/(Hz[k]+Hz[k+1])*(U1[i][j][wk]+U1[i-1][j][wk]) );
 		ddz = (U2[i][j][uk+1]-U2[i][j][uk-1])/(Hz[k+1]+Hz[k])*appw;
 	}
 	else if(k==vk)
@@ -256,14 +256,14 @@ long double A1(long double ***U1, long double ***U2, int i, int j, int k)
 			break;
 		default:
 			appu = 0.5*( Hx[i+1]/(Hx[i]+Hx[i+1])*(U1[i][j][uk]+U1[i][j-1][uk]) +
-				Hx[i]/(Hx[i]+Hx[i+1])*(U1[i+1][j][uk]+U1[i+1][j-1][uk]) );
+						 Hx[i]/(Hx[i]+Hx[i+1])*(U1[i+1][j][uk]+U1[i+1][j-1][uk]) );
 			ddx = (U2[i+1][j][vk]-U2[i-1][j][vk])/(Hx[i+1]+Hx[i])*appu;
 		}
 
 		ddy = (U2[i][j+1][vk]-U2[i][j-1][vk])*2/(Hy[j+1]+2*Hy[j]+Hy[j-1])*U1[i][j][vk];
 
-		appw = 0.5*( Hz[k]/(Hz[k]+Hz[k+1])*(U1[i][j][wk+1]+U1[i][j-1][wk+1]) + 
-			Hz[k+1]/(Hz[k]+Hz[k+1])*(U1[i][j][wk]+U1[i][j-1][wk]) );
+		appw = 0.5*( Hz[k]/(Hz[k]+Hz[k+1])*(U1[i][j][wk+1]+U1[i][j-1][wk+1]) +
+					 Hz[k+1]/(Hz[k]+Hz[k+1])*(U1[i][j][wk]+U1[i][j-1][wk]) );
 		ddz = (U2[i][j][vk+1]-U2[i][j][vk-1])/(Hz[k+1]+Hz[k])*appw;
 	}
 	else if(k==wk)
@@ -281,20 +281,20 @@ long double A1(long double ***U1, long double ***U2, int i, int j, int k)
 			break;
 		default:
 			appu = 0.5*( Hx[i+1]/(Hx[i]+Hx[i+1])*(U1[i][j][uk]+U1[i][j][uk-1]) +
-				Hx[i]/(Hx[i]+Hx[i+1])*(U1[i+1][j][uk]+U1[i+1][j][uk-1]) );
+						 Hx[i]/(Hx[i]+Hx[i+1])*(U1[i+1][j][uk]+U1[i+1][j][uk-1]) );
 			ddx = (U2[i+1][j][wk]-U2[i-1][j][wk])/(Hx[i+1]+Hx[i])*appu;
 		}
 
-		appv = 0.5*( Hy[j]/(Hy[j]+Hy[j+1])*(U1[i][j+1][vk]+U1[i][j+1][vk-1]) + 
-			Hy[j+1]/(Hy[j]+Hy[j+1])*(U1[i][j][vk]+U1[i][j][vk-1]) );
+		appv = 0.5*( Hy[j]/(Hy[j]+Hy[j+1])*(U1[i][j+1][vk]+U1[i][j+1][vk-1]) +
+					 Hy[j+1]/(Hy[j]+Hy[j+1])*(U1[i][j][vk]+U1[i][j][vk-1]) );
 		ddy = (U2[i][j+1][wk]-U2[i][j-1][wk])/(Hy[j+1]+Hy[j])*appv;
 
 		ddz = (U2[i][j][wk+1]-U2[i][j][wk-1])*2/(Hz[k+1]+2*Hz[k]+Hz[k-1])*U1[i][j][wk];
 	}
 
 	return (ddx+ddy+ddz);
-} 
-// линейная часть оператора
+}
+// Р»РёРЅРµР№РЅР°СЏ С‡Р°СЃС‚СЊ РѕРїРµСЂР°С‚РѕСЂР°
 long double A2(long double ***U, int i, int j, int k)
 {
 	int g=G[i][j][k];
@@ -305,11 +305,11 @@ long double A2(long double ***U, int i, int j, int k)
 	int wk = vk + dNz;
 	int pk = wk + dNz;
 
-	if(k>=3*dNz) //давление
+	if(k>=3*dNz) //РґР°РІР»РµРЅРёРµ
 	{
 		switch(g)
 		{
-		case 5: 
+		case 5:
 			return (U[i][j][pk+1]-U[i][j][pk])/Hz[k+1];
 		case 6:
 			return (U[i][j][pk]-U[i][j][pk-1])/Hz[k];
@@ -319,47 +319,50 @@ long double A2(long double ***U, int i, int j, int k)
 			return (U[i][j][pk]-U[i][j-1][pk])/Hy[j];
 		default:
 			return (U[i+1][j][uk]-U[i][j][uk])*2/(Hx[i+1]+Hx[i]) +
-				(U[i][j+1][vk]-U[i][j][vk])*2/(Hy[j+1]+Hy[j]) +
-				(U[i][j][wk+1]-U[i][j][wk])*2/(Hz[k+1]+Hz[k]);
+				   (U[i][j+1][vk]-U[i][j][vk])*2/(Hy[j+1]+Hy[j]) +
+				   (U[i][j][wk+1]-U[i][j][wk])*2/(Hz[k+1]+Hz[k]);
 		}
-	} 
+	}
 
 	long double lap_u;
 	int i1=i;
 	switch(g)
 	{
-	case 2: i1+=1; break;
-	case 3: i1-=1;
+	case 2:
+		i1+=1;
+		break;
+	case 3:
+		i1-=1;
 	}
 	if(k==uk)
 	{
 		lap_u=nu*(
-			((U[i1+1][j][k]-U[i1][j][k])*2/(Hx[i1+1]+Hx[i1])-
-			(U[i1][j][k]-U[i1-1][j][k])*2/(Hx[i1]+Hx[i1-1]))*2/(0.5*Hx[i1+1]+Hx[i1]+0.5*Hx[i1-1]) +
-			((U[i][j+1][k]-U[i][j][k])/Hy[j+1]-
-			(U[i][j][k]-U[i][j-1][k])/Hy[j])/(Hy[j+1]+Hy[j])*2.0 +
-			((U[i][j][k+1]-U[i][j][k])/Hz[k+1]-
-			(U[i][j][k]-U[i][j][k-1])/Hz[k])/(Hz[k+1]+Hz[k])*2.0);
+				  ((U[i1+1][j][k]-U[i1][j][k])*2/(Hx[i1+1]+Hx[i1])-
+				   (U[i1][j][k]-U[i1-1][j][k])*2/(Hx[i1]+Hx[i1-1]))*2/(0.5*Hx[i1+1]+Hx[i1]+0.5*Hx[i1-1]) +
+				  ((U[i][j+1][k]-U[i][j][k])/Hy[j+1]-
+				   (U[i][j][k]-U[i][j-1][k])/Hy[j])/(Hy[j+1]+Hy[j])*2.0 +
+				  ((U[i][j][k+1]-U[i][j][k])/Hz[k+1]-
+				   (U[i][j][k]-U[i][j][k-1])/Hz[k])/(Hz[k+1]+Hz[k])*2.0);
 	}
 	else if(k==vk)
 	{
 		lap_u=nu*(
-			((U[i1+1][j][k]-U[i1][j][k])/Hx[i1+1]-
-			(U[i1][j][k]-U[i1-1][j][k])/Hx[i1])/(Hx[i1+1]+Hx[i1])*2.0+
-			((U[i][j+1][k]-U[i][j][k])*2/(Hy[j+1]+Hy[j])-
-			(U[i][j][k]-U[i][j-1][k])*2/(Hy[j]+Hy[j-1]))*2/(0.5*Hy[j+1]+Hy[j]+0.5*Hy[j-1])+
-			((U[i][j][k+1]-U[i][j][k])/Hz[k+1]-
-			(U[i][j][k]-U[i][j][k-1])/Hz[k])/(Hz[k+1]+Hz[k])*2.0);
+				  ((U[i1+1][j][k]-U[i1][j][k])/Hx[i1+1]-
+				   (U[i1][j][k]-U[i1-1][j][k])/Hx[i1])/(Hx[i1+1]+Hx[i1])*2.0+
+				  ((U[i][j+1][k]-U[i][j][k])*2/(Hy[j+1]+Hy[j])-
+				   (U[i][j][k]-U[i][j-1][k])*2/(Hy[j]+Hy[j-1]))*2/(0.5*Hy[j+1]+Hy[j]+0.5*Hy[j-1])+
+				  ((U[i][j][k+1]-U[i][j][k])/Hz[k+1]-
+				   (U[i][j][k]-U[i][j][k-1])/Hz[k])/(Hz[k+1]+Hz[k])*2.0);
 	}
 	else if(k==wk)
 	{
 		lap_u=nu*(
-			((U[i1+1][j][k]-U[i1][j][k])/Hx[i1+1]-
-			(U[i1][j][k]-U[i1-1][j][k])/Hx[i1])/(Hx[i1+1]+Hx[i1])*2.0+
-			((U[i][j+1][k]-U[i][j][k])/Hy[j+1]-
-			(U[i][j][k]-U[i][j-1][k])/Hy[j])/(Hy[j+1]+Hy[j])*2.0 +
-			((U[i][j][k+1]-U[i][j][k])*2/(Hz[k+1]+Hz[k])-
-			(U[i][j][k]-U[i][j][k-1])*2/(Hz[k]+Hz[k-1]))*2/(0.5*Hz[k+1]+Hz[k]+0.5*Hz[k-1]));
+				  ((U[i1+1][j][k]-U[i1][j][k])/Hx[i1+1]-
+				   (U[i1][j][k]-U[i1-1][j][k])/Hx[i1])/(Hx[i1+1]+Hx[i1])*2.0+
+				  ((U[i][j+1][k]-U[i][j][k])/Hy[j+1]-
+				   (U[i][j][k]-U[i][j-1][k])/Hy[j])/(Hy[j+1]+Hy[j])*2.0 +
+				  ((U[i][j][k+1]-U[i][j][k])*2/(Hz[k+1]+Hz[k])-
+				   (U[i][j][k]-U[i][j][k-1])*2/(Hz[k]+Hz[k-1]))*2/(0.5*Hz[k+1]+Hz[k]+0.5*Hz[k-1]));
 	}
 
 	long double grad_p = 0;
@@ -374,7 +377,7 @@ long double A2(long double ***U, int i, int j, int k)
 }
 
 
-inline long double A(long double ***U1, long double ***U2, int i, int j, int k)
+long double A(long double ***U1, long double ***U2, int i, int j, int k)
 {
 	return A1(U1,U2,i,j,k)+A2(U2,i,j,k);
 }
@@ -383,7 +386,7 @@ void set_gr()
 {
 	int ***field;
 	alloc(field,Nx,Ny,Nz);
-	bool cells; // наличие компоненты, которой не назначена группа
+	bool cells; // РЅР°Р»РёС‡РёРµ РєРѕРјРїРѕРЅРµРЅС‚С‹, РєРѕС‚РѕСЂРѕР№ РЅРµ РЅР°Р·РЅР°С‡РµРЅР° РіСЂСѓРїРїР°
 	do
 	{
 		for(int i=0; i<Nx; ++i)
@@ -416,7 +419,8 @@ void set_gr()
 								field[t[c].i][t[c].j][t[c].k] = 1;
 						}
 					};
-	} while(cells);
+	}
+	while(cells);
 	++num;
 	del(field,Nx,Ny,Nz);
 }
@@ -452,7 +456,7 @@ double random_gr()
 	int full = Nx*Ny*Nz;
 	int number = rand();
 	double z = (double)((unsigned int) ((double)number /
-		(double) RAND_MAX * (double)full) + 1)/((double)full);
+										(double) RAND_MAX * (double)full) + 1)/((double)full);
 	return z;
 }
 
@@ -514,14 +518,14 @@ void init_gr()
 							for(int t=0; t<Nz; ++t)
 							{
 								if ((fabs(A1(e,y,l,s,t)) > 1e-20)||
-									(fabs(A1(y,e,l,s,t)) > 1e-20)||
-									(fabs(A2(e,l,s,t)) > 1e-20))
+										(fabs(A1(y,e,l,s,t)) > 1e-20)||
+										(fabs(A2(e,l,s,t)) > 1e-20))
 								{
 									bool d = true;
 									for(int c=0; (c<carg[i][j][k])&&d; ++c)
 										if((arg[i][j][k][c].i==l)&&
-											(arg[i][j][k][c].j==s)&&
-											(arg[i][j][k][c].k==t)) d=false;
+												(arg[i][j][k][c].j==s)&&
+												(arg[i][j][k][c].k==t)) d=false;
 									if(d)
 									{
 										add_gr(arg,carg[i][j][k],i,j,k,l,s,t);
@@ -916,7 +920,7 @@ void my_init_gr()
 	napr[1][3][1][3].k=0;
 	napr[1][3][1][4].i=1;
 	napr[1][3][1][4].j=0;
-	napr[1][3][1][4].k=-1;	
+	napr[1][3][1][4].k=-1;
 	//W v
 	napr[1][3][2][1].i=0;
 	napr[1][3][2][1].j=0;
@@ -972,7 +976,7 @@ void my_init_gr()
 	napr[2][3][1][3].k=0;
 	napr[2][3][1][4].i=1;
 	napr[2][3][1][4].j=0;
-	napr[2][3][1][4].k=-1;	
+	napr[2][3][1][4].k=-1;
 	//W v
 	napr[2][3][2][1].i=0;
 	napr[2][3][2][1].j=0;
@@ -1028,7 +1032,7 @@ void my_init_gr()
 	napr[3][3][1][3].k=0;
 	napr[3][3][1][4].i=0;
 	napr[3][3][1][4].j=0;
-	napr[3][3][1][4].k=0;	
+	napr[3][3][1][4].k=0;
 	//W v
 	napr[3][3][2][1].i=0;
 	napr[3][3][2][1].j=0;
@@ -1100,50 +1104,69 @@ void my_init_gr()
 	for(int i=0; i<Nx; ++i)
 		for(int j=0; j<Ny; ++j)
 			for(int k=0; k<Nz; ++k)
-			{				
-				carg[i][j][k] = 0;				
+			{
+				carg[i][j][k] = 0;
 				arg[i][j][k][0].i = 0;
 				arg[i][j][k][0].j = 0;
 				arg[i][j][k][0].k = 0;
 			};
-	for(int k=0; k<Nz; ++k){
+	for(int k=0; k<Nz; ++k)
+	{
 		int uk = k%dNz;
 		int vk = uk + dNz;
 		int wk = vk + dNz;
 		int pk = wk + dNz;
-		int var1;	
-		if(k==uk){var1=1;}
-		else if(k==vk){var1=2;}
-		else if(k==wk){var1=3;} 
-		else if(k==pk){var1=4;}
+		int var1;
+		if(k==uk)
+		{
+			var1=1;
+		}
+		else if(k==vk)
+		{
+			var1=2;
+		}
+		else if(k==wk)
+		{
+			var1=3;
+		}
+		else if(k==pk)
+		{
+			var1=4;
+		}
 		for(int i=0; i<Nx; ++i)
-			for(int j=0; j<Ny; ++j){
+			for(int j=0; j<Ny; ++j)
+			{
 
-				for(int var2=1; var2<5; var2++){
-					for(int c=1; c<=cnt[var1][var2]; c++)	{
+				for(int var2=1; var2<5; var2++)
+				{
+					for(int c=1; c<=cnt[var1][var2]; c++)
+					{
 						int i1=i+napr[G[i][j][k]][var1][var2][c].i;
 						int j1=j+napr[G[i][j][k]][var1][var2][c].j;
 						int k1=(var2-1)*dNz + uk + napr[G[i][j][k]][var1][var2][c].k;
 
 						if ( ((uk + napr[G[i][j][k]][var1][var2][c].k) >= dNz) ||
-							((uk + napr[G[i][j][k]][var1][var2][c].k) < 0) ||
-							(i1 >= Nx) ||
-							(i1 < 0) ||
-							(j1 >= Ny) ||
-							(j1 < 0) ) {} else {
-								if (G[i][j][k]!=0) {
-									bool d = true;
-									for(int c2=0; (c2<carg[i1][j1][k1])&&d; ++c2)
-										if((arg[i1][j1][k1][c2].i==i)&&
+								((uk + napr[G[i][j][k]][var1][var2][c].k) < 0) ||
+								(i1 >= Nx) ||
+								(i1 < 0) ||
+								(j1 >= Ny) ||
+								(j1 < 0) ) {}
+						else
+						{
+							if (G[i][j][k]!=0)
+							{
+								bool d = true;
+								for(int c2=0; (c2<carg[i1][j1][k1])&&d; ++c2)
+									if((arg[i1][j1][k1][c2].i==i)&&
 											(arg[i1][j1][k1][c2].j==j)&&
 											(arg[i1][j1][k1][c2].k==k)) d=false;
-									if(d)
-									{
-										add_gr(arg,carg[i1][j1][k1],i1,j1,k1,i,j,k);
-									}
+								if(d)
+								{
+									add_gr(arg,carg[i1][j1][k1],i1,j1,k1,i,j,k);
 								}
+							}
 
-								//   if (G[i1][j1][k1]!=0) {add_gr(arg,carg[i][j][k],i,j,k,i1,j1,k1);}
+							//   if (G[i1][j1][k1]!=0) {add_gr(arg,carg[i][j][k],i,j,k,i1,j1,k1);}
 
 						}
 
@@ -1171,7 +1194,7 @@ void eval_scalars(long double ***u, long double ***R, int i1, int j1, int k1, lo
 	F1_F2 = 0;
 
 	int c = carg[i1][j1][k1];
-	for(int oc=0;oc<c;++oc)
+	for(int oc=0; oc<c; ++oc)
 	{
 		indexes &a = arg[i1][j1][k1][oc];
 		int i = a.i;
@@ -1195,11 +1218,11 @@ void eval_scalars(long double ***u, long double ***R, int i1, int j1, int k1, lo
 
 long double calc_alpha(long double Rn_F1, long double Rn_F2, long double F1_F1, long double F2_F2, long double F1_F2)
 {
-	// в этом случае получается квадратное уравнение
+	// РІ СЌС‚РѕРј СЃР»СѓС‡Р°Рµ РїРѕР»СѓС‡Р°РµС‚СЃСЏ РєРІР°РґСЂР°С‚РЅРѕРµ СѓСЂР°РІРЅРµРЅРёРµ
 	if(fabs(F2_F2)<1e-15)
 	{
 		if(fabsl(F1_F1)<1e-15)
-			return 0;				
+			return 0;
 		return -Rn_F1/F1_F1;
 	}
 
@@ -1208,7 +1231,7 @@ long double calc_alpha(long double Rn_F1, long double Rn_F2, long double F1_F1, 
 	int t1=cubic(x,6*F1_F2/4.0/F2_F2,(2*F1_F1+4*Rn_F2)/4.0/F2_F2,2*Rn_F1/4.0/F2_F2);
 	alpha=x[0];
 	long double m=2*alpha*Rn_F1+(2*Rn_F2+F1_F1)*alpha*alpha+2*alpha*alpha*alpha*F1_F2+alpha*alpha*alpha*alpha*F2_F2;
-	for(int i=1;i<t1;++i)
+	for(int i=1; i<t1; ++i)
 	{
 		long double t;
 		t=x[i];
@@ -1217,16 +1240,19 @@ long double calc_alpha(long double Rn_F1, long double Rn_F2, long double F1_F1, 
 			alpha=t,m=m1;
 	}
 	return alpha;
-} 
+}
 
 
 
 int cubic(long double *x,long double a,long double b,long double c)
 {
 	long double q,r,r2,q3;
-	q=(a*a-3*b)/9; r=(2*a*a*a-9*a*b+27*c)/54;
-	r2=r*r; q3=q*q*q;
-	if(r2<q3) {
+	q=(a*a-3*b)/9;
+	r=(2*a*a*a-9*a*b+27*c)/54;
+	r2=r*r;
+	q3=q*q*q;
+	if(r2<q3)
+	{
 		long double t=acos(r/sqrt(q3))/3.0;
 		x[0]=-2*sqrt(q)*cos(t)-a/3.0;
 		x[1]=-2*sqrt(q)*cos(t+M_2PI/3)-a/3.0;
@@ -1246,15 +1272,15 @@ int cubic(long double *x,long double a,long double b,long double c)
 }
 
 /////////////////////////////////////////////////////////////////////////////////
-//Первый шаг
+//РџРµСЂРІС‹Р№ С€Р°Рі
 void tau_iter()
 {
 	long double Rn_F1=0,Rn_F2=0,F1_F1=0,F2_F2=0,F1_F2=0;
-	for(int i=0;i<Nx;++i)
+	for(int i=0; i<Nx; ++i)
 	{
-		for(int j=0;j<Ny;++j)
+		for(int j=0; j<Ny; ++j)
 		{
-			for(int k=0;k<Nz;++k)
+			for(int k=0; k<Nz; ++k)
 			{
 				if(G[i][j][k])
 				{
@@ -1279,7 +1305,7 @@ void tau_iter()
 		int t1=cubic(x,6*F1_F2/4.0/F2_F2,(2*F1_F1+4*Rn_F2)/4.0/F2_F2,2*Rn_F1/4.0/F2_F2);
 		tau=x[0];
 		long double m=2*tau*Rn_F1+2*tau*tau*Rn_F2+tau*tau*F1_F1+2*tau*tau*tau*F1_F2+tau*tau*tau*tau*F2_F2;
-		for(int i=1;i<t1;++i)
+		for(int i=1; i<t1; ++i)
 		{
 			long double t;
 			t=x[i];
@@ -1288,8 +1314,8 @@ void tau_iter()
 				tau=t,m=m1;
 		}
 	}
-	// в этом случае получается квадратное уравнение
-	// решать нужно по другому
+	// РІ СЌС‚РѕРј СЃР»СѓС‡Р°Рµ РїРѕР»СѓС‡Р°РµС‚СЃСЏ РєРІР°РґСЂР°С‚РЅРѕРµ СѓСЂР°РІРЅРµРЅРёРµ
+	// СЂРµС€Р°С‚СЊ РЅСѓР¶РЅРѕ РїРѕ РґСЂСѓРіРѕРјСѓ
 	else
 		tau=-Rn_F1/F1_F1;
 
@@ -1300,74 +1326,74 @@ void tau_iter()
 				if(G[i][j][k])
 					U[i][j][k]+=tau*R[i][j][k];
 	}
-	// невязка
+	// РЅРµРІСЏР·РєР°
 } // void nonlinear_tau_iteration::eval(matrix3d_ld *u)
 
-// Второй шаг схемы н/а
+// Р’С‚РѕСЂРѕР№ С€Р°Рі СЃС…РµРјС‹ РЅ/Р°
 void alpha_iter()
 {
-//////////////////////////////
-	// основной цикл
-/*
-	for( int n=0; n<num; ++n )
+	//////////////////////////////
+	// РѕСЃРЅРѕРІРЅРѕР№ С†РёРєР»
+	/*
+	   for( int n=0; n<num; ++n )
+	   {
+	   for(int i1=0;i1<Nx;++i1)
+	   {
+	   for(int j1=0;j1<Ny;++j1)
+	   {
+	   for(int k1=0;k1<Nz;++k1)
+	   {
+	   int g=G[i1][j1][k1];
+	   if( (g)&&(groups[i1][j1][k1]==n) )
+	   {
+	   Z[i1][j1][k1]=1.0;
+	   long double Rn_F1=0,Rn_F2=0,F1_F1=0,F2_F2=0,F1_F2=0;
+	   long double _Rn_F1=0,_Rn_F2=0,_F1_F1=0,_F2_F2=0,_F1_F2=0;
+	   eval_scalars(U,R,i1,j1,k1,Rn_F1,Rn_F2,F1_F1,F2_F2,F1_F2);
+	   long double alpha=calc_alpha(Rn_F1,Rn_F2,F1_F1,F2_F2,F1_F2);
+	   U[i1][j1][k1]+=alpha;
+	   Z[i1][j1][k1] = 0;
+	   residual(i1,j1,k1);
+	   }
+	   }
+	   }
+	   }
+	   }
+	   */
+	for(int i1=0; i1<Nx; ++i1)
 	{
-		for(int i1=0;i1<Nx;++i1)
+		for(int j1=0; j1<Ny; ++j1)
 		{
-			for(int j1=0;j1<Ny;++j1)
+			for(int k1=0; k1<Nz; ++k1)
 			{
-				for(int k1=0;k1<Nz;++k1)
+				int g=G[i1][j1][k1];
+				if( (g) )
 				{
-					int g=G[i1][j1][k1];
-					if( (g)&&(groups[i1][j1][k1]==n) )
-					{
-						Z[i1][j1][k1]=1.0;
-						long double Rn_F1=0,Rn_F2=0,F1_F1=0,F2_F2=0,F1_F2=0;
-						long double _Rn_F1=0,_Rn_F2=0,_F1_F1=0,_F2_F2=0,_F1_F2=0;
-						eval_scalars(U,R,i1,j1,k1,Rn_F1,Rn_F2,F1_F1,F2_F2,F1_F2);
-						long double alpha=calc_alpha(Rn_F1,Rn_F2,F1_F1,F2_F2,F1_F2);
-						U[i1][j1][k1]+=alpha;
-						Z[i1][j1][k1] = 0;
-						residual(i1,j1,k1);
-					}
-				} 
-			} 
-		} 
+					Z[i1][j1][k1]=1.0;
+					long double Rn_F1=0,Rn_F2=0,F1_F1=0,F2_F2=0,F1_F2=0;
+					long double _Rn_F1=0,_Rn_F2=0,_F1_F1=0,_F2_F2=0,_F1_F2=0;
+					eval_scalars(U,R,i1,j1,k1,Rn_F1,Rn_F2,F1_F1,F2_F2,F1_F2);
+					long double alpha=calc_alpha(Rn_F1,Rn_F2,F1_F1,F2_F2,F1_F2);
+					U[i1][j1][k1]+=alpha;
+					Z[i1][j1][k1] = 0;
+					residual(i1,j1,k1);
+				}
+			}
+		}
 	}
-	*/
-		for(int i1=0;i1<Nx;++i1)
-		{
-			for(int j1=0;j1<Ny;++j1)
-			{
-				for(int k1=0;k1<Nz;++k1)
-				{
-					int g=G[i1][j1][k1];
-					if( (g) )
-					{
-						Z[i1][j1][k1]=1.0;
-						long double Rn_F1=0,Rn_F2=0,F1_F1=0,F2_F2=0,F1_F2=0;
-						long double _Rn_F1=0,_Rn_F2=0,_F1_F1=0,_F2_F2=0,_F1_F2=0;
-						eval_scalars(U,R,i1,j1,k1,Rn_F1,Rn_F2,F1_F1,F2_F2,F1_F2);
-						long double alpha=calc_alpha(Rn_F1,Rn_F2,F1_F1,F2_F2,F1_F2);
-						U[i1][j1][k1]+=alpha;
-						Z[i1][j1][k1] = 0;
-						residual(i1,j1,k1);
-					}
-				} 
-			} 
-		} 
 
 
-//////////////////////////////
+	//////////////////////////////
 }
 /////////////////////////////////////////////////////////////////////////////////
-// ускорение 
+// СѓСЃРєРѕСЂРµРЅРёРµ
 void speed_first()
 {
-	for(int i=0;i<Nx;++i)
+	for(int i=0; i<Nx; ++i)
 	{
-		for(int j=0;j<Ny;++j)
+		for(int j=0; j<Ny; ++j)
 		{
-			for(int k=0;k<Nz;++k)
+			for(int k=0; k<Nz; ++k)
 			{
 				U_2[i][j][k] = U_1[i][j][k];
 				U_1[i][j][k] = U[i][j][k];
@@ -1382,18 +1408,18 @@ void speed_first()
 void speed_work()
 {
 	long double Rn_F1=0,Rn_F2=0,F1_F1=0,F2_F2=0,F1_F2=0;
-	for(int i=0;i<Nx;++i)
+	for(int i=0; i<Nx; ++i)
 	{
-		for(int j=0;j<Ny;++j)
-			for(int k=0;k<Nz;++k)
+		for(int j=0; j<Ny; ++j)
+			for(int k=0; k<Nz; ++k)
 				if(G[i][j][k])
 				{
 
 					long double F1 = 2*A1(U_2,U_2,i,j,k) - A1(U,U_2,i,j,k) -
-						A1(U_2,U,i,j,k) + A2(U_2,i,j,k) - A2(U,i,j,k);
+									 A1(U_2,U,i,j,k) + A2(U_2,i,j,k) - A2(U,i,j,k);
 
 					long double F2 = A1(U,U,i,j,k) - A1(U,U_2,i,j,k) -
-						A1(U_2,U,i,j,k) + A1(U_2,U_2,i,j,k);
+									 A1(U_2,U,i,j,k) + A1(U_2,U_2,i,j,k);
 
 					long double Rn = A(U_2,U_2,i,j,k);
 					long double hh = Hx[i]*Hy[j]*Hz[k];
@@ -1413,7 +1439,7 @@ void speed_work()
 		int t1=cubic(x,6*F1_F2/4.0/F2_F2,(2*F1_F1+4*Rn_F2)/4.0/F2_F2,2*Rn_F1/4.0/F2_F2);
 		tau=x[0];
 		long double m= 2*tau*Rn_F1+(2*Rn_F2+F1_F1)*tau*tau+2*tau*tau*tau*F1_F2+tau*tau*tau*tau*F2_F2;
-		for(int i=1;i<t1;++i)
+		for(int i=1; i<t1; ++i)
 		{
 			long double t;
 			t=x[i];
@@ -1422,8 +1448,8 @@ void speed_work()
 				tau=t,m=m1;
 		}
 	}
-	// в этом случае получается квадратное уравнение
-	// решать нужно по другому
+	// РІ СЌС‚РѕРј СЃР»СѓС‡Р°Рµ РїРѕР»СѓС‡Р°РµС‚СЃСЏ РєРІР°РґСЂР°С‚РЅРѕРµ СѓСЂР°РІРЅРµРЅРёРµ
+	// СЂРµС€Р°С‚СЊ РЅСѓР¶РЅРѕ РїРѕ РґСЂСѓРіРѕРјСѓ
 	else if(F1_F2>1e-10)
 	{
 		long double a = 6.0*F1_F2;
@@ -1431,9 +1457,9 @@ void speed_work()
 		long double c = 2.0*Rn_F1;
 
 		long double D = b*b - 4*a*c;
-		long double 
-			x1 = ( -b + sqrt(D) )/(2*a),
-			x2 = ( -b - sqrt(D) )/(2*a);
+		long double
+		x1 = ( -b + sqrt(D) )/(2*a),
+		x2 = ( -b - sqrt(D) )/(2*a);
 		if( (a*x1*x1 + b*x1)<(a*x2*x2 + b*x2) )
 			tau = x1;
 		else
@@ -1443,13 +1469,13 @@ void speed_work()
 		tau=-Rn_F1/F1_F1;
 
 	long double omega=tau;
-	for(int i=0;i<Nx;++i)
+	for(int i=0; i<Nx; ++i)
 	{
-		for(int j=0;j<Ny;++j)
-			for(int k=0;k<Nz;++k)
+		for(int j=0; j<Ny; ++j)
+			for(int k=0; k<Nz; ++k)
 				if(G[i][j][k])
 				{
-					long double tmp=U[i][j][k];    // сохранение для ускорения
+					long double tmp=U[i][j][k];    // СЃРѕС…СЂР°РЅРµРЅРёРµ РґР»СЏ СѓСЃРєРѕСЂРµРЅРёСЏ
 					U[i][j][k] = (1+omega)*U_2[i][j][k]-omega*U[i][j][k];
 					//U_2[i][j] = U_1[i][j];
 					//U_1[i][j] = tmp;
@@ -1460,12 +1486,12 @@ void speed_work()
 }
 /////////////////////////////////////////////////////////////////////////////////
 /*void print_params()
-{
-	FILE *f = fopen("params.txt", "w");
-	fprintf(f,"p_left = %d",p_left);
-	fclose(f);
-}
-*/
+  {
+  FILE *f = fopen("params.txt", "w");
+  fprintf(f,"p_left = %d",p_left);
+  fclose(f);
+  }
+  */
 void print_texplot_matrix()
 {
 	char name[40];
@@ -1479,7 +1505,7 @@ void print_texplot_matrix()
 	{
 		for(int j=0; j<Ny; ++j)
 		{
-			for(int i=0;i<Nx;++i) 
+			for(int i=0; i<Nx; ++i)
 			{
 				fprintf(f,"%LF, %LF, %LF,", Cx[i], Cy[j], Cz[k]);
 
@@ -1507,7 +1533,7 @@ void print_texplot_matrix()
 	{
 		for(int j=0; j<Ny; ++j)
 		{
-			for(int i=0;i<Nx;++i) 
+			for(int i=0; i<Nx; ++i)
 			{
 				fprintf(f,"%LF, %LF, %LF,", Cx[i], Cy[j], Cz[k]);
 
@@ -1538,7 +1564,7 @@ void print_texplot()
 	{
 		for(int j=0; j<Ny-1; ++j)
 		{
-			for(int i=0;i<Nx;++i) 
+			for(int i=0; i<Nx; ++i)
 			{
 				fprintf(f,"%LF, %LF, %LF,", Cx[i], Cy[j], Cz[k]);
 
@@ -1555,7 +1581,7 @@ void print_texplot()
 					fprintf(f,"%LF,",U[i][j+1][k+dNz]);
 				else
 					fprintf(f,"%LF,", Hy[j]/(Hy[j]+Hy[j+1])*U[i][j+1][k+dNz]+
-						Hy[j+1]/(Hy[j]+Hy[j+1])*U[i][j][k+dNz]);
+							Hy[j+1]/(Hy[j]+Hy[j+1])*U[i][j][k+dNz]);
 
 				if(k==0)
 					fprintf(f,"%LF,",U[i][j][k+2*dNz]);
@@ -1563,7 +1589,7 @@ void print_texplot()
 					fprintf(f,"%LF,",U[i][j][k+1+2*dNz]);
 				else
 					fprintf(f,"%LF,", Hz[k]/(Hz[k]+Hz[k+1])*U[i][j][k+1+2*dNz]+
-						Hz[k+1]/(Hz[k]+Hz[k+1])*U[i][j][k+2*dNz]);
+							Hz[k+1]/(Hz[k]+Hz[k+1])*U[i][j][k+2*dNz]);
 
 				fprintf(f,"%LF\n",U[i][j][k+3*dNz]);
 			}
@@ -1614,11 +1640,11 @@ void print_info()
 	fclose(f);
 
 }
-// Инициализирующие функции
+// РРЅРёС†РёР°Р»РёР·РёСЂСѓСЋС‰РёРµ С„СѓРЅРєС†РёРё
 
 void X_init()
 {
-	// Сначала y, z
+	// РЎРЅР°С‡Р°Р»Р° y, z
 	for(int d=0; d<Rd; ++d)
 	{
 		long double s = sqrtl(2)/2*r_L*d/(Rd-1);
@@ -1632,7 +1658,7 @@ void X_init()
 	Cy[Ny-1] = 2*Cy[Ny-2]-Cy[Ny-3];
 	Cz[dNz-1] = 2*Cz[dNz-2]-Cz[dNz-3];
 
-	// Теперь x
+	// РўРµРїРµСЂСЊ x
 	for(int i=0; i<Nx1; ++i)
 		Cx[i] = x1_L*i/(Nx1-1);
 	for(int i=1; i<Nx2; ++i)
@@ -1648,13 +1674,13 @@ void X_init()
 	x_L = Cx[Nx1+Nx2+Nx3+Nx4+Nx5-5];
 
 
-	for(int i=1;i<Nx;++i)
+	for(int i=1; i<Nx; ++i)
 		Hx[i]=Cx[i]-Cx[i-1];
 	Hx[0]=Hx[1];
-	for(int j=1;j<Ny;++j)
+	for(int j=1; j<Ny; ++j)
 		Hy[j]=Cy[j]-Cy[j-1];
 	Hy[0]=Hy[1];
-	for(int k=1;k<dNz;++k)
+	for(int k=1; k<dNz; ++k)
 		Hz[k]=Cz[k]-Cz[k-1];
 	Hz[0]=Hz[1];
 
@@ -1666,22 +1692,22 @@ void X_init()
 
 	{
 		FILE *f = fopen("h.txt","w");
-		for(int i=0; i<Nx; ++i) 
+		for(int i=0; i<Nx; ++i)
 			fprintf(f,"%LF ",Cx[i]);
 		fprintf(f,"\n");
 
-		for(int j=0; j<Ny; ++j) 
+		for(int j=0; j<Ny; ++j)
 			fprintf(f,"%LF ",Cy[j]);
 		fprintf(f,"\n");
 
-		for(int k=0; k<Nz; ++k) 
+		for(int k=0; k<Nz; ++k)
 			fprintf(f,"%LF ",Cz[k]);
 		fprintf(f,"\n");
 		fclose(f);
 	}
 }
 
-// Заполнение маски узлов
+// Р—Р°РїРѕР»РЅРµРЅРёРµ РјР°СЃРєРё СѓР·Р»РѕРІ
 void G_init()
 {
 	for(int i=0; i<Nx; ++i)
@@ -1690,7 +1716,7 @@ void G_init()
 
 	// u
 
-	// фиктивные плоскости
+	// С„РёРєС‚РёРІРЅС‹Рµ РїР»РѕСЃРєРѕСЃС‚Рё
 	for(int j=0; j<Ny; ++j)
 		for(int k=0; k<dNz; ++k) G[0][j][k] = 0;
 	for(int i=0; i<Nx; ++i)
@@ -1698,7 +1724,7 @@ void G_init()
 	for(int i=0; i<Nx; ++i)
 		for(int j=0; j<Ny; ++j) G[i][j][dNz-1] = 0;
 
-	// лепестки клапана
+	// Р»РµРїРµСЃС‚РєРё РєР»Р°РїР°РЅР°
 	for(int k=0; k<Nz1; ++k)
 	{
 		for(int j=Rd_2-1-k; j<Rd_2+k; ++j)
@@ -1735,7 +1761,7 @@ void G_init()
 
 	// v
 
-	// лепестки клапана
+	// Р»РµРїРµСЃС‚РєРё РєР»Р°РїР°РЅР°
 	for(int k=0; k<Nz1; ++k)
 	{
 		for(int j=Rd_2-k; j<Rd_2+k; ++j)
@@ -1745,7 +1771,7 @@ void G_init()
 				G[i][j][dNz-2-k +dNz] = 0;
 			}
 	}
-	
+
 	for(int i=0; i<Nx; ++i)
 		for(int j=0; j<Ny; ++j) G[i][j][dNz+dNz-1] = 0;
 
@@ -1774,7 +1800,7 @@ void G_init()
 
 	// w
 
-	// лепестки клапана
+	// Р»РµРїРµСЃС‚РєРё РєР»Р°РїР°РЅР°
 	for(int k=1; k<Nz1; ++k)
 	{
 		for(int j=Rd_2-1-k; j<Rd_2+k; ++j)
@@ -1814,7 +1840,7 @@ void G_init()
 
 	//p
 
-	// лепестки клапана
+	// Р»РµРїРµСЃС‚РєРё РєР»Р°РїР°РЅР°
 	for(int k=1; k<Nz1-1; ++k)
 	{
 		for(int j=Rd_2-k; j<Rd_2-1+k; ++j)
@@ -1853,9 +1879,9 @@ void G_init()
 		for(int k=dNz-1; k>=0; --k)
 		{
 			f<<"k = "<<k<<"\n";
-			for(int j=Ny-1;j>=0;--j)
+			for(int j=Ny-1; j>=0; --j)
 			{
-				for(int i=0;i<Nx;++i)
+				for(int i=0; i<Nx; ++i)
 					f<<G[i][j][k]<<' ';
 				f<<"\n";
 			};
@@ -1866,9 +1892,9 @@ void G_init()
 		for(int k=2*dNz-1; k>=dNz; --k)
 		{
 			f<<"k = "<<k<<"\n";
-			for(int j=Ny-1;j>=0;--j)
+			for(int j=Ny-1; j>=0; --j)
 			{
-				for(int i=0;i<Nx;++i)
+				for(int i=0; i<Nx; ++i)
 					f<<G[i][j][k]<<' ';
 				f<<"\n";
 			};
@@ -1879,9 +1905,9 @@ void G_init()
 		for(int k=3*dNz-1; k>=2*dNz; --k)
 		{
 			f<<"k = "<<k<<"\n";
-			for(int j=Ny-1;j>=0;--j)
+			for(int j=Ny-1; j>=0; --j)
 			{
-				for(int i=0;i<Nx;++i)
+				for(int i=0; i<Nx; ++i)
 					f<<G[i][j][k]<<' ';
 				f<<"\n";
 			};
@@ -1892,9 +1918,9 @@ void G_init()
 		for(int k=4*dNz-1; k>=3*dNz; --k)
 		{
 			f<<"k = "<<k<<"\n";
-			for(int j=Ny-1;j>=0;--j)
+			for(int j=Ny-1; j>=0; --j)
 			{
-				for(int i=0;i<Nx;++i)
+				for(int i=0; i<Nx; ++i)
 					f<<G[i][j][k]<<' ';
 				f<<"\n";
 			};
@@ -1908,62 +1934,62 @@ void G_init()
 void U_init()
 {
 	int vortex_inside_only = 1;
-		// Первоначально все нули
-		for(int i=0;i<Nx;++i)
-		{
-			for(int j=0;j<Ny;++j)
-				for(int k=0;k<Nz;++k)
-					U[i][j][k]=0;
-		}
-		
-		// p линейно убывает по всей области
-		//for(int i=0;i<Nx;++i)
-		//	for(int j=0;j<Ny-1;++j)
-		//		for(int k=0;k<dNz-1;++k)
-		//		{
-		//			U[i][j][3*dNz+k] = p_left - (p_left-p_right)*i/(Nx-1);
-		//		}
+	// РџРµСЂРІРѕРЅР°С‡Р°Р»СЊРЅРѕ РІСЃРµ РЅСѓР»Рё
+	for(int i=0; i<Nx; ++i)
+	{
+		for(int j=0; j<Ny; ++j)
+			for(int k=0; k<Nz; ++k)
+				U[i][j][k]=0;
+	}
 
-		for(int i=0; i<Nx; ++i)
-			for(int j=0; j<Rd_2; ++j)
-				for(int k=0; k<Rd_2-j; ++k)
-				{
-					long double p = p_left - (p_left-p_right)*i/(Nx-1);
-					if( (G[i][Rd_2-1+j][3*dNz+Rd_2-1+k]) ||(i==0)||(i==Nx-1) ) 
-						U[i][Rd_2-1+j][3*dNz+Rd_2-1+k]= p;
-					if( (G[i][Rd_2-1-j][3*dNz+Rd_2-1+k]) ||(i==0)||(i==Nx-1))
-						U[i][Rd_2-1-j][3*dNz+Rd_2-1+k]= p;
-					if( (G[i][Rd_2-1+j][3*dNz+Rd_2-1-k]) ||(i==0)||(i==Nx-1))
-						U[i][Rd_2-1+j][3*dNz+Rd_2-1-k]= p;
-					if( (G[i][Rd_2-1-j][3*dNz+Rd_2-1-k]) ||(i==0)||(i==Nx-1))
-						U[i][Rd_2-1-j][3*dNz+Rd_2-1-k]= p;
-				}
+	// p Р»РёРЅРµР№РЅРѕ СѓР±С‹РІР°РµС‚ РїРѕ РІСЃРµР№ РѕР±Р»Р°СЃС‚Рё
+	//for(int i=0;i<Nx;++i)
+	//	for(int j=0;j<Ny-1;++j)
+	//		for(int k=0;k<dNz-1;++k)
+	//		{
+	//			U[i][j][3*dNz+k] = p_left - (p_left-p_right)*i/(Nx-1);
+	//		}
 
-		long double um = 1;
-		for(int i=1;i<Nx;++i)
-			for(int j=0; j<Rd_2-1; ++j)
-				for(int k=0; k<Rd_2-1-j; ++k)
-				{
-					long double 
-						y = Cy[Rd_2-1+j],
-						z = Cz[Rd_2-1+k];
+	for(int i=0; i<Nx; ++i)
+		for(int j=0; j<Rd_2; ++j)
+			for(int k=0; k<Rd_2-j; ++k)
+			{
+				long double p = p_left - (p_left-p_right)*i/(Nx-1);
+				if( (G[i][Rd_2-1+j][3*dNz+Rd_2-1+k]) ||(i==0)||(i==Nx-1) )
+					U[i][Rd_2-1+j][3*dNz+Rd_2-1+k]= p;
+				if( (G[i][Rd_2-1-j][3*dNz+Rd_2-1+k]) ||(i==0)||(i==Nx-1))
+					U[i][Rd_2-1-j][3*dNz+Rd_2-1+k]= p;
+				if( (G[i][Rd_2-1+j][3*dNz+Rd_2-1-k]) ||(i==0)||(i==Nx-1))
+					U[i][Rd_2-1+j][3*dNz+Rd_2-1-k]= p;
+				if( (G[i][Rd_2-1-j][3*dNz+Rd_2-1-k]) ||(i==0)||(i==Nx-1))
+					U[i][Rd_2-1-j][3*dNz+Rd_2-1-k]= p;
+			}
 
-					if( (G[i][Rd_2-1+j][Rd_2-1+k])) 
-						U[i][Rd_2-1+j][Rd_2-1+k] = ( r_L*r_L-(y*y+z*z) )*um*um/r_L/r_L;
-					if( (G[i][Rd_2-1-j][Rd_2-1+k]))
-						U[i][Rd_2-1-j][Rd_2-1+k] = ( r_L*r_L-(y*y+z*z) )*um*um/r_L/r_L;
-					if( (G[i][Rd_2-1+j][Rd_2-1-k]))
-						U[i][Rd_2-1+j][Rd_2-1-k] = ( r_L*r_L-(y*y+z*z) )*um*um/r_L/r_L;
-					if( (G[i][Rd_2-1-j][Rd_2-1-k]))
-						U[i][Rd_2-1-j][Rd_2-1-k] = ( r_L*r_L-(y*y+z*z) )*um*um/r_L/r_L;
-				};
+	long double um = 1;
+	for(int i=1; i<Nx; ++i)
+		for(int j=0; j<Rd_2-1; ++j)
+			for(int k=0; k<Rd_2-1-j; ++k)
+			{
+				long double
+				y = Cy[Rd_2-1+j],
+				z = Cz[Rd_2-1+k];
+
+				if( (G[i][Rd_2-1+j][Rd_2-1+k]))
+					U[i][Rd_2-1+j][Rd_2-1+k] = ( r_L*r_L-(y*y+z*z) )*um*um/r_L/r_L;
+				if( (G[i][Rd_2-1-j][Rd_2-1+k]))
+					U[i][Rd_2-1-j][Rd_2-1+k] = ( r_L*r_L-(y*y+z*z) )*um*um/r_L/r_L;
+				if( (G[i][Rd_2-1+j][Rd_2-1-k]))
+					U[i][Rd_2-1+j][Rd_2-1-k] = ( r_L*r_L-(y*y+z*z) )*um*um/r_L/r_L;
+				if( (G[i][Rd_2-1-j][Rd_2-1-k]))
+					U[i][Rd_2-1-j][Rd_2-1-k] = ( r_L*r_L-(y*y+z*z) )*um*um/r_L/r_L;
+			};
 
 
 }
 
 void vars_init()
 {
-	eps = 0.000001;	
+	eps = 0.000001;
 
 	x1_L = 0.06;
 	x2_L = 0.06;
@@ -1999,7 +2025,7 @@ void vars_init()
 	p_right = 0;
 }
 
-// Инициализация
+// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 void init()
 {
 	vars_init();
@@ -2032,10 +2058,10 @@ void init()
 
 	Rn_1 = Rn_2 = 0;
 
-	for(int i=0;i<Nx;++i)
+	for(int i=0; i<Nx; ++i)
 	{
-		for(int j=0;j<Ny;++j)
-			for(int k=0;k<Nz;++k)
+		for(int j=0; j<Ny; ++j)
+			for(int k=0; k<Nz; ++k)
 				U_2[i][j][k] = U_1[i][j][k] = 0;
 	}
 
@@ -2055,7 +2081,7 @@ void init()
 	Rn = norm(R);
 	R0 = Rn;
 
-	// вектор Z
+	// РІРµРєС‚РѕСЂ Z
 	for(int i=0; i<Nx; ++i)
 	{
 		for(int j=0; j<Ny; ++j)
@@ -2066,8 +2092,8 @@ void init()
 			}
 		}
 	}
-//*
-	// группы
+	//*
+	// РіСЂСѓРїРїС‹
 	init_gr();
 	print_gr();
 	set_gr();
@@ -2078,110 +2104,110 @@ void init()
 		{
 			for(int k=0; k<Nz; ++k)
 			{
-				fprintf(fgr,"%3d ",groups[i][j][k]); 
+				fprintf(fgr,"%3d ",groups[i][j][k]);
 			}
 		}
 		fprintf(fgr,"\n");
 	}
 	fclose(fgr);
-//*/	
-/*
-	{
-		FILE *f;
-		int x,y,z;
-		f = fopen("oper_arg.txt","r");
-		while( fscanf(f,"%d, %d, %d: ",&x,&y,&z)!=EOF )
-		{
-			int a, b, c, s = 0;
-			while( fscanf(f,"|%d %d %d |",&a,&b,&c)>0 )
-			{
-				arg[x][y][z][s].i = a;
-				arg[x][y][z][s].j = b;
-				arg[x][y][z][s].k = c;
-				++s;
-			}
-			carg[x][y][z] = s;
-		}
-		fclose(f);
-		printf("arg ok\n");
-	}
-//*/
+	//*/
+	/*
+	   {
+	   FILE *f;
+	   int x,y,z;
+	   f = fopen("oper_arg.txt","r");
+	   while( fscanf(f,"%d, %d, %d: ",&x,&y,&z)!=EOF )
+	   {
+	   int a, b, c, s = 0;
+	   while( fscanf(f,"|%d %d %d |",&a,&b,&c)>0 )
+	   {
+	   arg[x][y][z][s].i = a;
+	   arg[x][y][z][s].j = b;
+	   arg[x][y][z][s].k = c;
+	   ++s;
+	   }
+	   carg[x][y][z] = s;
+	   }
+	   fclose(f);
+	   printf("arg ok\n");
+	   }
+	//*/
 
-/*
-	my_init_gr();
-	FILE *f = fopen("oper_arg.txt","w");
-	for(int i=0; i<Nx; ++i)
-		for(int j=0; j<Ny; ++j)
-			for(int k=0; k<Nz; ++k)
-			{
-				fprintf(f, "%3d, %3d, %3d: ", i, j, k);
-				for(int c = 0; c<carg[i][j][k]; ++c)
-					fprintf(f, "| %4d %4d %4d |", arg[i][j][k][c].i, arg[i][j][k][c].j, arg[i][j][k][c].k);
-				fprintf(f,"\n");
-			};
-	fclose(f);
-//*/
+	/*
+	   my_init_gr();
+	   FILE *f = fopen("oper_arg.txt","w");
+	   for(int i=0; i<Nx; ++i)
+	   for(int j=0; j<Ny; ++j)
+	   for(int k=0; k<Nz; ++k)
+	   {
+	   fprintf(f, "%3d, %3d, %3d: ", i, j, k);
+	   for(int c = 0; c<carg[i][j][k]; ++c)
+	   fprintf(f, "| %4d %4d %4d |", arg[i][j][k][c].i, arg[i][j][k][c].j, arg[i][j][k][c].k);
+	   fprintf(f,"\n");
+	   };
+	   fclose(f);
+	//*/
 }
 
-// Основной цикл
+// РћСЃРЅРѕРІРЅРѕР№ С†РёРєР»
 void run()
 {
 
-/*
-	int 
-		ni = 11, nj = 10, nk = 11;
+	/*
+	   int
+	   ni = 11, nj = 10, nk = 11;
 
-	FILE *f = fopen("1.dat", "a");
+	   FILE *f = fopen("1.dat", "a");
 
-	fprintf(f,"ZONE T=T1, I=%d, J=%d, K=%d, F=POINT\n", ni, nj, nk-1);
-	for(int k=0; k<nk-1; ++k)
-	{
-		for(int j=-nj/2; j<nj/2; ++j)
-		{
-			for(int i=0;i<ni;++i) 
-			{
-				double
-					a = M_PI*(j+nj/2)/(nj-1),
-					//r = ( Cz[Nz1-1] - Cz[0] )- ( Cz[Nz1-1] - Cz[0] )*k/(nk-1),
-					d = r_L - ( Cz[Nz1-1] - Cz[0] ),
-					R = d + (r_L-d)*(nk-k)/(nk-1),
-					//ry = sqrt( r_L*r_L - d*d ),
-					//dy = r_L-ry,
-					rr = sqrt( R*R - d*d*cos(a)*cos(a) ) - d*sin(a),
-					x = Cx[Nx1-1+i+abs(j)+k],
-					y = rr*cos(a),
-					z = rr*sin(a) + d;
-				fprintf(f,"%f, %f, %f, 0, 0, 0, 0\n", x, y, z);
-			}
-		}
+	   fprintf(f,"ZONE T=T1, I=%d, J=%d, K=%d, F=POINT\n", ni, nj, nk-1);
+	   for(int k=0; k<nk-1; ++k)
+	   {
+	   for(int j=-nj/2; j<nj/2; ++j)
+	   {
+	   for(int i=0;i<ni;++i)
+	   {
+	   double
+	   a = M_PI*(j+nj/2)/(nj-1),
+	//r = ( Cz[Nz1-1] - Cz[0] )- ( Cz[Nz1-1] - Cz[0] )*k/(nk-1),
+	d = r_L - ( Cz[Nz1-1] - Cz[0] ),
+	R = d + (r_L-d)*(nk-k)/(nk-1),
+	//ry = sqrt( r_L*r_L - d*d ),
+	//dy = r_L-ry,
+	rr = sqrt( R*R - d*d*cos(a)*cos(a) ) - d*sin(a),
+	x = Cx[Nx1-1+i+abs(j)+k],
+	y = rr*cos(a),
+	z = rr*sin(a) + d;
+	fprintf(f,"%f, %f, %f, 0, 0, 0, 0\n", x, y, z);
+	}
+	}
 	}
 
 	fprintf(f,"ZONE T=T1, I=%d, J=%d, K=%d, F=POINT\n", ni, nj, nk-1);
 	for(int k=0; k<nk-1; ++k)
 	{
-		for(int j=-nj/2; j<nj/2; ++j)
-		{
-			for(int i=0;i<ni;++i) 
-			{
-				double
-					a = M_PI*(j+nj/2)/(nj-1),
-					//r = ( Cz[Nz1-1] - Cz[0] )- ( Cz[Nz1-1] - Cz[0] )*k/(nk-1),
-					d = r_L - ( Cz[Nz1-1] - Cz[0] ),
-					R = d + (r_L-d)*(nk-k)/(nk-1),
-					//ry = sqrt( r_L*r_L - d*d ),
-					//dy = r_L-ry,
-					rr = sqrt( R*R - d*d*cos(a)*cos(a) ) - d*sin(a),
-					x = Cx[Nx1-1+i+abs(j)+k],
-					y = rr*cos(a),
-					z = - (rr*sin(a) + d);
-				fprintf(f,"%f, %f, %f, 0, 0, 0, 0\n", x, y, z);
-			}
-		}
+	for(int j=-nj/2; j<nj/2; ++j)
+	{
+	for(int i=0;i<ni;++i)
+	{
+	double
+	a = M_PI*(j+nj/2)/(nj-1),
+	//r = ( Cz[Nz1-1] - Cz[0] )- ( Cz[Nz1-1] - Cz[0] )*k/(nk-1),
+	d = r_L - ( Cz[Nz1-1] - Cz[0] ),
+	R = d + (r_L-d)*(nk-k)/(nk-1),
+	//ry = sqrt( r_L*r_L - d*d ),
+	//dy = r_L-ry,
+	rr = sqrt( R*R - d*d*cos(a)*cos(a) ) - d*sin(a),
+	x = Cx[Nx1-1+i+abs(j)+k],
+	y = rr*cos(a),
+	z = - (rr*sin(a) + d);
+	fprintf(f,"%f, %f, %f, 0, 0, 0, 0\n", x, y, z);
+	}
+	}
 	}
 
 	fclose(f);
-*/
-//*
+	*/
+	//*
 	residual();
 	iters = 0;
 	print_info();
@@ -2237,10 +2263,10 @@ void run()
 	}
 	while (Rn/R0>eps);
 	print_texplot();
-//*/
+	//*/
 }
 
-// Деструктор
+// Р”РµСЃС‚СЂСѓРєС‚РѕСЂ
 void down()
 {
 	del(arg,Nx,Ny,Nz);
@@ -2256,11 +2282,11 @@ void down()
 
 	delete [] Hx;
 	delete [] Hy;
-	
+
 
 }
 
-// Точка входа
+// РўРѕС‡РєР° РІС…РѕРґР°
 int main()
 {
 	init();
