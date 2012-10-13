@@ -1875,58 +1875,58 @@ void G_init()
 
 	{
 		ofstream f("check_grid.txt");
-		f << "u_grid\n\n";
+		//f << "u_grid\n\n";
 		for(int k=dNz-1; k>=0; --k)
 		{
-			f<<"k = "<<k<<"\n";
+			//f<<"k = "<<k<<"\n";
 			for(int j=Ny-1; j>=0; --j)
 			{
 				for(int i=0; i<Nx; ++i)
-					f<<G[i][j][k]<<' ';
+                    f<<Cx[i]<<' '<<Cy[i]<<' '<<Cz[i]<<' '<<G[i][j][k]<<' ';
 				f<<"\n";
 			};
-			f<<"\n";
+			//f<<"\n";
 		};
-		f<<"\n";
-		f << "v_grid\n";
-		for(int k=2*dNz-1; k>=dNz; --k)
-		{
-			f<<"k = "<<k<<"\n";
-			for(int j=Ny-1; j>=0; --j)
-			{
-				for(int i=0; i<Nx; ++i)
-					f<<G[i][j][k]<<' ';
-				f<<"\n";
-			};
-			f<<"\n";
-		};
-		f<<"\n";
-		f << "w_grid\n";
-		for(int k=3*dNz-1; k>=2*dNz; --k)
-		{
-			f<<"k = "<<k<<"\n";
-			for(int j=Ny-1; j>=0; --j)
-			{
-				for(int i=0; i<Nx; ++i)
-					f<<G[i][j][k]<<' ';
-				f<<"\n";
-			};
-			f<<"\n";
-		};
-		f<<"\n";
-		f << "p_grid\n";
-		for(int k=4*dNz-1; k>=3*dNz; --k)
-		{
-			f<<"k = "<<k<<"\n";
-			for(int j=Ny-1; j>=0; --j)
-			{
-				for(int i=0; i<Nx; ++i)
-					f<<G[i][j][k]<<' ';
-				f<<"\n";
-			};
-			f<<"\n";
-		};
-		f<<"\n";
+		//f<<"\n";
+		//f << "v_grid\n";
+		//for(int k=2*dNz-1; k>=dNz; --k)
+		//{
+		//	f<<"k = "<<k<<"\n";
+		//	for(int j=Ny-1; j>=0; --j)
+		//	{
+		//		for(int i=0; i<Nx; ++i)
+        //            f<<Cx[i]<<' '<<Cy[i]<<' '<<Cz[i]<<' '<<G[i][j][k]<<' ';
+		//		f<<"\n";
+		//	};
+		//	f<<"\n";
+		//};
+		//f<<"\n";
+		//f << "w_grid\n";
+		//for(int k=3*dNz-1; k>=2*dNz; --k)
+		//{
+		//	f<<"k = "<<k<<"\n";
+		//	for(int j=Ny-1; j>=0; --j)
+		//	{
+		//		for(int i=0; i<Nx; ++i)
+        //           f<<Cx[i]<<' '<<Cy[i]<<' '<<Cz[i]<<' '<<G[i][j][k]<<' ';
+		//		f<<"\n";
+		//	};
+		//	f<<"\n";
+		//};
+		//f<<"\n";
+		//f << "p_grid\n";
+		//for(int k=4*dNz-1; k>=3*dNz; --k)
+		//{
+		//	f<<"k = "<<k<<"\n";
+		//	for(int j=Ny-1; j>=0; --j)
+		//	{
+		//		for(int i=0; i<Nx; ++i)
+        //            f<<Cx[i]<<' '<<Cy[i]<<' '<<Cz[i]<<' '<<G[i][j][k]<<' ';
+		//		f<<"\n";
+		//	};
+		//	f<<"\n";
+		//};
+		//f<<"\n";
 		f.close();
 	}
 }
