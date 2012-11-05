@@ -46,7 +46,11 @@ Nx, Ny, Nz, dNz, Rd, Rd_2, Rd_4, // Количество узлов
 
 // Работа с группами и матрицы влияния
 matrix_ind ***arg, ***func;
-int ***carg, ***cfunc;
+
+// Массив содержит количество элементов, которые изменяться (и будут пересчитаны), если изменить i,j,k элемент
+int ***carg;
+
+int ***cfunc;
 int ***groups;
 int num;
 
@@ -76,7 +80,9 @@ int cubic(long double *x, long double a, long double b, long double c);
 void alpha_iter();
 void print_info();
 void print_texplot_matrix();
-
+void print_vtk_header(char *output_path, int sizeX, int sizeY, int sizeZ);
+void print_vtk_data_header(char *output_path, int sizeX, int sizeY, int sizeZ);
+void print_area();
 
 // Норма вектора
 
@@ -107,7 +113,9 @@ long double norm(long double*** v1, long double*** v2)
 	return sqrt(s);
 }
 
-// Пересчет невязки
+/*
+ * Полный пересчет невязки
+ */
 void residual()
 {
 	for(int i=0; i<Nx; ++i)
@@ -117,15 +125,20 @@ void residual()
 					R[i][j][k] = A(U,U,i,j,k);
 }
 
+/*
+ * Пересчет невязки для конкретного элемента.
+ * Сначала выбирается количество элементов, которые изменятся,
+ * затем индексы для них - по ним происходит пересчет.
+ */
 void residual(int i, int j, int k)
 {
-	int c = carg[i][j][k];
-	for(int oc=0; oc<c; ++oc)
+	int count_changed = carg[i][j][k];
+	for(int oc=0; oc<count_changed; ++oc)
 	{
-		indexes &a=arg[i][j][k][oc];
-		int ii=a.i;
-		int jj=a.j;
-		int kk=a.k;
+		indexes &changed=arg[i][j][k][oc];
+		int ii=changed.i;
+		int jj=changed.j;
+		int kk=changed.k;
 		if(G[ii][jj][kk])
 			R[ii][jj][kk] = A(U,U,ii,jj,kk);
 	}
@@ -1599,6 +1612,110 @@ void print_texplot()
 	fclose(f);
 }
 
+/*
+ * Визуализация расчетной области
+ */
+void print_area()
+{
+    char output_path[] = "surface.vtk";
+    print_vtk_header(output_path, Nx, Ny-1, dNz-1);
+
+    FILE *f = fopen(output_path,"a");
+
+	for(int k=0; k<dNz-1; ++k)
+	{
+		for(int j=0; j<Ny-1; ++j)
+		{
+			for(int i=0; i<Nx; ++i)
+			{
+                fprintf(f,"%LF %LF %LF\n", Cx[i],Cy[j],Cz[k]);
+			}
+		}
+	}
+
+    fclose(f);
+
+    print_vtk_data_header(output_path, Nx, Ny-1, dNz-1);
+
+    f = fopen(output_path,"a");
+    for(int k=0; k<dNz-1; ++k)
+    {
+        for(int j=0; j<Ny-1; ++j)
+        {
+            for(int i=0; i<Nx; ++i)
+            {
+                fprintf(f,"%d\n", G[i][j][k]);
+            }
+        }
+    }
+
+	fclose(f);
+}
+
+/*
+ * Запись в файл заголовка данных vtk
+ */
+void print_vtk_data_header(char *output_path, int sizeX, int sizeY, int sizeZ)
+{
+#pragma region HEADER
+    string header;
+    char line [50];
+
+    sprintf(line,"POINT_DATA %d\n",sizeX*sizeY*sizeZ);
+    header.append(line);
+
+    sprintf(line,"SCALARS scalars int\n");
+    header.append(line);
+
+    sprintf(line,"LOOKUP_TABLE default\n");
+    header.append(line);
+#pragma endregion Подготовка строки с заголовком vtk файла
+
+#pragma region WRITE_FILE
+    ofstream output_data;
+    output_data.open(output_path,std::ios_base::app | std::ios_base::out);
+    output_data << header;
+    output_data.close();
+#pragma endregion Запись заголовка в файл
+}
+
+
+/*
+ * Запись в файл заголовка vtk
+ */
+void print_vtk_header(char *output_path, int sizeX, int sizeY, int sizeZ)
+{
+#pragma region HEADER
+    string header;
+    char line [50];
+
+    sprintf(line,"# vtk DataFile Version 1.0\n");
+    header.append(line);
+
+    sprintf(line,"Data file for valves model\n");
+    header.append(line);
+
+    sprintf(line,"ASCII\n");
+    header.append(line);
+
+    sprintf(line,"DATASET STRUCTURED_GRID\n");
+    header.append(line);
+
+    sprintf(line,"DIMENSIONS %d %d %d\n",sizeX,sizeY,sizeZ);
+    header.append(line);
+
+    sprintf(line,"POINTS %d double\n",sizeX*sizeY*sizeZ);
+    header.append(line);
+#pragma endregion Подготовка строки с заголовком vtk файла
+
+#pragma region WRITE_FILE
+    ofstream output_data;
+    output_data.open(output_path);
+    output_data << header;
+    output_data.close();
+#pragma endregion Запись заголовка в файл
+}
+
 void print_info()
 {
 	print_texplot();
@@ -1725,16 +1842,28 @@ void G_init()
 		for(int j=0; j<Ny; ++j) G[i][j][dNz-1] = 0;
 
 	// лепестки клапана
+    // k - начальное положение
+    // Nz1 - длинна лепестка
+    // Rd_2 - радиус?
 	for(int k=0; k<Nz1; ++k)
 	{
-		for(int j=Rd_2-1-k; j<Rd_2+k; ++j)
+		for(int j=k; j<Rd_2*2-k; ++j)
 			for(int i=Nx1-1+k + 1; i<Nx1+Nx2+Nx3-3+k; ++i)
 			{
 				G[i][j][k] = 0;
-				G[i][j][dNz-2-k] = 0;
+				//G[i][j][dNz-2-k] = 0;
 			}
 	}
 
+    for(int k=0; k<Nz1; ++k)
+	{
+		for(int j=k; j<Rd_2*2-k; ++j)
+			for(int i=Nx1-1+k + 1; i<Nx1+Nx2+Nx3-3+k; ++i)
+			{
+				//G[i][j][k] = 0;
+				G[i][j][k+18] = 0;
+			}
+	}
 
 	for(int i=0; i<Nx; ++i)
 		for(int j=0; j<Rd_2; ++j)
@@ -1929,6 +2058,8 @@ void G_init()
 		//f<<"\n";
 		f.close();
 	}
+
+    print_area();
 }
 
 void U_init()

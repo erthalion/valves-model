@@ -1,0 +1,198 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+A	src/main.cpp	/^long double A(long double ***U1, long double ***U2, int i, int j, int k)$/;"	f	signature:(long double ***U1, long double ***U2, int i, int j, int k)
+A	src/main.cpp	/^long double A(long double ***U1, long double ***U2, int i, int j, int k);$/;"	p	file:	signature:(long double ***U1, long double ***U2, int i, int j, int k)
+A1	src/main.cpp	/^long double A1(long double ***U1, long double ***U2, int i, int j, int k)$/;"	f	signature:(long double ***U1, long double ***U2, int i, int j, int k)
+A1	src/main.cpp	/^long double A1(long double ***U1, long double ***U2, int i, int j, int k);$/;"	p	file:	signature:(long double ***U1, long double ***U2, int i, int j, int k)
+A2	src/main.cpp	/^long double A2(long double ***U, int i, int j, int k)$/;"	f	signature:(long double ***U, int i, int j, int k)
+A2	src/main.cpp	/^long double A2(long double ***U, int i, int j, int k);$/;"	p	file:	signature:(long double ***U, int i, int j, int k)
+ARCHITECTURE_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	181;"	d	file:
+ARCHITECTURE_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	184;"	d	file:
+ARCHITECTURE_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	187;"	d	file:
+ARCHITECTURE_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	190;"	d	file:
+ARCHITECTURE_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	194;"	d	file:
+CMAKE_BINARY_DIR	Makefile	/^CMAKE_BINARY_DIR = \/home\/erthalion\/coding\/science\/valves-model$/;"	m
+CMAKE_COMMAND	Makefile	/^CMAKE_COMMAND = \/usr\/bin\/cmake$/;"	m
+CMAKE_EDIT_COMMAND	Makefile	/^CMAKE_EDIT_COMMAND = \/usr\/bin\/ccmake$/;"	m
+CMAKE_SOURCE_DIR	Makefile	/^CMAKE_SOURCE_DIR = \/home\/erthalion\/coding\/science\/valves-model$/;"	m
+COMPILER_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	12;"	d	file:
+COMPILER_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	15;"	d	file:
+COMPILER_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	18;"	d	file:
+COMPILER_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	21;"	d	file:
+COMPILER_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	24;"	d	file:
+COMPILER_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	27;"	d	file:
+COMPILER_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	30;"	d	file:
+COMPILER_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	34;"	d	file:
+COMPILER_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	36;"	d	file:
+COMPILER_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	38;"	d	file:
+COMPILER_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	42;"	d	file:
+COMPILER_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	45;"	d	file:
+COMPILER_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	48;"	d	file:
+COMPILER_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	51;"	d	file:
+COMPILER_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	54;"	d	file:
+COMPILER_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	57;"	d	file:
+COMPILER_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	60;"	d	file:
+COMPILER_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	65;"	d	file:
+COMPILER_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	68;"	d	file:
+COMPILER_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	74;"	d	file:
+COMPILER_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	77;"	d	file:
+COMPILER_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	80;"	d	file:
+COMPILER_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	9;"	d	file:
+Cx	src/main.cpp	/^	 *Cx, *Cy, *Cz, \/\/ координаты$/;"	v
+Cy	src/main.cpp	/^	 *Cx, *Cy, *Cz, \/\/ координаты$/;"	v
+Cz	src/main.cpp	/^	 *Cx, *Cy, *Cz, \/\/ координаты$/;"	v
+G	src/main.cpp	/^	***G; \/\/ Маска узлов$/;"	v
+G_init	src/main.cpp	/^void G_init()$/;"	f	signature:()
+Hx	src/main.cpp	/^	 *Hx, *Hy, *Hz, \/\/ шаги$/;"	v
+Hy	src/main.cpp	/^	 *Hx, *Hy, *Hz, \/\/ шаги$/;"	v
+Hz	src/main.cpp	/^	 *Hx, *Hy, *Hz, \/\/ шаги$/;"	v
+M_2PI	src/main.cpp	13;"	d	file:
+Nx	src/main.cpp	/^Nx, Ny, Nz, dNz, Rd, Rd_2, Rd_4, \/\/ Количество узлов$/;"	v
+Nx1	src/main.cpp	/^	Nx1, Nx2, Nx3, Nx4, Nx5,$/;"	v
+Nx2	src/main.cpp	/^	Nx1, Nx2, Nx3, Nx4, Nx5,$/;"	v
+Nx3	src/main.cpp	/^	Nx1, Nx2, Nx3, Nx4, Nx5,$/;"	v
+Nx4	src/main.cpp	/^	Nx1, Nx2, Nx3, Nx4, Nx5,$/;"	v
+Nx5	src/main.cpp	/^	Nx1, Nx2, Nx3, Nx4, Nx5,$/;"	v
+Ny	src/main.cpp	/^Nx, Ny, Nz, dNz, Rd, Rd_2, Rd_4, \/\/ Количество узлов$/;"	v
+Nz	src/main.cpp	/^Nx, Ny, Nz, dNz, Rd, Rd_2, Rd_4, \/\/ Количество узлов$/;"	v
+Nz1	src/main.cpp	/^	Nz1, Nz2, Nz3,$/;"	v
+Nz2	src/main.cpp	/^	Nz1, Nz2, Nz3,$/;"	v
+Nz3	src/main.cpp	/^	Nz1, Nz2, Nz3,$/;"	v
+PLATFORM_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	101;"	d	file:
+PLATFORM_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	104;"	d	file:
+PLATFORM_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	107;"	d	file:
+PLATFORM_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	110;"	d	file:
+PLATFORM_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	113;"	d	file:
+PLATFORM_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	116;"	d	file:
+PLATFORM_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	119;"	d	file:
+PLATFORM_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	122;"	d	file:
+PLATFORM_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	125;"	d	file:
+PLATFORM_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	128;"	d	file:
+PLATFORM_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	134;"	d	file:
+PLATFORM_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	137;"	d	file:
+PLATFORM_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	140;"	d	file:
+PLATFORM_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	143;"	d	file:
+PLATFORM_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	146;"	d	file:
+PLATFORM_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	149;"	d	file:
+PLATFORM_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	152;"	d	file:
+PLATFORM_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	155;"	d	file:
+PLATFORM_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	158;"	d	file:
+PLATFORM_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	161;"	d	file:
+PLATFORM_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	164;"	d	file:
+PLATFORM_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	167;"	d	file:
+PLATFORM_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	170;"	d	file:
+PLATFORM_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	92;"	d	file:
+PLATFORM_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	95;"	d	file:
+PLATFORM_ID	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	98;"	d	file:
+R	src/main.cpp	/^	 ***R, \/\/ Невязка$/;"	v
+R0	src/main.cpp	/^	 Rn, R0,$/;"	v
+RM	Makefile	/^RM = \/usr\/bin\/cmake -E remove -f$/;"	m
+Rd	src/main.cpp	/^Nx, Ny, Nz, dNz, Rd, Rd_2, Rd_4, \/\/ Количество узлов$/;"	v
+Rd_2	src/main.cpp	/^Nx, Ny, Nz, dNz, Rd, Rd_2, Rd_4, \/\/ Количество узлов$/;"	v
+Rd_4	src/main.cpp	/^Nx, Ny, Nz, dNz, Rd, Rd_2, Rd_4, \/\/ Количество узлов$/;"	v
+Rn	src/main.cpp	/^	 Rn, R0,$/;"	v
+Rn_1	src/main.cpp	/^	 Rn_1, Rn_2,$/;"	v
+Rn_2	src/main.cpp	/^	 Rn_1, Rn_2,$/;"	v
+SHELL	Makefile	/^SHELL = \/bin\/sh$/;"	m
+SUFFIXES	Makefile	/^SUFFIXES =$/;"	m
+U	src/main.cpp	/^	 ***U, \/\/ Вектор неизвестных$/;"	v
+U_1	src/main.cpp	/^	 ***U_1, ***U_2, \/\/ для ускорения$/;"	v
+U_2	src/main.cpp	/^	 ***U_1, ***U_2, \/\/ для ускорения$/;"	v
+U_init	src/main.cpp	/^void U_init()$/;"	f	signature:()
+X_init	src/main.cpp	/^void X_init()$/;"	f	signature:()
+Z	src/main.cpp	/^	 ***Z; \/\/ для метода н\/а$/;"	v
+_CRT_SECURE_NO_WARNINGS	src/main.cpp	2;"	d	file:
+_USE_MATH_DEFINES	src/main.cpp	3;"	d	file:
+add_gr	src/main.cpp	/^void add_gr(matrix_ind ***&m, int &n, int i, int j, int k, int l, int s, int t)$/;"	f	signature:(matrix_ind ***&m, int &n, int i, int j, int k, int l, int s, int t)
+add_gr	src/main.cpp	/^void add_gr(matrix_ind ***&m, int &n, int i, int j, int k, int l, int s, int t);$/;"	p	file:	signature:(matrix_ind ***&m, int &n, int i, int j, int k, int l, int s, int t)
+alloc	src/main.cpp	/^void alloc(int ***&a, int x, int y, int z)$/;"	f	signature:(int ***&a, int x, int y, int z)
+alloc	src/main.cpp	/^void alloc(int ***&a, int x, int y, int z);$/;"	p	file:	signature:(int ***&a, int x, int y, int z)
+alloc	src/main.cpp	/^void alloc(long double ***&a, int x, int y, int z)$/;"	f	signature:(long double ***&a, int x, int y, int z)
+alloc	src/main.cpp	/^void alloc(long double ***&a, int x, int y, int z);$/;"	p	file:	signature:(long double ***&a, int x, int y, int z)
+alloc	src/main.cpp	/^void alloc(matrix_ind ***&a, int x, int y, int z)$/;"	f	signature:(matrix_ind ***&a, int x, int y, int z)
+alloc	src/main.cpp	/^void alloc(matrix_ind ***&a, int x, int y, int z);$/;"	p	file:	signature:(matrix_ind ***&a, int x, int y, int z)
+alpha_iter	src/main.cpp	/^void alpha_iter()$/;"	f	signature:()
+alpha_iter	src/main.cpp	/^void alpha_iter();$/;"	p	file:	signature:()
+arg	src/main.cpp	/^matrix_ind ***arg, ***func;$/;"	v
+calc_alpha	src/main.cpp	/^long double calc_alpha(long double Rn_F1, long double Rn_F2, long double F1_F1, long double F2_F2, long double F1_F2)$/;"	f	signature:(long double Rn_F1, long double Rn_F2, long double F1_F1, long double F2_F2, long double F1_F2)
+calc_alpha	src/main.cpp	/^long double calc_alpha(long double Rn_F1, long double Rn_F2, long double F1_F1, long double F2_F2, long double F1_F2);$/;"	p	file:	signature:(long double Rn_F1, long double Rn_F2, long double F1_F1, long double F2_F2, long double F1_F2)
+carg	src/main.cpp	/^int ***carg;$/;"	v
+cfunc	src/main.cpp	/^int ***cfunc;$/;"	v
+cubic	src/main.cpp	/^int cubic(long double *x, long double a, long double b, long double c);$/;"	p	file:	signature:(long double *x, long double a, long double b, long double c)
+cubic	src/main.cpp	/^int cubic(long double *x,long double a,long double b,long double c)$/;"	f	signature:(long double *x,long double a,long double b,long double c)
+dNz	src/main.cpp	/^Nx, Ny, Nz, dNz, Rd, Rd_2, Rd_4, \/\/ Количество узлов$/;"	v
+del	src/main.cpp	/^void del(int ***&a, int x, int y, int z)$/;"	f	signature:(int ***&a, int x, int y, int z)
+del	src/main.cpp	/^void del(int ***&a, int x, int y, int z);$/;"	p	file:	signature:(int ***&a, int x, int y, int z)
+del	src/main.cpp	/^void del(long double ***&a, int x, int y, int z)$/;"	f	signature:(long double ***&a, int x, int y, int z)
+del	src/main.cpp	/^void del(long double ***&a, int x, int y, int z);$/;"	p	file:	signature:(long double ***&a, int x, int y, int z)
+del	src/main.cpp	/^void del(matrix_ind ***&a, int x, int y, int z)$/;"	f	signature:(matrix_ind ***&a, int x, int y, int z)
+del	src/main.cpp	/^void del(matrix_ind ***&a, int x, int y, int z);$/;"	p	file:	signature:(matrix_ind ***&a, int x, int y, int z)
+down	src/main.cpp	/^void down()$/;"	f	signature:()
+eps	src/main.cpp	/^	 eps,$/;"	v
+eval_scalars	src/main.cpp	/^void eval_scalars(long double ***u, long double ***R, int i1, int j1, int k1, long double &Rn_F1, long double &Rn_F2, long double &F1_F1, long double &F2_F2, long double &F1_F2)$/;"	f	signature:(long double ***u, long double ***R, int i1, int j1, int k1, long double &Rn_F1, long double &Rn_F2, long double &F1_F1, long double &F2_F2, long double &F1_F2)
+eval_scalars	src/main.cpp	/^void eval_scalars(long double ***u, long double ***R, int i1, int j1, int k1, long double &Rn_F1, long double &Rn_F2, long double &F1_F1, long double &F2_F2, long double &F1_F2);$/;"	p	file:	signature:(long double ***u, long double ***R, int i1, int j1, int k1, long double &Rn_F1, long double &Rn_F2, long double &F1_F1, long double &F2_F2, long double &F1_F2)
+func	src/main.cpp	/^matrix_ind ***arg, ***func;$/;"	v
+groups	src/main.cpp	/^int ***groups;$/;"	v
+i	src/main.cpp	/^	int i,j,k;$/;"	m	struct:indexes	file:	access:public
+indexes	src/main.cpp	/^struct indexes$/;"	s	file:
+indexes::i	src/main.cpp	/^	int i,j,k;$/;"	m	struct:indexes	file:	access:public
+indexes::j	src/main.cpp	/^	int i,j,k;$/;"	m	struct:indexes	file:	access:public
+indexes::k	src/main.cpp	/^	int i,j,k;$/;"	m	struct:indexes	file:	access:public
+info_arch	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	/^char const* info_arch = "INFO" ":" "arch[" ARCHITECTURE_ID "]";$/;"	v
+info_compiler	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	/^char const* info_compiler = "INFO" ":" "compiler[" COMPILER_ID "]";$/;"	v
+info_platform	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	/^char const* info_platform = "INFO" ":" "platform[" PLATFORM_ID "]";$/;"	v
+init	src/main.cpp	/^void init()$/;"	f	signature:()
+init_gr	src/main.cpp	/^void init_gr()$/;"	f	signature:()
+init_gr	src/main.cpp	/^void init_gr();$/;"	p	file:	signature:()
+iters	src/main.cpp	/^	iters,$/;"	v
+j	src/main.cpp	/^	int i,j,k;$/;"	m	struct:indexes	file:	access:public
+k	src/main.cpp	/^	int i,j,k;$/;"	m	struct:indexes	file:	access:public
+main	CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp	/^int main(int argc, char* argv[])$/;"	f	signature:(int argc, char* argv[])
+main	src/main.cpp	/^int main()$/;"	f	signature:()
+matrix_ind	src/main.cpp	/^typedef indexes matrix_ind[25];$/;"	t	file:
+my_init_gr	src/main.cpp	/^void my_init_gr()$/;"	f	signature:()
+norm	src/main.cpp	/^long double norm(long double*** v)$/;"	f	signature:(long double*** v)
+norm	src/main.cpp	/^long double norm(long double*** v);$/;"	p	file:	signature:(long double*** v)
+norm	src/main.cpp	/^long double norm(long double*** v1, long double*** v2)$/;"	f	signature:(long double*** v1, long double*** v2)
+norm	src/main.cpp	/^long double norm(long double*** v1, long double*** v2);$/;"	p	file:	signature:(long double*** v1, long double*** v2)
+nu	src/main.cpp	/^	 nu, \/\/ кинематическая вязкость$/;"	v
+num	src/main.cpp	/^int num;$/;"	v
+p_left	src/main.cpp	/^	 p_left, p_right, \/\/ давление$/;"	v
+p_right	src/main.cpp	/^	 p_left, p_right, \/\/ давление$/;"	v
+print_area	src/main.cpp	/^void print_area()$/;"	f	signature:()
+print_gr	src/main.cpp	/^void print_gr()$/;"	f	signature:()
+print_gr	src/main.cpp	/^void print_gr();$/;"	p	file:	signature:()
+print_info	src/main.cpp	/^void print_info()$/;"	f	signature:()
+print_info	src/main.cpp	/^void print_info();$/;"	p	file:	signature:()
+print_texplot	src/main.cpp	/^void print_texplot()$/;"	f	signature:()
+print_texplot_matrix	src/main.cpp	/^void print_texplot_matrix()$/;"	f	signature:()
+print_texplot_matrix	src/main.cpp	/^void print_texplot_matrix();$/;"	p	file:	signature:()
+print_vtk_header	src/main.cpp	/^void print_vtk_header(char *output_path, int sizeX, int sizeY, int sizeZ)$/;"	f	signature:(char *output_path, int sizeX, int sizeY, int sizeZ)
+print_vtk_header	src/main.cpp	/^void print_vtk_header(char *output_path, int sizeX, int sizeY, int sizeZ);$/;"	p	file:	signature:(char *output_path, int sizeX, int sizeY, int sizeZ)
+r_L	src/main.cpp	/^x_L, y_L, z_L, r_L, \/\/ размеры канала$/;"	v
+random_gr	src/main.cpp	/^double random_gr()$/;"	f	signature:()
+random_gr	src/main.cpp	/^double random_gr();$/;"	p	file:	signature:()
+residual	src/main.cpp	/^void residual()$/;"	f	signature:()
+residual	src/main.cpp	/^void residual();$/;"	p	file:	signature:()
+residual	src/main.cpp	/^void residual(int i, int j, int k)$/;"	f	signature:(int i, int j, int k)
+residual	src/main.cpp	/^void residual(int i, int j, int k);$/;"	p	file:	signature:(int i, int j, int k)
+rho	src/main.cpp	/^	 rho, \/\/ плотность$/;"	v
+run	src/main.cpp	/^void run()$/;"	f	signature:()
+set_gr	src/main.cpp	/^void set_gr()$/;"	f	signature:()
+set_gr	src/main.cpp	/^void set_gr();$/;"	p	file:	signature:()
+speed_first	src/main.cpp	/^void speed_first()$/;"	f	signature:()
+speed_work	src/main.cpp	/^void speed_work()$/;"	f	signature:()
+tau_iter	src/main.cpp	/^void tau_iter()$/;"	f	signature:()
+vars_init	src/main.cpp	/^void vars_init()$/;"	f	signature:()
+x1_L	src/main.cpp	/^	 x1_L, x2_L, x3_L, x4_L, x5_L,$/;"	v
+x2_L	src/main.cpp	/^	 x1_L, x2_L, x3_L, x4_L, x5_L,$/;"	v
+x3_L	src/main.cpp	/^	 x1_L, x2_L, x3_L, x4_L, x5_L,$/;"	v
+x4_L	src/main.cpp	/^	 x1_L, x2_L, x3_L, x4_L, x5_L,$/;"	v
+x5_L	src/main.cpp	/^	 x1_L, x2_L, x3_L, x4_L, x5_L,$/;"	v
+x_L	src/main.cpp	/^x_L, y_L, z_L, r_L, \/\/ размеры канала$/;"	v
+y_L	src/main.cpp	/^x_L, y_L, z_L, r_L, \/\/ размеры канала$/;"	v
+z_L	src/main.cpp	/^x_L, y_L, z_L, r_L, \/\/ размеры канала$/;"	v
