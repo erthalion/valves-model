@@ -83,6 +83,8 @@ void print_texplot_matrix();
 void print_vtk_header(char *output_path, int sizeX, int sizeY, int sizeZ);
 void print_vtk_data_header(char *output_path, int sizeX, int sizeY, int sizeZ);
 void print_area();
+void print_vtk_header_points(char *output_path, int sizeX, int sizeY, int sizeZ);
+void print_area_points();
 
 // Норма вектора
 
@@ -1613,6 +1615,28 @@ void print_texplot()
 }
 
 /*
+ * Загрузка маски из файла
+ */
+void load_mask(const char *file_name)
+{
+    FILE *f = fopen(file_name,"r");
+
+	for(int k=0; k<dNz-1; ++k)
+	{
+		for(int j=0; j<Ny-1; ++j)
+		{
+			for(int i=0; i<Nx; ++i)
+			{
+                fscanf(f,"%d ", &G[i][j][k]);
+			}
+		}
+	}
+
+    fclose(f);
+    printf("Mask has been loaded\n");
+}
+
+/*
  * Визуализация расчетной области
  */
 void print_area()
@@ -1638,6 +1662,30 @@ void print_area()
     print_vtk_data_header(output_path, Nx, Ny-1, dNz-1);
 
     f = fopen(output_path,"a");
+    for(int k=0; k<dNz-1; ++k)
+    {
+        for(int j=0; j<Ny-1; ++j)
+        {
+            for(int i=0; i<Nx; ++i)
+            {
+                fprintf(f,"%d\n", G[i][j][k]);
+            }
+        }
+    }
+
+	fclose(f);
+}
+
+/*
+ * Визуализация расчетной области в STRUCTURED_POINTS
+ */
+void print_area_points()
+{
+    char output_path[] = "surface.vtk";
+    print_vtk_header_points(output_path, Nx, Ny-1, dNz-1);
+    print_vtk_data_header(output_path, Nx, Ny-1, dNz-1);
+
+    FILE *f = fopen(output_path,"a");
     for(int k=0; k<dNz-1; ++k)
     {
         for(int j=0; j<Ny-1; ++j)
@@ -1715,6 +1763,46 @@ void print_vtk_header(char *output_path, int sizeX, int sizeY, int sizeZ)
     output_data.close();
 #pragma endregion Запись заголовка в файл
 }
+
+/*
+ * Запись в файл заголовка vtk STRUCTURED_POINTS
+ */
+void print_vtk_header_points(char *output_path, int sizeX, int sizeY, int sizeZ)
+{
+#pragma region HEADER
+    string header;
+    char line [50];
+
+    sprintf(line,"# vtk DataFile Version 1.0\n");
+    header.append(line);
+
+    sprintf(line,"Data file for valves model\n");
+    header.append(line);
+
+    sprintf(line,"ASCII\n");
+    header.append(line);
+
+    sprintf(line,"DATASET STRUCTURED_POINTS\n");
+    header.append(line);
+
+    sprintf(line,"DIMENSIONS %d %d %d\n",sizeX,sizeY,sizeZ);
+    header.append(line);
+
+    sprintf(line,"ORIGIN %d %d %d\n",0,0,0);
+    header.append(line);
+
+    sprintf(line,"SPACING %d %d %d\n",1,1,1);
+    header.append(line);
+#pragma endregion Подготовка строки с заголовком vtk файла
+
+#pragma region WRITE_FILE
+    ofstream output_data;
+    output_data.open(output_path);
+    output_data << header;
+    output_data.close();
+#pragma endregion Запись заголовка в файл
+}
+
 
 void print_info()
 {
@@ -2058,7 +2146,8 @@ void G_init()
 		//f<<"\n";
 		f.close();
 	}
-
+    
+    load_mask("prism.mask");
     print_area();
 }
 
