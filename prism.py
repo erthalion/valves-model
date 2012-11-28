@@ -16,6 +16,7 @@ x, y, z = np.ogrid[0:nx, 0:ny, 0:nz]
 in_boundary = (0*x + 0*y + z == 1)
 out_boundary = (0*x + 0*y + z == 60)
 middle = (0*x +0*y + z > 1) & (0*x +0*y + z < 60)
+middle_valve = (0*x +0*y + z > 20) & (0*x +0*y + z < 40)
 valve = (0*x +0*y + z > 25) & (0*x +0*y + z < 30)
 left = (0*x +0*y + z < 20)
 right = (0*x +0*y + z > 40)
@@ -38,17 +39,17 @@ right_mask = outer_prism & right
 first_valve = inner_cylinder\
         & (x + 0*y + 0*z < 12)\
         & (-(x-x0) + (y-y0) + 0*z > 0)\
-        & valve
+        & middle_valve
 
 second_valve = inner_cylinder\
         & (x + 0*y + 0*z > 12)\
         & ((x-x0) + (y-y0) + 0*z > 0)\
-        & valve
+        & middle_valve
 
 third_valve = inner_cylinder\
         & ((x-x0) + (y-y0) + 0*z < 0)\
         & (-(x-x0) + (y-y0) + 0*z < 0)\
-        & valve
+        & middle_valve
 
 input_mask = outer_prism & in_boundary
 input_left_mask = outer_prism & left_boundary
