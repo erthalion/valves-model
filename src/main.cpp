@@ -1,4 +1,3 @@
-// Подключение заголовков
 #define _CRT_SECURE_NO_WARNINGS
 #define _USE_MATH_DEFINES
 
@@ -6,9 +5,10 @@
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
-//#include <conio.h>
+#include <csignal>
 #include <fstream>
 #include <string.h>
+#include <iostream>
 
 #define M_2PI 2*M_PI
 using namespace std;
@@ -225,8 +225,9 @@ void del(matrix_ind ***&a, int x, int y, int z)
 //  нелинейная часть оператора
 long double A1(long double ***U1, long double ***U2, int i, int j, int k)
 {
+    //raise(SIGINT);
 	int g = G[i][j][k];
-	if( (!g) || (k>=dNz*3) ) return 0;
+	if( g == 0 || k>=dNz*3 ) return 0;
 
 	int uk = k%dNz;
 	int vk = uk + dNz;
@@ -1615,22 +1616,59 @@ void print_texplot()
 }
 
 /*
+ * Загрузка координат из файла
+ */
+void load_coords(const char *file_x_name, 
+        const char *file_y_name,
+        const char *file_z_name)
+{
+    FILE *f = fopen(file_x_name,"r");
+
+	for(int i=0; i<Nx; ++i)
+	{
+        fscanf(f,"%LF\n", &Cx[i]);
+	}
+
+    fclose(f);
+
+    f = fopen(file_y_name,"r");
+
+    for(int j=0; j<Ny-1; ++j)
+    {
+        fscanf(f,"%LF\n", &Cy[j]);
+    }
+
+    fclose(f);
+
+    f = fopen(file_z_name,"r");
+
+	for(int k=0; k<dNz-1; ++k)
+	{
+        fscanf(f,"%LF\n", &Cz[k]);
+	}
+
+    fclose(f);
+
+    printf("Coordinates has been loaded\n");
+}
+
+/*
  * Загрузка маски из файла
  */
 void load_mask(const char *file_name)
 {
     FILE *f = fopen(file_name,"r");
 
-	for(int k=0; k<dNz-1; ++k)
-	{
-		for(int j=0; j<Ny-1; ++j)
-		{
-			for(int i=0; i<Nx; ++i)
-			{
+    for(int i=0; i<Nx; ++i)
+    {
+        for(int k=0; k<dNz-1; ++k)
+        {
+            for(int j=0; j<Ny-1; ++j)
+            {
                 fscanf(f,"%d ", &G[i][j][k]);
-			}
-		}
-	}
+            }
+        }
+    }
 
     fclose(f);
     printf("Mask has been loaded\n");
@@ -1644,6 +1682,7 @@ void print_area()
     char output_path[] = "surface.vtk";
     print_vtk_header(output_path, Nx, Ny-1, dNz-1);
 
+    //raise(SIGINT);
     FILE *f = fopen(output_path,"a");
 
 	for(int k=0; k<dNz-1; ++k)
@@ -1933,25 +1972,61 @@ void G_init()
     // k - начальное положение
     // Nz1 - длинна лепестка
     // Rd_2 - радиус?
-	for(int k=0; k<Nz1; ++k)
-	{
-		for(int j=k; j<Rd_2*2-k; ++j)
-			for(int i=Nx1-1+k + 1; i<Nx1+Nx2+Nx3-3+k; ++i)
-			{
-				G[i][j][k] = 0;
-				//G[i][j][dNz-2-k] = 0;
-			}
-	}
-
     for(int k=0; k<Nz1; ++k)
-	{
-		for(int j=k; j<Rd_2*2-k; ++j)
-			for(int i=Nx1-1+k + 1; i<Nx1+Nx2+Nx3-3+k; ++i)
-			{
-				//G[i][j][k] = 0;
-				G[i][j][k+18] = 0;
-			}
-	}
+    {
+        for(int j=k; j<Rd_2*2-k; ++j)
+            for(int i=Nx1-1+k + 1; i<Nx1+Nx2+Nx3-3+k; ++i)
+            {
+                 G[i][j][k] = 0;
+                 G[i][j][dNz-2-k] = 0;
+            }
+    }
+
+/*
+ *     for(int k=0; k<Nz1; ++k)
+ *     {
+ *         for(int j=Rd_2-k; j<Rd_2+k; ++j)
+ *             for(int i=Nx1-1 +k + 1; i<Nx1+Nx2+Nx3-3+k; ++i)
+ *             {
+ *                 //G[i][j][k] = 0;
+ *                 G[i][j][k+15] = 0;
+ *             }
+ *     }
+ *
+ *     for(int k=0; k<Nz1; ++k)
+ *     {
+ *         for(int j=Rd_2-k; j<Rd_2+k; ++j)
+ *             for(int i=Nx1-1 +k + 1; i<Nx1+Nx2+Nx3-3+k; ++i)
+ *             {
+ *                 //G[i][j][k] = 0;
+ *                 G[i][k][j+15] = 0;
+ *             }
+ *     }
+ *
+ */
+    /*
+     *for(int k=0; k<Nz1-4; ++k)
+	 *{
+	 *    for(int j=0; j<Rd_2-k; ++j)
+	 *        for(int i=Nx1-1+k + 1; i<Nx1+Nx2+Nx3-3+k; ++i)
+	 *        {
+	 *            //G[i][j][k] = 0;
+	 *            G[i][j][k+15] = 0;
+	 *        }
+	 *}
+     */
+
+    /*
+     *for(int k=0; k<Nz1; ++k)
+	 *{
+	 *    for(int j=Rd_2*2-k; j<Rd_2*2; ++j)
+	 *        for(int i=Nx1-1+k + 1; i<Nx1+Nx2+Nx3-3+k; ++i)
+	 *        {
+	 *            //G[i][j][k] = 0;
+	 *            G[i][j][k+15] = 0;
+	 *        }
+	 *}
+     */
 
 	for(int i=0; i<Nx; ++i)
 		for(int j=0; j<Rd_2; ++j)
@@ -2147,12 +2222,15 @@ void G_init()
 		f.close();
 	}
     
+    //raise(SIGINT);
     load_mask("prism.mask");
+    load_coords("prism.x.coord","prism.y.coord","prism.z.coord");
     print_area();
 }
 
 void U_init()
 {
+    //raise(SIGINT);
 	int vortex_inside_only = 1;
 	// Первоначально все нули
 	for(int i=0; i<Nx; ++i)
@@ -2437,6 +2515,7 @@ void run()
 	do
 	{
 
+        //raise(SIGINT);
 		++iters;
 		speed_first();
 		long double R1 = norm(R);
