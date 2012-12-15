@@ -21,7 +21,7 @@ out_fake_boundary = (0*z + 0*y + x == 60)
 in_boundary = (0*z + 0*y + x == 1)
 out_boundary = (0*z + 0*y + x == 59)
 middle = (0*z +0*y + x > 1) & (0*z +0*y + x < 60)
-middle_valve = (0*z +0*y + x > 20) & (0*z +0*y + x < 40)
+middle_valve = (0*z +0*y + x > 25) & (0*z +0*y + x < 28)
 valve = (0*z +0*y + x > 25) & (0*z +0*y + x < 30)
 left = (0*z +0*y + x < 20)
 right = (0*z +0*y + x > 40)
@@ -84,9 +84,9 @@ array[mask] = 1
 #array[outer_mask_right] = 1
 #array[left_mask] = 1
 #array[right_mask] = 1
-#array[first_valve] = 0
-#array[second_valve] = 0
-#array[third_valve] = 0
+array[first_valve] = 0
+array[second_valve] = 0
+array[third_valve] = 0
 
 #array[input_left_mask] = 1
 #array[output_left_mask] = 1
@@ -130,7 +130,7 @@ with file('prism.mask', 'w') as outfile:
 
 """ Generate 3d array of coordinates
 """
-Hx = Hy = Hz = 0.1
+Hx = Hy = Hz = 0.01
 x_coord = np.zeros((nx))
 y_coord = np.zeros((ny))
 z_coord = np.zeros((nz))
@@ -138,19 +138,19 @@ z_coord = np.zeros((nz))
 output = open("prism.x.coord","w")
 for i in range(0, nx):
     x_coord[i] = i*Hx
-    output.write(str(x_coord.item((i)))+"\n")
+    output.write('%0.10f\n' % x_coord.item((i)))
 output.close()
 
 output = open("prism.y.coord","w")
 for j in range(0, ny):
     y_coord[j] = j*Hy
-    output.write(str(y_coord.item((j)))+"\n")
+    output.write('%0.10f\n' % y_coord.item((j)))
 output.close()
 
 output = open("prism.z.coord","w")
 for k in range(0, nz):
     z_coord[k] = k*Hz
-    output.write(str(z_coord.item((k)))+"\n")
+    output.write('%0.10f\n' % z_coord.item((k)))
 output.close()
 
 output = open("prism.vtk","w")
@@ -167,7 +167,8 @@ output.write(header)
 for k in range(0, 25):
     for j in range(0, 25):
         for i in range(0, 61):
-            output.write('%.6f %.6f %.6f\n' %(x_coord.item(i), y_coord.item(j), z_coord.item(k)))
+            #print '%0.10f %0.10f %0.10f\n' % (x_coord.item(i), y_coord.item(j), z_coord.item(k))
+            output.write('%0.10f %0.10f %0.10f\n' %(x_coord.item(i), y_coord.item(j), z_coord.item(k)))
 
 data_header = "POINT_DATA 38125\n\
 SCALARS scalars int\n\
@@ -176,6 +177,6 @@ output.write(data_header)
 for k in range(0, 25):
     for j in range(0, 25):
         for i in range(0, 61):
-            output.write(str(int(array.item((i, j, k))))+"\n")
+            output.write('%d\n' % int(array.item((i, j, k))))
 
 output.close()
