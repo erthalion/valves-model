@@ -2487,7 +2487,7 @@ void run()
         }
         //getch();
     }
-    while (iters<1);
+    while (Rn/R0>eps);
 
     time_t end_time = time(NULL);
     printf("Time is %ld\n", end_time - start_time);
