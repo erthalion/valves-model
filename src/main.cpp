@@ -513,29 +513,32 @@ void print_gr()
 
 void load_groups()
 {
+    printf("loading groups\n");
     FILE *f = fopen("oper_arg.txt","r");
     for(int i=0; i<Nx; ++i)
         for(int j=0; j<Ny; ++j)
             for(int k=0; k<Nz; ++k)
             {
                 int ii,jj,kk;
-                fscanf(f, "%3d %3d %3d %3d\n ", &ii, &jj, &kk, &carg[ii][jj][kk]);
+                fscanf(f, "%3d %3d %3d", &ii, &jj, &kk);
+                fscanf(f, "%3d\n", &carg[ii][jj][kk]);
                 for(int cc = 0; cc < carg[ii][jj][kk]; ++cc)
                     fscanf(f, "%4d %4d %4d\n", &arg[ii][jj][kk][cc].i, &arg[ii][jj][kk][cc].j, &arg[ii][jj][kk][cc].k);
             };
     fclose(f);
 
-    f = fopen("oper_func.txt","w");
+    /*f = fopen("oper_func.txt","w");
     for(int i=0; i<Nx; ++i)
         for(int j=0; j<Ny; ++j)
             for(int k=0; k<Nz; ++k)
             {
                 int ii,jj,kk;
-                fscanf(f, "%3d %3d %3d %3d\n", &ii, &jj, &kk, &cfunc[ii][jj][kk]);
+                fscanf(f, "%3d %3d %3d", &ii, &jj, &kk);
+                fscanf(f, "%3d\n", &cfunc[ii][jj][kk]);
                 for(int cc = 0; cc < cfunc[ii][jj][kk]; ++cc)
                     fscanf(f, "%4d %4d %4d\n", &func[ii][jj][kk][cc].i, &func[ii][jj][kk][cc].j, &func[ii][jj][kk][cc].k);
             };
-    fclose(f);
+    fclose(f);*/
 
     FILE *fgr = fopen("gr.txt","r");
     for(int i=0; i<Nx; ++i)
@@ -550,6 +553,7 @@ void load_groups()
         fprintf(fgr,"\n");
     }
     fclose(fgr);
+    printf("groups have been loaded\n");
 }
 
 double random_gr()
@@ -2468,9 +2472,10 @@ void init()
     }
 
     // группы
-    init_gr();
+    load_groups();
+    /*init_gr();
     set_gr();
-    print_gr();
+    print_gr();*/
 }
 
 // Основной цикл
