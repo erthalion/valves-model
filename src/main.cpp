@@ -477,23 +477,79 @@ void print_gr()
         for(int j=0; j<Ny; ++j)
             for(int k=0; k<Nz; ++k)
             {
-                fprintf(f, "%3d, %3d, %3d: ", i, j, k);
+                // current indexes (i,j,k) and count of chanched indexes(carg)
+                fprintf(f, "%3d %3d %3d %3d\n", i, j, k, carg[i][j][k]);
                 for(int c = 0; c<carg[i][j][k]; ++c)
-                    fprintf(f, "| %4d %4d %4d |", arg[i][j][k][c].i, arg[i][j][k][c].j, arg[i][j][k][c].k);
-                fprintf(f,"\n");
+                    fprintf(f, "%4d %4d %4d\n", arg[i][j][k][c].i, arg[i][j][k][c].j, arg[i][j][k][c].k);
             };
     fclose(f);
+
     f = fopen("oper_func.txt","w");
     for(int i=0; i<Nx; ++i)
         for(int j=0; j<Ny; ++j)
             for(int k=0; k<Nz; ++k)
             {
-                fprintf(f, "%3d, %3d, %3d: ", i, j, k);
+                // current indexes (i,j,k) and count of chanched indexes(cfunc)
+                fprintf(f, "%3d %3d %3d %3d\n", i, j, k, cfunc[i][j][k]);
                 for(int c = 0; c<cfunc[i][j][k]; ++c)
-                    fprintf(f, "| %4d %4d %4d |", func[i][j][k][c].i, func[i][j][k][c].j, func[i][j][k][c].k);
-                fprintf(f,"\n");
+                    fprintf(f, "%4d %4d %4d\n", func[i][j][k][c].i, func[i][j][k][c].j, func[i][j][k][c].k);
             };
     fclose(f);
+
+    FILE *fgr = fopen("gr.txt","w");
+    for(int i=0; i<Nx; ++i)
+    {
+        for(int j=0; j<Ny; ++j)
+        {
+            for(int k=0; k<Nz; ++k)
+            {
+                fprintf(fgr,"%3d ",groups[i][j][k]);
+            }
+        }
+        fprintf(fgr,"\n");
+    }
+    fclose(fgr);
+}
+
+void load_groups()
+{
+    FILE *f = fopen("oper_arg.txt","r");
+    for(int i=0; i<Nx; ++i)
+        for(int j=0; j<Ny; ++j)
+            for(int k=0; k<Nz; ++k)
+            {
+                int ii,jj,kk;
+                fscanf(f, "%3d %3d %3d %3d\n ", &ii, &jj, &kk, &carg[ii][jj][kk]);
+                for(int cc = 0; cc < carg[ii][jj][kk]; ++cc)
+                    fscanf(f, "%4d %4d %4d\n", &arg[ii][jj][kk][cc].i, &arg[ii][jj][kk][cc].j, &arg[ii][jj][kk][cc].k);
+            };
+    fclose(f);
+
+    f = fopen("oper_func.txt","w");
+    for(int i=0; i<Nx; ++i)
+        for(int j=0; j<Ny; ++j)
+            for(int k=0; k<Nz; ++k)
+            {
+                int ii,jj,kk;
+                fscanf(f, "%3d %3d %3d %3d\n", &ii, &jj, &kk, &cfunc[ii][jj][kk]);
+                for(int cc = 0; cc < cfunc[ii][jj][kk]; ++cc)
+                    fscanf(f, "%4d %4d %4d\n", &func[ii][jj][kk][cc].i, &func[ii][jj][kk][cc].j, &func[ii][jj][kk][cc].k);
+            };
+    fclose(f);
+
+    FILE *fgr = fopen("gr.txt","r");
+    for(int i=0; i<Nx; ++i)
+    {
+        for(int j=0; j<Ny; ++j)
+        {
+            for(int k=0; k<Nz; ++k)
+            {
+                fscanf(fgr,"%3d ", &groups[i][j][k]);
+            }
+        }
+        fprintf(fgr,"\n");
+    }
+    fclose(fgr);
 }
 
 double random_gr()
@@ -589,7 +645,7 @@ void init_gr()
     del(e,Nx,Ny,Nz);
     del(y,Nx,Ny,Nz);
 
-    printf("groups has been inited\n");
+    printf("groups has been initialized\n");
 }
 
 // my_init
@@ -2410,24 +2466,11 @@ void init()
             }
         }
     }
-    //*
+
     // группы
     init_gr();
-    print_gr();
     set_gr();
-    FILE *fgr = fopen("gr.txt","w");
-    for(int i=0; i<Nx; ++i)
-    {
-        for(int j=0; j<Ny; ++j)
-        {
-            for(int k=0; k<Nz; ++k)
-            {
-                fprintf(fgr,"%3d ",groups[i][j][k]);
-            }
-        }
-        fprintf(fgr,"\n");
-    }
-    fclose(fgr);
+    print_gr();
 }
 
 // Основной цикл
