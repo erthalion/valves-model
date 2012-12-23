@@ -2061,40 +2061,10 @@ void print_info()
     fclose(f);
 
 }
+
 // Инициализирующие функции
-
-void X_init()
+void h_init()
 {
-    // Сначала y, z
-    for(int d=0; d<Rd; ++d)
-    {
-        long double s = sqrtl(2)/2*r_L*d/(Rd-1);
-        long double t = sqrtl(r_L*r_L-s*s);
-        Cz[Rd_2-1+d] = Cy[Rd_2-1+d] = s;
-        Cz[Rd_2-1-d] = Cy[Rd_2-1-d] = -s;
-        Cz[Rd_4-1-d] = Cy[Rd_4-1-d] = t;
-        Cz[d] = Cy[d] = -t;
-    }
-
-    Cy[Ny-1] = 2*Cy[Ny-2]-Cy[Ny-3];
-    Cz[dNz-1] = 2*Cz[dNz-2]-Cz[dNz-3];
-
-    // Теперь x
-    for(int i=0; i<Nx1; ++i)
-        Cx[i] = x1_L*i/(Nx1-1);
-    for(int i=1; i<Nx2; ++i)
-        Cx[Nx1-1 + i] = Cx[Nx1-1+i-1] + abs(Cz[i]-Cz[i-1]);
-    x2_L = Cx[Nx1-1 + Nx2-1] - x1_L;
-    for(int i=1; i<Nx3; ++i)
-        Cx[Nx1+Nx2-2 + i] = Cx[Nx1-1 + Nx2-1] + x3_L*i/(Nx3-1);
-    for(int i=1; i<Nx4; ++i)
-        Cx[Nx1+Nx2+Nx3-3 + i] = Cx[Nx1-1 + Nx2-1 + Nx3-1 + i-1] + abs(Cz[i]-Cz[i-1]);
-    x4_L = Cx[Nx1-1 + Nx2-1 + Nx3-1 + Nx4-1] - Cx[Nx1-1 + Nx2-1 + Nx3-1];
-    for(int i=1; i<Nx5; ++i)
-        Cx[Nx1+Nx2+Nx3+Nx4-4 + i] = Cx[Nx1-1 + Nx2-1 + Nx3-1 + Nx4-1] + x5_L*i/(Nx5-1);
-    x_L = Cx[Nx1+Nx2+Nx3+Nx4+Nx5-5];
-
-
     for(int i=1; i<Nx; ++i)
         Hx[i]=Cx[i]-Cx[i-1];
     Hx[0]=Hx[1];
@@ -2107,212 +2077,8 @@ void X_init()
 
     for(int i=0; i<dNz; ++i)
     {
-        Cz[i+3*dNz] = Cz[i+2*dNz] = Cz[i+1*dNz] = Cz[i];
         Hz[i+3*dNz] = Hz[i+2*dNz] = Hz[i+1*dNz] = Hz[i];
     }
-
-    {
-        FILE *f = fopen("h.txt","w");
-        for(int i=0; i<Nx; ++i)
-            fprintf(f,"%LF ",Cx[i]);
-        fprintf(f,"\n");
-
-        for(int j=0; j<Ny; ++j)
-            fprintf(f,"%LF ",Cy[j]);
-        fprintf(f,"\n");
-
-        for(int k=0; k<Nz; ++k)
-            fprintf(f,"%LF ",Cz[k]);
-        fprintf(f,"\n");
-        fclose(f);
-    }
-}
-
-// Заполнение маски узлов
-void G_init()
-{
-    for(int i=0; i<Nx; ++i)
-        for(int j=0; j<Ny; ++j)
-            for(int k=0; k<Nz; ++k) G[i][j][k] = 1;
-
-    // u
-
-    // фиктивные плоскости
-    for(int j=0; j<Ny; ++j)
-        for(int k=0; k<dNz; ++k) G[0][j][k] = 0;
-    for(int i=0; i<Nx; ++i)
-        for(int k=0; k<dNz; ++k) G[i][Ny-1][k] = 0;
-    for(int i=0; i<Nx; ++i)
-        for(int j=0; j<Ny; ++j) G[i][j][dNz-1] = 0;
-
-    // лепестки клапана
-    // k - начальное положение
-    // Nz1 - длинна лепестка
-    // Rd_2 - радиус?
-    for(int k=0; k<Nz1; ++k)
-    {
-        for(int j=k; j<Rd_2*2-k; ++j)
-            for(int i=Nx1-1+k + 1; i<Nx1+Nx2+Nx3-3+k; ++i)
-            {
-                G[i][j][k] = 0;
-                G[i][j][dNz-2-k] = 0;
-            }
-    }
-
-    for(int i=0; i<Nx; ++i)
-        for(int j=0; j<Rd_2; ++j)
-            for(int k=Rd_2-1-j; k<Rd_2; ++k)
-            {
-                G[i][Rd_2-1+j][Rd_2-1+k] = 0;
-                G[i][Rd_2-1-j][Rd_2-1+k] = 0;
-                G[i][Rd_2-1+j][Rd_2-1-k] = 0;
-                G[i][Rd_2-1-j][Rd_2-1-k] = 0;
-            };
-
-    for(int j=0; j<Rd_2-1; ++j)
-        for(int k=0; k<Rd_2-1-j; ++k)
-        {
-            G[1][Rd_2-1+j][Rd_2-1+k] = 2;
-            G[1][Rd_2-1-j][Rd_2-1+k] = 2;
-            G[1][Rd_2-1+j][Rd_2-1-k] = 2;
-            G[1][Rd_2-1-j][Rd_2-1-k] = 2;
-            G[Nx-1][Rd_2-1+j][Rd_2-1+k] = 3;
-            G[Nx-1][Rd_2-1-j][Rd_2-1+k] = 3;
-            G[Nx-1][Rd_2-1+j][Rd_2-1-k] = 3;
-            G[Nx-1][Rd_2-1-j][Rd_2-1-k] = 3;
-        };
-
-    // v
-
-    // лепестки клапана
-    for(int k=0; k<Nz1; ++k)
-    {
-        for(int j=Rd_2-k; j<Rd_2+k; ++j)
-            for(int i=Nx1-1+k; i<Nx1+Nx2+Nx3-3+k; ++i)
-            {
-                G[i][j][k +dNz] = 0;
-                G[i][j][dNz-2-k +dNz] = 0;
-            }
-    }
-
-    for(int i=0; i<Nx; ++i)
-        for(int j=0; j<Ny; ++j) G[i][j][dNz+dNz-1] = 0;
-
-    for(int i=0; i<Nx; ++i)
-        for(int j=0; j<Rd_2; ++j)
-            for(int k=Rd_2-1-j; k<Rd_2; ++k)
-            {
-                G[i][Rd_2-1+j+1][Rd_2-1+k+dNz] = 0;
-                G[i][Rd_2-1-j][Rd_2-1+k+dNz] = 0;
-                G[i][Rd_2-1+j+1][Rd_2-1-k+dNz] = 0;
-                G[i][Rd_2-1-j][Rd_2-1-k+dNz] = 0;
-            };
-
-    for(int j=0; j<Rd_2-1; ++j)
-        for(int k=0; k<Rd_2-1-j; ++k)
-        {
-            G[0][Rd_2-1+j+1][Rd_2-1+k+dNz] = 0;
-            G[0][Rd_2-1-j][Rd_2-1+k+dNz] = 0;
-            G[0][Rd_2-1+j+1][Rd_2-1-k+dNz] = 0;
-            G[0][Rd_2-1-j][Rd_2-1-k+dNz] = 0;
-            G[Nx-1][Rd_2-1+j+1][Rd_2-1+k+dNz] = 0; //3; //11;
-            G[Nx-1][Rd_2-1-j][Rd_2-1+k+dNz] = 0; //3; //11;
-            G[Nx-1][Rd_2-1+j+1][Rd_2-1-k+dNz] = 0; //3; //11;
-            G[Nx-1][Rd_2-1-j][Rd_2-1-k+dNz] = 0; //3; //11;
-        };
-
-    // w
-
-    // лепестки клапана
-    for(int k=1; k<Nz1; ++k)
-    {
-        for(int j=Rd_2-1-k; j<Rd_2+k; ++j)
-            for(int i=Nx1-1+k; i<Nx1+Nx2+Nx3-3+k; ++i)
-            {
-                G[i][j][k +2*dNz] = 0;
-                G[i][j][dNz-1-k +2*dNz] = 0;
-            }
-    }
-
-
-    for(int i=0; i<Nx; ++i)
-        for(int k=0; k<dNz; ++k) G[i][Ny-1][2*dNz+k] = 0;
-
-    for(int i=0; i<Nx; ++i)
-        for(int j=0; j<Rd_2; ++j)
-            for(int k=Rd_2-1-j; k<Rd_2; ++k)
-            {
-                G[i][Rd_2-1+j][Rd_2-1+k+1+dNz*2] = 0;
-                G[i][Rd_2-1-j][Rd_2-1+k+1+dNz*2] = 0;
-                G[i][Rd_2-1+j][Rd_2-1-k+dNz*2] = 0;
-                G[i][Rd_2-1-j][Rd_2-1-k+dNz*2] = 0;
-            };
-
-    for(int j=0; j<Rd_2-1; ++j)
-        for(int k=0; k<Rd_2-1-j; ++k)
-        {
-            G[0][Rd_2-1+j][Rd_2-1+k+1+dNz*2] = 0;
-            G[0][Rd_2-1-j][Rd_2-1+k+1+dNz*2] = 0;
-            G[0][Rd_2-1+j][Rd_2-1-k+dNz*2] = 0;
-            G[0][Rd_2-1-j][Rd_2-1-k+dNz*2] = 0;
-            G[Nx-1][Rd_2-1+j][Rd_2-1+k+1+dNz*2] = 0; //3; //11;
-            G[Nx-1][Rd_2-1-j][Rd_2-1+k+1+dNz*2] = 0; //3; //11;
-            G[Nx-1][Rd_2-1+j][Rd_2-1-k+dNz*2] = 0; //3; //11;
-            G[Nx-1][Rd_2-1-j][Rd_2-1-k+dNz*2] = 0; //3; //11;
-        };
-
-    //p
-
-    // лепестки клапана
-    for(int k=1; k<Nz1-1; ++k)
-    {
-        for(int j=Rd_2-k; j<Rd_2-1+k; ++j)
-            for(int i=Nx1-1+k+1; i<Nx1+Nx2+Nx3-3+k-1; ++i)
-            {
-                G[i][j][k +3*dNz] = 0;
-                G[i][j][dNz-2-k +3*dNz] = 0;
-            }
-    }
-
-    for(int i=0; i<Nx; ++i)
-        for(int j=0; j<Ny; ++j) G[i][j][3*dNz+dNz-1] = 0;
-    for(int i=0; i<Nx; ++i)
-        for(int k=0; k<dNz; ++k) G[i][Ny-1][3*dNz+k] = 0;
-
-    for(int i=0; i<Nx; ++i)
-        for(int j=0; j<Rd_2; ++j)
-            for(int k=Rd_2-1-j+1; k<Rd_2; ++k)
-            {
-                G[i][Rd_2-1+j][Rd_2-1+k+dNz*3] = 0;
-                G[i][Rd_2-1-j][Rd_2-1+k+dNz*3] = 0;
-                G[i][Rd_2-1+j][Rd_2-1-k+dNz*3] = 0;
-                G[i][Rd_2-1-j][Rd_2-1-k+dNz*3] = 0;
-            };
-
-    for(int j=0; j<Ny; ++j)
-        for(int k=0; k<dNz; ++k)
-        {
-            G[0][j][3*dNz+k] = 0;
-            G[Nx-1][j][3*dNz+k] = 0;
-        };
-
-    {
-        ofstream f("check_grid.txt");
-        for(int k=dNz-1; k>=0; --k)
-        {
-            for(int j=Ny-1; j>=0; --j)
-            {
-                for(int i=0; i<Nx; ++i)
-                    f<<Cx[i]<<' '<<Cy[i]<<' '<<Cz[i]<<' '<<G[i][j][k]<<' ';
-                f<<"\n";
-            };
-        };
-        f.close();
-    }
-
-    load_mask("prism.mask");
-    load_coords("prism.x.coord","prism.y.coord","prism.z.coord");
-    print_area();
 }
 
 void U_init()
@@ -2451,8 +2217,9 @@ void init()
     Cy = new long double [Ny];
     Cz = new long double [Nz];
 
-    X_init();
-    G_init();
+    load_mask("prism.mask");
+    load_coords("prism.x.coord","prism.y.coord","prism.z.coord");
+    h_init();
     U_init();
 
     residual();
@@ -2567,4 +2334,20 @@ int main()
     run();
     down();
     return 0;
+}
+
+/*
+ * Debugging functions
+ */
+void printm(long double ***m, int size_x, int size_y, int size_z)
+{
+    for (int i = 0; i < size_x; i++) {
+        for (int j = 0; j < size_y; j++) {
+            for (int k = 0; k < size_z; k++) {
+                printf("%LF ", m[i][j][k]);
+            }
+            printf("\n");
+        }
+        printf("\n");
+    }
 }
