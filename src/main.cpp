@@ -54,6 +54,7 @@ int ***carg;
 int ***groups;
 int num;
 
+bool generate_groups = true;
 
 // Методы проекта
 long double norm(long double*** v);
@@ -1570,10 +1571,16 @@ void init()
     }
 
     // группы
-    load_groups();
-    /*init_gr();
-    set_gr();
-    print_gr();*/
+    if(generate_groups)
+    {
+        init_gr();
+        set_gr();
+        print_gr();
+    }
+    else
+    {
+        load_groups();
+    }
 }
 
 // Основной цикл
