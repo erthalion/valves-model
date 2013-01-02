@@ -17,10 +17,10 @@ R = 12
 x, y, z = np.ogrid[0:nx, 0:ny, 0:nz]
 
 in_fake_boundary = (0*z + 0*y + x == 0)
-out_fake_boundary = (0*z + 0*y + x == 60)
+out_fake_boundary = (0*z + 0*y + x == nx -1)
 in_boundary = (0*z + 0*y + x == 1)
-out_boundary = (0*z + 0*y + x == 59)
-middle = (0*z +0*y + x > 1) & (0*z +0*y + x < 60)
+out_boundary = (0*z + 0*y + x == nx - 2)
+middle = (0*z +0*y + x > 1) & (0*z +0*y + x < nx - 1)
 middle_valve = (0*z +0*y + x > 25) & (0*z +0*y + x < 28)
 valve = (0*z +0*y + x > 25) & (0*z +0*y + x < 30)
 left = (0*z +0*y + x < 20)
@@ -98,7 +98,6 @@ for conus in conuses_right:
 
 array[input_mask] = 2
 array[output_mask] = 3
-# спросить у Назима, правильно ли это? (исключение фиктивных границ, или не то)
 array[input_fake_mask] = 0
 
 array[output_fake_mask] = 0
@@ -109,18 +108,18 @@ header = "# vtk DataFile Version 1.0\n\
 Data file for valves model\n\
 ASCII\n\
 DATASET STRUCTURED_POINTS\n\
-DIMENSIONS 61 25 25\n\
+DIMENSIONS %d %d %d\n\
 ORIGIN 0 0 0\n\
 SPACING 1 1 1\n\
-POINT_DATA 38125\n\
+POINT_DATA %d\n\
 SCALARS scalars int\n\
-LOOKUP_TABLE default\n"
+LOOKUP_TABLE default\n" % (nx, ny, nz, nx*ny*nz)
 
 output.write(header)
 
-for k in range(0, 25):
-    for j in range(0, 25):
-        for i in range(0, 61):
+for k in range(0, nz):
+    for j in range(0, ny):
+        for i in range(0, nz):
             output.write(str(int(array.item((i, j, k))))+"\n")
 
 output.close()
@@ -159,24 +158,23 @@ header = "# vtk DataFile Version 1.0\n\
 Data file for valves model\n\
 ASCII\n\
 DATASET STRUCTURED_GRID\n\
-DIMENSIONS 61 25 25\n\
-POINTS 38125 double\n"
+DIMENSIONS %d %d %d\n\
+POINTS %d double\n" % (nx, ny, nz, nx*ny*nz)
 
 output.write(header)
 
-for k in range(0, 25):
-    for j in range(0, 25):
-        for i in range(0, 61):
-            #print '%0.10f %0.10f %0.10f\n' % (x_coord.item(i), y_coord.item(j), z_coord.item(k))
+for k in range(0, nz):
+    for j in range(0, ny):
+        for i in range(0, nx):
             output.write('%0.10f %0.10f %0.10f\n' %(x_coord.item(i), y_coord.item(j), z_coord.item(k)))
 
-data_header = "POINT_DATA 38125\n\
+data_header = "POINT_DATA %d\n\
 SCALARS scalars int\n\
-LOOKUP_TABLE default\n"
+LOOKUP_TABLE default\n" % (nx*ny*nz)
 output.write(data_header)
-for k in range(0, 25):
-    for j in range(0, 25):
-        for i in range(0, 61):
+for k in range(0, nz):
+    for j in range(0, ny):
+        for i in range(0, nx):
             output.write('%d\n' % int(array.item((i, j, k))))
 
 output.close()
