@@ -969,7 +969,7 @@ void print_vtk()
             for(int i=0; i<Nx; ++i)
             {
                 // TODO: include pressure
-                fprintf(f,"%LF, %LF, %LF\n", Cx[i], Cy[j], Cz[k]);
+                fprintf(f,"%LF %LF %LF\n", Cx[i], Cy[j], Cz[k]);
                 //fprintf(f,"%LF\n",U[i][j][k+3*dNz]);
             }
         }
@@ -987,27 +987,29 @@ void print_vtk()
             for(int i=0; i<Nx; ++i)
             {
                 if(i==0)
-                    fprintf(f,"%LF,",U[i+1][j][k]);
+                    fprintf(f,"%LF ",U[i+1][j][k]);
                 else if(i==Nx-1)
-                    fprintf(f,"%LF,",U[i][j][k]);
+                    fprintf(f,"%LF ",U[i][j][k]);
                 else
-                    fprintf(f,"%LF,", Hx[i]/(Hx[i+1]+Hx[i])*U[i+1][j][k]+Hx[i+1]/(Hx[i+1]+Hx[i])*U[i][j][k] );
+                    fprintf(f,"%LF ", Hx[i]/(Hx[i+1]+Hx[i])*U[i+1][j][k]+Hx[i+1]/(Hx[i+1]+Hx[i])*U[i][j][k] );
 
                 if(j==0)
-                    fprintf(f,"%LF,",U[i][j][k+dNz]);
+                    fprintf(f,"%LF ",U[i][j][k+dNz]);
                 else if(j==Ny-2)
-                    fprintf(f,"%LF,",U[i][j+1][k+dNz]);
+                    fprintf(f,"%LF ",U[i][j+1][k+dNz]);
                 else
-                    fprintf(f,"%LF,", Hy[j]/(Hy[j]+Hy[j+1])*U[i][j+1][k+dNz]+
+                    fprintf(f,"%LF ", Hy[j]/(Hy[j]+Hy[j+1])*U[i][j+1][k+dNz]+
                             Hy[j+1]/(Hy[j]+Hy[j+1])*U[i][j][k+dNz]);
 
                 if(k==0)
-                    fprintf(f,"%LF,",U[i][j][k+2*dNz]);
+                    fprintf(f,"%LF ",U[i][j][k+2*dNz]);
                 else if(k==dNz-2)
-                    fprintf(f,"%LF,",U[i][j][k+1+2*dNz]);
+                    fprintf(f,"%LF ",U[i][j][k+1+2*dNz]);
                 else
-                    fprintf(f,"%LF,", Hz[k]/(Hz[k]+Hz[k+1])*U[i][j][k+1+2*dNz]+
+                    fprintf(f,"%LF ", Hz[k]/(Hz[k]+Hz[k+1])*U[i][j][k+1+2*dNz]+
                             Hz[k+1]/(Hz[k]+Hz[k+1])*U[i][j][k+2*dNz]);
+
+                fprintf(f, "\n");
             }
         }
     }
@@ -1027,7 +1029,7 @@ void print_vtk_streamline_vector_header(char *output_path)
 
 #pragma region WRITE_FILE
     ofstream output_data;
-    output_data.open(output_path);
+    output_data.open(output_path,std::ios_base::app | std::ios_base::out);
     output_data << header;
     output_data.close();
 #pragma endregion Запись заголовка в файл
