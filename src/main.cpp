@@ -1178,10 +1178,30 @@ void load_mask(const char *file_name)
         {
             for(int j=0; j<Ny-1; ++j)
             {
+                // маска для компоненты u
                 fscanf(f,"%d ", &G[i][j][k]);
             }
         }
     }
+
+    for(int i=0; i<Nx; ++i)
+    {
+        for(int k=0; k<dNz-1; ++k)
+        {
+            for(int j=0; j<Ny-1; ++j)
+            {
+                // маска для компоненты v
+                G[i][j][k + dNz] = G[i][j][k];
+
+                // маска для компоненты w
+                G[i][j][k + 2*dNz] = G[i][j][k];
+
+                // маска для компоненты p
+                G[i][j][k + 3*dNz] = G[i][j][k];
+            }
+        }
+    }
+
 
     fclose(f);
     printf("Mask has been loaded\n");
@@ -1662,8 +1682,15 @@ void down()
 int main()
 {
     init();
-    run();
-    down();
+    if(generate_groups)
+    {
+        return 0;
+    }
+    else
+    {
+        run();
+        down();
+    }
     return 0;
 }
 
