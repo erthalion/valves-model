@@ -88,7 +88,7 @@ void print_vtk_header_points(char *output_path, int sizeX, int sizeY, int sizeZ)
 void print_area_points();
 void print_vtk_streamline_header(char *output_path, int sizeX, int sizeY, int sizeZ);
 void print_vtk();
-void print_vtk_streamline_vector_header(char *output_path);
+void print_vtk_streamline_vector_header(char *output_path, int sizeX, int sizeY, int sizeZ);
 
 // Норма вектора
 long double norm(long double*** v)
@@ -958,7 +958,8 @@ void print_texplot_matrix()
 void print_vtk()
 {
     char output_path[] = "streamlines.vtk";
-    print_vtk_streamline_header(output_path, Nx, Ny-1, dNz-1);
+    //print_vtk_streamline_header(output_path, Nx, Ny-1, dNz-1);
+    print_vtk_header(output_path, Nx, Ny-1, dNz-1);
 
     FILE *f = fopen(output_path,"a");
 
@@ -977,7 +978,7 @@ void print_vtk()
 
     fclose(f);
 
-    print_vtk_streamline_vector_header(output_path);
+    print_vtk_streamline_vector_header(output_path, Nx, Ny-1, dNz-1);
 
     f = fopen(output_path,"a");
     for(int k=0; k<dNz-1; ++k)
@@ -1017,11 +1018,14 @@ void print_vtk()
     fclose(f);
 }
 
-void print_vtk_streamline_vector_header(char *output_path)
+void print_vtk_streamline_vector_header(char *output_path, int sizeX, int sizeY, int sizeZ)
 {
 #pragma region HEADER
     string header;
     char line [50];
+
+    sprintf(line,"\nPOINT_DATA %d\n", sizeX * sizeY * sizeZ);
+    header.append(line);
 
     sprintf(line,"\nVECTORS uvw float\n");
     header.append(line);
@@ -1205,6 +1209,26 @@ void load_mask(const char *file_name)
 
     fclose(f);
     printf("Mask has been loaded\n");
+}
+
+void load_pressure_mask(const char *file_name)
+{
+    FILE *f = fopen(file_name,"r");
+
+    for(int i=0; i<Nx; ++i)
+    {
+        for(int k=0; k<dNz-1; ++k)
+        {
+            for(int j=0; j<Ny-1; ++j)
+            {
+                // маска для компоненты u
+                fscanf(f,"%d ", &G[i][j][k + 3*dNz]);
+            }
+        }
+    }
+
+    fclose(f);
+    printf("Pressure mask has been loaded\n");
 }
 
 /*
@@ -1571,8 +1595,9 @@ void init()
     Cy = new long double [Ny];
     Cz = new long double [Nz];
 
-    load_mask("prism.mask");
-    load_coords("prism.x.coord","prism.y.coord","prism.z.coord");
+    load_mask("area.mask");
+    load_pressure_mask("pressure.mask");
+    load_coords("area.x.coord","area.y.coord","area.z.coord");
     h_init();
     U_init();
 
