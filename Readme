@@ -1,1 +1,3 @@
 There is program for hydrodynamic modeling valves
+Update on cluster with rsync (nusc it's short name from ssh config):
+rsync -av valves-model/ dadolgov@nusc:~/valves-model --exclude .git --exclude results
