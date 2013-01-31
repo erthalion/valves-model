@@ -89,6 +89,7 @@ void print_area_points();
 void print_vtk_streamline_header(char *output_path, int sizeX, int sizeY, int sizeZ);
 void print_vtk();
 void print_vtk_streamline_vector_header(char *output_path, int sizeX, int sizeY, int sizeZ);
+void print_vtk_streamline_scalar_header(char *output_path, int sizeX, int sizeY, int sizeZ);
 
 // Норма вектора
 long double norm(long double*** v)
@@ -969,9 +970,24 @@ void print_vtk()
         {
             for(int i=0; i<Nx; ++i)
             {
-                // TODO: include pressure
                 fprintf(f,"%LF %LF %LF\n", Cx[i], Cy[j], Cz[k]);
                 //fprintf(f,"%LF\n",U[i][j][k+3*dNz]);
+            }
+        }
+    }
+
+    fclose(f);
+
+    print_vtk_streamline_scalar_header(output_path, Nx, Ny-1, dNz-1);
+    f = fopen(output_path,"a");
+
+    for(int k=0; k<dNz-1; ++k)
+    {
+        for(int j=0; j<Ny-1; ++j)
+        {
+            for(int i=0; i<Nx; ++i)
+            {
+                fprintf(f,"%LF\n", U[i][j][k+3*dNz]);
             }
         }
     }
@@ -1018,7 +1034,26 @@ void print_vtk()
     fclose(f);
 }
 
+// TODO: move all plot functions into other file/class/namespace
 void print_vtk_streamline_vector_header(char *output_path, int sizeX, int sizeY, int sizeZ)
+{
+#pragma region HEADER
+    string header;
+    char line [50];
+
+    sprintf(line,"\nVECTORS uvw float\n");
+    header.append(line);
+#pragma endregion Подготовка строки с заголовком vtk файла
+
+#pragma region WRITE_FILE
+    ofstream output_data;
+    output_data.open(output_path,std::ios_base::app | std::ios_base::out);
+    output_data << header;
+    output_data.close();
+#pragma endregion Запись заголовка в файл
+}
+
+void print_vtk_streamline_scalar_header(char *output_path, int sizeX, int sizeY, int sizeZ)
 {
 #pragma region HEADER
     string header;
@@ -1027,7 +1062,10 @@ void print_vtk_streamline_vector_header(char *output_path, int sizeX, int sizeY,
     sprintf(line,"\nPOINT_DATA %d\n", sizeX * sizeY * sizeZ);
     header.append(line);
 
-    sprintf(line,"\nVECTORS uvw float\n");
+    sprintf(line,"SCALARS p float\n");
+    header.append(line);
+
+    sprintf(line,"LOOKUP_TABLE default\n");
     header.append(line);
 #pragma endregion Подготовка строки с заголовком vtk файла
 
