@@ -6,7 +6,7 @@ set(BUILD_ROOT build)
 aux_source_directory(${SOURCE_ROOT} SOURCES)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(CMAKE_CXX_FLAGS "-o0 -g")
+    set(CMAKE_CXX_FLAGS "-o0 -g -DDEBUG")
 endif(CMAKE_BUILD_TYPE STREQUAL Debug)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")

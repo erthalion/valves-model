@@ -1259,7 +1259,7 @@ void load_pressure_mask(const char *file_name)
         {
             for(int j=0; j<Ny-1; ++j)
             {
-                // маска для компоненты u
+                // маска для компоненты давления
                 fscanf(f,"%d ", &G[i][j][k + 3*dNz]);
             }
         }
@@ -1510,21 +1510,21 @@ void U_init()
     }
 
     for(int i=0; i<Nx; ++i)
-        for(int j=0; j<Rd_2; ++j)
-            for(int k=0; k<Rd_2-j; ++k)
+        for(int j=0; j<Ny; ++j)
+            for(int k=0; k< dNz; ++k)
             {
                 long double p = p_left - (p_left-p_right)*i/(Nx-1);
-                if( (G[i][Rd_2-1+j][3*dNz+Rd_2-1+k]) ||(i==0)||(i==Nx-1) )
-                    U[i][Rd_2-1+j][3*dNz+Rd_2-1+k]= p;
-                if( (G[i][Rd_2-1-j][3*dNz+Rd_2-1+k]) ||(i==0)||(i==Nx-1))
-                    U[i][Rd_2-1-j][3*dNz+Rd_2-1+k]= p;
-                if( (G[i][Rd_2-1+j][3*dNz+Rd_2-1-k]) ||(i==0)||(i==Nx-1))
-                    U[i][Rd_2-1+j][3*dNz+Rd_2-1-k]= p;
-                if( (G[i][Rd_2-1-j][3*dNz+Rd_2-1-k]) ||(i==0)||(i==Nx-1))
-                    U[i][Rd_2-1-j][3*dNz+Rd_2-1-k]= p;
+                if (G[i][j][k +3*dNz] == 1)
+                {
+                    U[i][j][k + 3*dNz] = p;
+                }
             }
 
-    long double um = 1;
+    /*print_vtk();
+    printf("next step...");
+    getchar();*/
+
+    /*long double um = 1;
     for(int i=1; i<Nx; ++i)
         for(int j=0; j<Rd_2-1; ++j)
             for(int k=0; k<Rd_2-1-j; ++k)
@@ -1677,6 +1677,12 @@ void run()
 
     do
     {
+
+#ifdef DEBUG
+    print_vtk();
+    printf("next step...");
+    getchar();
+#endif
 
         ++iters;
         speed_first();
