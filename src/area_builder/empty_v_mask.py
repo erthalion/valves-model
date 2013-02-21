@@ -15,16 +15,21 @@ R = 11
 
 x, y, z = np.ogrid[0:nx, 0:ny, 0:nz]
 
-mask = (x > 0) & (x < 60) &\
-        (y > 0) & (y < 25) &\
-        (z > 0) & (z < 25)
+in_boundary = (x == 2)
+out_boundary = (x == 58)
+
+mask = (x > 1) & (x < 59) &\
+        (y > 1) & (y < 24) &\
+        (z > 1) & (z < 24)
 
 array = np.zeros((nx, ny, nz))
 
 array[mask] = 1
+array[in_boundary & mask] = 2
+array[out_boundary & mask] = 3
 
 """ Write mask file
 """
-with file('pressure.mask', 'w') as outfile:
+with file('v_area.mask', 'w') as outfile:
     for slice_2d in array:
         np.savetxt(outfile, slice_2d, fmt="%i")
