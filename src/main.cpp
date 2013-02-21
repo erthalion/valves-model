@@ -504,6 +504,13 @@ void load_groups()
 {
     printf("loading groups\n");
     FILE *f = fopen("oper_arg.txt","r");
+    
+    if (!f)
+    {
+        printf("oper_arg.txt not found!\n");
+        exit(1);
+    }
+
     for(int i=0; i<Nx; ++i)
         for(int j=0; j<Ny; ++j)
             for(int k=0; k<Nz; ++k)
@@ -517,6 +524,12 @@ void load_groups()
     fclose(f);
 
     FILE *fgr = fopen("gr.txt","r");
+    if (!fgr)
+    {
+        printf("gr.txt not found!\n");
+        exit(1);
+    }
+
     for(int i=0; i<Nx; ++i)
     {
         for(int j=0; j<Ny; ++j)
@@ -1179,6 +1192,12 @@ void load_coords(const char *file_x_name,
 {
     FILE *f = fopen(file_x_name,"r");
 
+    if (!f)
+    {
+        printf("x coord file not found!\n");
+        exit(1);
+    }
+
     for(int i=0; i<Nx; ++i)
     {
         fscanf(f,"%LF\n", &Cx[i]);
@@ -1187,8 +1206,13 @@ void load_coords(const char *file_x_name,
     fclose(f);
 
     f = fopen(file_y_name,"r");
+    if (!f)
+    {
+        printf("y coord file not found!\n");
+        exit(1);
+    }
 
-    for(int j=0; j<Ny-1; ++j)
+    for(int j=0; j<Ny; ++j)
     {
         fscanf(f,"%LF\n", &Cy[j]);
     }
@@ -1196,8 +1220,13 @@ void load_coords(const char *file_x_name,
     fclose(f);
 
     f = fopen(file_z_name,"r");
+    if (!f)
+    {
+        printf("z coord file not found!\n");
+        exit(1);
+    }
 
-    for(int k=0; k<dNz-1; ++k)
+    for(int k=0; k<dNz; ++k)
     {
         fscanf(f,"%LF\n", &Cz[k]);
     }
@@ -1210,54 +1239,93 @@ void load_coords(const char *file_x_name,
 /*
  * Загрузка маски из файла
  */
-void load_mask(const char *file_name)
+void load_u_mask(const char *file_name)
 {
     FILE *f = fopen(file_name,"r");
+    if (!f)
+    {
+        printf("u mask file not found!\n");
+        exit(1);
+    }
 
     for(int i=0; i<Nx; ++i)
     {
-        for(int k=0; k<dNz-1; ++k)
+        for(int k=0; k<dNz; ++k)
         {
-            for(int j=0; j<Ny-1; ++j)
+            for(int j=0; j<Ny; ++j)
             {
                 // маска для компоненты u
                 fscanf(f,"%d ", &G[i][j][k]);
             }
         }
     }
+    fclose(f);
+    printf("U mask has been loaded\n");
+}
+
+void load_v_mask(const char *file_name)
+{
+    FILE *f = fopen(file_name,"r");
+    if (!f)
+    {
+        printf("v mask file not found!\n");
+        exit(1);
+    }
 
     for(int i=0; i<Nx; ++i)
     {
-        for(int k=0; k<dNz-1; ++k)
+        for(int k=0; k<dNz; ++k)
         {
-            for(int j=0; j<Ny-1; ++j)
+            for(int j=0; j<Ny; ++j)
             {
-                // маска для компоненты v
-                G[i][j][k + dNz] = G[i][j][k];
-
-                // маска для компоненты w
-                G[i][j][k + 2*dNz] = G[i][j][k];
-
-                // маска для компоненты p
-                G[i][j][k + 3*dNz] = G[i][j][k];
+                // маска для компоненты u
+                fscanf(f,"%d ", &G[i][j][k + 2*dNz]);
             }
         }
     }
-
-
     fclose(f);
-    printf("Mask has been loaded\n");
+    printf("V mask has been loaded\n");
 }
+
+void load_w_mask(const char *file_name)
+{
+    FILE *f = fopen(file_name,"r");
+    if (!f)
+    {
+        printf("w mask file not found!\n");
+        exit(1);
+    }
+
+    for(int i=0; i<Nx; ++i)
+    {
+        for(int k=0; k<dNz; ++k)
+        {
+            for(int j=0; j<Ny; ++j)
+            {
+                // маска для компоненты u
+                fscanf(f,"%d ", &G[i][j][k + 3*dNz]);
+            }
+        }
+    }
+    fclose(f);
+    printf("W mask has been loaded\n");
+}
+
 
 void load_pressure_mask(const char *file_name)
 {
     FILE *f = fopen(file_name,"r");
+    if (!f)
+    {
+        printf("pressure mask file not found!\n");
+        exit(1);
+    }
 
     for(int i=0; i<Nx; ++i)
     {
-        for(int k=0; k<dNz-1; ++k)
+        for(int k=0; k<dNz; ++k)
         {
-            for(int j=0; j<Ny-1; ++j)
+            for(int j=0; j<Ny; ++j)
             {
                 // маска для компоненты давления
                 fscanf(f,"%d ", &G[i][j][k + 3*dNz]);
@@ -1514,12 +1582,11 @@ void U_init()
             for(int k=0; k< dNz; ++k)
             {
                 long double p = p_left - (p_left-p_right)*i/(Nx-1);
-                if (G[i][j][k +3*dNz] == 1)
+                if (G[i][j][k +3*dNz] == 1 || G[i][j][k +3*dNz] == 2 || G[i][j][k +3*dNz] == 3)
                 {
                     U[i][j][k + 3*dNz] = p;
                 }
             }
-
     /*print_vtk();
     printf("next step...");
     getchar();*/
@@ -1542,40 +1609,13 @@ void U_init()
                 if( (G[i][Rd_2-1-j][Rd_2-1-k]))
                     U[i][Rd_2-1-j][Rd_2-1-k] = ( r_L*r_L-(y*y+z*z) )*um*um/r_L/r_L;
             };
-
+*/
 
 }
 
 void vars_init()
 {
-    eps = 0.000001;
-
-    x1_L = 0.06;
-    x2_L = 0.06;
-    x3_L = 0.06;
-    x4_L = 0.06;
-    x5_L = 0.12;
-
-    x_L = x1_L + x2_L + x3_L + x4_L + x5_L;
-    y_L = 0.2;
-    z_L = 0.2;
-    r_L = 0.1;
-
-    Nx1 = 11;
-    Nx2 = 11;
-    Nx3 = 11;
-    Nx4 = 11;
-    Nx5 = 21;
-    Nx = Nx1+Nx2+Nx3+Nx4+Nx5 - 4;
-
-    // Nz = 25
-    Nz1 = 11;
-    Nz2 = 5;
-    Nz3 = 11;
-    //Rd = 6; // Ny = Nz = 21;
-    Rd = 7; // Ny = Nz = 25;
-    //Rd = 11; // Ny = Nz = 41;
-    //Rd = 21; // Ny = Nz = 81;
+    eps = 0.01;
 
     nu = 1e-2;
     rho = 1;
@@ -1589,19 +1629,11 @@ void init()
 {
     vars_init();
 
-    y_L = 2*r_L;
-    z_L = 2*r_L;
+    dNz = 26;
+    Nx = 61;
+    Ny = 26;
+    Nz = 104;
 
-    Rd_2 = Rd*2-1;
-    Rd_4 = Rd_2*2-1;
-
-    Ny = dNz = Rd_4;
-
-    // ++ - фиктивные слои
-    // Nz - весь блок, dNz - отдельной переменной
-    ++Ny;
-    ++dNz;
-    Nz = 4*dNz;
 
     alloc(arg,Nx,Ny,Nz);
     alloc(func,Nx,Ny,Nz);
@@ -1633,7 +1665,9 @@ void init()
     Cy = new long double [Ny];
     Cz = new long double [Nz];
 
-    load_mask("area.mask");
+    load_u_mask("u_area.mask");
+    load_v_mask("v_area.mask");
+    load_w_mask("w_area.mask");
     load_pressure_mask("pressure.mask");
     load_coords("area.x.coord","area.y.coord","area.z.coord");
     h_init();
@@ -1678,13 +1712,12 @@ void run()
     do
     {
 
-#ifdef DEBUG
-    print_vtk();
-    printf("next step...");
-    getchar();
-#endif
-
-        ++iters;
+/*#ifdef DEBUG*/
+    //print_vtk();
+    //printf("tau next step...");
+    //getchar();
+/*#endif*/
+         ++iters;
         speed_first();
         long double R1 = norm(R);
 
