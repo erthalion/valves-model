@@ -23,6 +23,7 @@ vtk_file_reader = engine.open(sys.argv[1], scene)
 vtk_file_reader1 = engine.open(sys.argv[2], scene)
 
 surface = Surface()
+engine.add_filter(surface, vtk_file_reader)
 surface.contour.contours = [1.5]
 surface.actor.mapper.progress = 1.0
 surface.actor.mapper.scalar_range = array([ 0.,  3.])
@@ -32,31 +33,32 @@ surface.actor.property.opacity = 0.1602
 
 streamline = Streamline()
 streamline.seed.widget = streamline.seed.widget_list[2]
-streamline.seed.widget.enabled = False
-streamline.seed.widget.interactor = None
+engine.add_filter(streamline, vtk_file_reader1)
+streamline.stream_tracer.integration_direction = 'both'
+#streamline.seed.widget.enabled = False
+#streamline.seed.widget.interactor = None
 streamline.actor.property.specular_color = (0.0, 0.0, 0.0)
 streamline.actor.property.diffuse_color = (0.0, 0.0, 0.0)
 streamline.actor.property.ambient_color = (0.0, 0.0, 0.0)
 streamline.actor.property.color = (0.0, 0.0, 0.0)
-streamline.seed.widget.origin = array([ 0.00733424, -0.01543501, -0.03262647])
-streamline.seed.widget.center = array([ 0.00733424,  0.12744006,  0.11075326])
-streamline.seed.widget.normal = array([ 1.,  0.,  0.])
-streamline.seed.widget.point1 = array([ 0.00733424,  0.27031514, -0.03262647])
-streamline.seed.widget.point2 = array([ 0.00733424, -0.01543501,  0.25413299])
-streamline.seed.widget.enabled = False
+#streamline.seed.widget.origin = array([ 0.00733424, -0.01543501, -0.03262647])
+#streamline.seed.widget.center = array([ 0.00733424,  0.12744006,  0.11075326])
+#streamline.seed.widget.normal = array([ 1.,  0.,  0.])
+#streamline.seed.widget.point1 = array([ 0.00733424,  0.27031514, -0.03262647])
+#streamline.seed.widget.point2 = array([ 0.00733424, -0.01543501,  0.25413299])
+#streamline.seed.widget.enabled = False
 streamline.seed.widget.resolution = 10
 
 axes = Axes()
+engine.add_filter(axes, vtk_file_reader)
+#import ipdb; ipdb.set_trace()
 axes.property.reference_count = 17
-axes.property.color = (0.0, 0.0, 0.0)
+axes.axes.property.color = (0.0, 0.0, 0.0)
 axes.title_text_property.shadow_offset = array([ 1, -1])
 axes.title_text_property.color = (0.0, 0.0, 0.0)
 axes.label_text_property.shadow_offset = array([ 1, -1])
 axes.label_text_property.color = (0.0, 0.0, 0.0)
 
-engine.add_filter(axes, vtk_file_reader)
-engine.add_filter(surface, vtk_file_reader)
-engine.add_filter(streamline, vtk_file_reader1)
 
 scene.scene.background = (1.0, 1.0, 1.0)
 scene.scene.disable_render = True
@@ -68,5 +70,6 @@ scene.scene.camera.view_up = [0.999824689874523, -0.018625038896002939, -0.00192
 scene.scene.camera.clipping_range = [1.0908954355408496, 1.92551655925284]
 scene.scene.camera.compute_view_plane_normal()
 scene.scene.render()
+#scene.scene.save(u'/home/erthalion/snapshot.png')
 
 show()
