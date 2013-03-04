@@ -2,10 +2,14 @@
 # -*- coding: utf8 -*-
 
 import numpy as np
+import ConfigParser
 
-nx = 61
-ny = 25
-nz = 25
+area = ConfigParser.RawConfigParser()
+area.read('area.config')
+
+nx = int(area.get('Area', 'Nx'))
+ny = int(area.get('Area', 'Ny'))
+nz = int(area.get('Area', 'dNz'))
 
 z0 = 12
 y0 = 12
@@ -15,18 +19,13 @@ R = 11
 
 x, y, z = np.ogrid[0:nx, 0:ny, 0:nz]
 
-in_boundary = (x == 2)
-out_boundary = (x == 58)
-
-mask = (x > 1) & (x < 59) &\
-        (y > 1) & (y < 23) &\
-        (z > 1) & (z < 23)
+mask = (x >= 0) & (x < nx) &\
+        (y >= 0) & (y < ny) &\
+        (z >= 0) & (z < nz)
 
 array = np.zeros((nx, ny, nz))
 
 array[mask] = 1
-array[in_boundary & mask] = 2
-array[out_boundary & mask] = 3
 
 """ Generate 3d array of coordinates
 """

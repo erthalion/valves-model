@@ -47,7 +47,7 @@ streamline.actor.property.color = (0.0, 0.0, 0.0)
 #streamline.seed.widget.point1 = array([ 0.00733424,  0.27031514, -0.03262647])
 #streamline.seed.widget.point2 = array([ 0.00733424, -0.01543501,  0.25413299])
 #streamline.seed.widget.enabled = False
-streamline.seed.widget.resolution = 10
+streamline.seed.widget.resolution = 4
 
 axes = Axes()
 engine.add_filter(axes, vtk_file_reader)

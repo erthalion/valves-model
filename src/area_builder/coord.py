@@ -2,10 +2,14 @@
 # -*- coding: utf8 -*-
 
 import numpy as np
+import ConfigParser
 
-nx = 61
-ny = 26
-nz = 26
+area = ConfigParser.RawConfigParser()
+area.read('area.config')
+
+nx = int(area.get('Area', 'Nx'))
+ny = int(area.get('Area', 'Ny'))
+nz = int(area.get('Area', 'dNz'))
 
 """ Generate 3d array of coordinates
 """

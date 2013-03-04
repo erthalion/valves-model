@@ -10,6 +10,8 @@
 #include <string.h>
 #include <iostream>
 #include <time.h>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ini_parser.hpp>
 
 #define M_2PI 2*M_PI
 using namespace std;
@@ -54,7 +56,7 @@ int ***carg;
 int ***groups;
 int num;
 
-bool generate_groups = true;
+bool generate_groups = false;
 
 // Методы проекта
 long double norm(long double*** v);
@@ -1250,9 +1252,9 @@ void load_u_mask(const char *file_name)
 
     for(int i=0; i<Nx; ++i)
     {
-        for(int k=0; k<dNz; ++k)
+        for(int j=0; j<Ny; ++j)
         {
-            for(int j=0; j<Ny; ++j)
+            for(int k=0; k<dNz; ++k)
             {
                 // маска для компоненты u
                 fscanf(f,"%d ", &G[i][j][k]);
@@ -1274,9 +1276,9 @@ void load_v_mask(const char *file_name)
 
     for(int i=0; i<Nx; ++i)
     {
-        for(int k=0; k<dNz; ++k)
+        for(int j=0; j<Ny; ++j)
         {
-            for(int j=0; j<Ny; ++j)
+            for(int k=0; k<dNz; ++k)
             {
                 // маска для компоненты u
                 fscanf(f,"%d ", &G[i][j][k + 2*dNz]);
@@ -1298,9 +1300,9 @@ void load_w_mask(const char *file_name)
 
     for(int i=0; i<Nx; ++i)
     {
-        for(int k=0; k<dNz; ++k)
+        for(int j=0; j<Ny; ++j)
         {
-            for(int j=0; j<Ny; ++j)
+            for(int k=0; k<dNz; ++k)
             {
                 // маска для компоненты u
                 fscanf(f,"%d ", &G[i][j][k + 3*dNz]);
@@ -1323,16 +1325,20 @@ void load_pressure_mask(const char *file_name)
 
     for(int i=0; i<Nx; ++i)
     {
-        for(int k=0; k<dNz; ++k)
+        for(int j=0; j<Ny; ++j)
         {
-            for(int j=0; j<Ny; ++j)
+            for(int k=0; k<dNz; ++k)
             {
                 // маска для компоненты давления
                 fscanf(f,"%d ", &G[i][j][k + 3*dNz]);
+                //printf("%d ", G[i][j][k+3*dNz]);
             }
+            //printf("\n");
         }
+        //printf("\n");
     }
 
+    //getchar();
     fclose(f);
     printf("Pressure mask has been loaded\n");
 }
@@ -1582,10 +1588,7 @@ void U_init()
             for(int k=0; k< dNz; ++k)
             {
                 long double p = p_left - (p_left-p_right)*i/(Nx-1);
-                if (G[i][j][k +3*dNz] == 1 || G[i][j][k +3*dNz] == 2 || G[i][j][k +3*dNz] == 3)
-                {
-                    U[i][j][k + 3*dNz] = p;
-                }
+                U[i][j][k + 3*dNz] = p;
             }
     /*print_vtk();
     printf("next step...");
@@ -1615,7 +1618,7 @@ void U_init()
 
 void vars_init()
 {
-    eps = 0.01;
+    eps = 0.001;
 
     nu = 1e-2;
     rho = 1;
@@ -1624,16 +1627,24 @@ void vars_init()
     p_right = 0;
 }
 
+void load_config()
+{
+    boost::property_tree::ptree config;
+    boost::property_tree::ini_parser::read_ini("area.config", config);
+
+    Nx = config.get<int>("Area.Nx");
+    Ny = config.get<int>("Area.Ny");
+    dNz = config.get<int>("Area.dNz");
+    Nz = config.get<int>("Area.Nz");
+
+    printf("config has been loaded\n");
+}
+
 // Инициализация
 void init()
 {
+    load_config();
     vars_init();
-
-    dNz = 26;
-    Nx = 61;
-    Ny = 26;
-    Nz = 104;
-
 
     alloc(arg,Nx,Ny,Nz);
     alloc(func,Nx,Ny,Nz);
@@ -1712,11 +1723,11 @@ void run()
     do
     {
 
-/*#ifdef DEBUG*/
-    //print_vtk();
-    //printf("tau next step...");
-    //getchar();
-/*#endif*/
+#ifdef DEBUG
+    print_vtk();
+    printf("next step...");
+    getchar();
+#endif
          ++iters;
         speed_first();
         long double R1 = norm(R);

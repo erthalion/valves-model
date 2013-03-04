@@ -34,7 +34,7 @@ for i in range(6, 13):
     conuses_left.append(conus_mask)
 
 conuses_right = []
-for i in range(5, 13):
+for i in range(4, 13):
     conus_mask = ((z-z0)*(z-z0) + (y-y0)*(y-y0) + 0*x > i*i) & ((z-z0)*(z-z0) + (y-y0)*(y-y0) + 0*x < R*R) & (0*z +0*y + x > i - 5) & (0*z +0*y + x < 20 + i)
     conuses_right.append(conus_mask)
 

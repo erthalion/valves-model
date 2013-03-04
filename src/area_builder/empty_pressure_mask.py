@@ -2,10 +2,14 @@
 # -*- coding: utf8 -*-
 
 import numpy as np
+import ConfigParser
 
-nx = 61
-ny = 26
-nz = 26
+area = ConfigParser.RawConfigParser()
+area.read('area.config')
+
+nx = int(area.get('Area', 'Nx'))
+ny = int(area.get('Area', 'Ny'))
+nz = int(area.get('Area', 'dNz'))
 
 z0 = 13
 y0 = 13
@@ -15,9 +19,9 @@ R = 11
 
 x, y, z = np.ogrid[0:nx, 0:ny, 0:nz]
 
-mask = (x > 0) & (x < 60) &\
-        (y > 0) & (y < 25) &\
-        (z > 0) & (z < 25)
+mask = (x >= 1) & (x <= nx-2) &\
+        (y >= 0) & (y <= ny-2) &\
+        (z >= 0) & (z <= ny-2)
 
 array = np.zeros((nx, ny, nz))
 
