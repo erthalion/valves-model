@@ -2,3 +2,7 @@ build
 CMakeFiles
 cmake_install.cmake
 CMakeCache.txt
+*.pyc
+groups
+*.vtk
+*.mask
