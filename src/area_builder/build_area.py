@@ -3,10 +3,7 @@
 
 import coord
 import mask
-import empty_pressure_mask
-import empty_u_mask
-import empty_v_mask
-import empty_w_mask
+from empty import empty_pressure_mask, empty_u_mask, empty_v_mask, empty_w_mask
 
 if __name__ == '__main__':
     coord.build_area()
