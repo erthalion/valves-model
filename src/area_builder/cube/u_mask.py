@@ -21,9 +21,9 @@ def build_area():
             (y >= 1) & (y <= ny-3) &\
             (z >= 1) & (z <= ny-3)
 
-    inner_cube = (x >= (nx-1)/3) & (x <= (nx-1)*2/3) &\
-            (y >= (ny-1)/3) & (y <= (ny-1)*2/3) &\
-            (z >= (nz-1)/3) & (z <= (nz-1)*2/3)
+    inner_cube = (x >= nx/3) & (x <= nx*2/3) &\
+            (y >= ny/3) & (y <= ny*2/3) &\
+            (z >= nz/3) & (z <= nz*2/3)
 
     array = np.zeros((nx, ny, nz))
 
