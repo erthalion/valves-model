@@ -5,6 +5,8 @@ set(SOURCE_ROOT src)
 set(BUILD_ROOT build)
 aux_source_directory(${SOURCE_ROOT} SOURCES)
 
+link_directories("lib")
+
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_CXX_FLAGS "-o0 -g -DDEBUG")
 endif(CMAKE_BUILD_TYPE STREQUAL Debug)
@@ -24,3 +26,4 @@ if(CMAKE_PROFILE_TYPE STREQUAL "Use")
 endif(CMAKE_PROFILE_TYPE STREQUAL "Use")
 
 add_executable( ${BUILD_ROOT}/${BIN}.${CMAKE_BUILD_TYPE}  ${SOURCES} )
+target_link_libraries (${BUILD_ROOT}/${BIN}.${CMAKE_BUILD_TYPE} inih)

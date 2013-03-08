@@ -10,8 +10,7 @@
 #include <string.h>
 #include <iostream>
 #include <time.h>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/ini_parser.hpp>
+#include "lib/inih/INIReader.h"
 
 #define M_2PI 2*M_PI
 using namespace std;
@@ -1629,13 +1628,12 @@ void vars_init()
 
 void load_config()
 {
-    boost::property_tree::ptree config;
-    boost::property_tree::ini_parser::read_ini("area.config", config);
+    INIReader config("area.config");
 
-    Nx = config.get<int>("Area.Nx");
-    Ny = config.get<int>("Area.Ny");
-    dNz = config.get<int>("Area.dNz");
-    Nz = config.get<int>("Area.Nz");
+    Nx = config.GetInteger("Area", "Nx", 10);
+    Ny = config.GetInteger("Area", "Ny", 10);
+    dNz = config.GetInteger("Area", "dNz", 10);
+    Nz = config.GetInteger("Area", "Nz", 10);
 
     printf("config has been loaded\n");
 }
