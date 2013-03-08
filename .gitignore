@@ -6,3 +6,5 @@ CMakeCache.txt
 groups
 *.vtk
 *.mask
+*.o
+*.so
