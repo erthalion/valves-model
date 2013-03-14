@@ -11,7 +11,7 @@ def build_area():
     nx = int(area.get('Area', 'Nx'))
     ny = int(area.get('Area', 'Ny'))
     nz = int(area.get('Area', 'dNz'))
-    R = ny/2-2
+    R = ny/2 - 2
     x0 = nx/2
     y0 = ny/2
     z0 = nz/2
@@ -29,9 +29,9 @@ def build_area():
 
     array = np.zeros((nx, ny, nz))
 
+    array[inner_cylinder & mask] = 1
     array[in_boundary & mask & inner_cylinder] = 2
     array[out_boundary & mask & inner_cylinder] = 3
-    array[inner_cylinder & mask] = 1
 
     """ Write mask file
     """

@@ -1583,36 +1583,19 @@ void U_init()
     }
 
     for(int i=0; i<Nx; ++i)
+    {
         for(int j=0; j<Ny; ++j)
+        {
             for(int k=0; k< dNz; ++k)
             {
                 long double p = p_left - (p_left-p_right)*i/(Nx-1);
-                U[i][j][k + 3*dNz] = p;
+                if(G[i][j][k] == 1)
+                {
+                    U[i][j][k + 3*dNz] = p;
+                }
             }
-    /*print_vtk();
-    printf("next step...");
-    getchar();*/
-
-    /*long double um = 1;
-    for(int i=1; i<Nx; ++i)
-        for(int j=0; j<Rd_2-1; ++j)
-            for(int k=0; k<Rd_2-1-j; ++k)
-            {
-                long double
-                    y = Cy[Rd_2-1+j],
-                      z = Cz[Rd_2-1+k];
-
-                if( (G[i][Rd_2-1+j][Rd_2-1+k]))
-                    U[i][Rd_2-1+j][Rd_2-1+k] = ( r_L*r_L-(y*y+z*z) )*um*um/r_L/r_L;
-                if( (G[i][Rd_2-1-j][Rd_2-1+k]))
-                    U[i][Rd_2-1-j][Rd_2-1+k] = ( r_L*r_L-(y*y+z*z) )*um*um/r_L/r_L;
-                if( (G[i][Rd_2-1+j][Rd_2-1-k]))
-                    U[i][Rd_2-1+j][Rd_2-1-k] = ( r_L*r_L-(y*y+z*z) )*um*um/r_L/r_L;
-                if( (G[i][Rd_2-1-j][Rd_2-1-k]))
-                    U[i][Rd_2-1-j][Rd_2-1-k] = ( r_L*r_L-(y*y+z*z) )*um*um/r_L/r_L;
-            };
-*/
-
+        }
+    }
 }
 
 void vars_init()

@@ -25,13 +25,13 @@ def build_area():
             (y >= 1) & (y <= ny-2) &\
             (z >= 1) & (z <= nz-3)
 
-    inner_cylinder = ((y-y0)**2 + (z-z0)**2 + 0*x < R**2)
+    inner_cylinder = ((y-y0)**2 + (z-z0)**2 < R**2)
 
     array = np.zeros((nx, ny, nz))
 
+    array[inner_cylinder & mask] = 1
     array[in_boundary & mask & inner_cylinder] = 2
     array[out_boundary & mask & inner_cylinder] = 3
-    array[inner_cylinder & mask] = 1
 
     """ Write mask file
     """

@@ -11,7 +11,10 @@ def build_area():
     nx = int(area.get('Area', 'Nx'))
     ny = int(area.get('Area', 'Ny'))
     nz = int(area.get('Area', 'dNz'))
-    R = ny/2
+    R = ny/2 - 2
+    x0 = nx/2
+    y0 = ny/2
+    z0 = nz/2
 
     x, y, z = np.ogrid[0:nx, 0:ny, 0:nz]
 
@@ -22,13 +25,13 @@ def build_area():
             (y >= 1) & (y <= ny-3) &\
             (z >= 1) & (z <= nz-2)
 
-    inner_cylinder = (y**2 + z**2 < R**2) & (x > 0)
+    inner_cylinder = ((y-y0)**2 + (z-z0)**2 < R**2)
 
     array = np.zeros((nx, ny, nz))
 
+    array[inner_cylinder & mask] = 1
     array[in_boundary & mask & inner_cylinder] = 2
     array[out_boundary & mask & inner_cylinder] = 3
-    array[inner_cylinder & mask] = 1
 
     """ Write mask file
     """
