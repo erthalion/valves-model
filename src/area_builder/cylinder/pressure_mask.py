@@ -18,6 +18,9 @@ def build_area():
 
     x, y, z = np.ogrid[0:nx, 0:ny, 0:nz]
 
+    in_boundary = (x == 0)
+    out_boundary = (x == nx-1)
+
     mask = (x >= 1) & (x <= nx-2) &\
             (y >= 0) & (y <= ny-2) &\
             (z >= 0) & (z <= ny-2)
@@ -27,6 +30,8 @@ def build_area():
     array = np.zeros((nx, ny, nz))
 
     array[inner_cylinder & mask] = 1
+    array[in_boundary & inner_cylinder] = 2
+    array[out_boundary & inner_cylinder] = 3
 
     """ Write mask file
     """

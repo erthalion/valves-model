@@ -1589,9 +1589,16 @@ void U_init()
             for(int k=0; k< dNz; ++k)
             {
                 long double p = p_left - (p_left-p_right)*i/(Nx-1);
-                if(G[i][j][k] == 1)
+                if(G[i][j][k + 3*dNz] == 1)
                 {
                     U[i][j][k + 3*dNz] = p;
+                }
+
+                /* Pressure on in/out boundaries must be set and not calculated */
+                if(G[i][j][k + 3*dNz] == 2 || G[i][j][k + 3*dNz] == 3)
+                {
+                    U[i][j][k + 3*dNz] = p;
+                    G[i][j][k + 3*dNz] = 0;
                 }
             }
         }
