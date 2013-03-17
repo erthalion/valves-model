@@ -18,6 +18,7 @@ def build_area():
     z0 = nz/2
     alpha = pi/4
     big_valve_width = 2
+    big_valve_shift = nx*2/3
 
     x, y, z = np.ogrid[0:nx, 0:ny, 0:nz]
 
@@ -30,11 +31,11 @@ def build_area():
 
     inner_cylinder = ((y-y0)**2 + (z-z0)**2 < (R+1)**2)
 
-    first_conuse = ((x-x0) >= -np.sqrt((y-y0)**2 + (z-z0)**2)*tan(alpha)) &\
-            (x-x0 <= -R/2) & (x-x0 >= -R)
+    first_conuse = ((x-big_valve_shift) >= -np.sqrt((y-y0)**2 + (z-z0)**2)*tan(alpha)) &\
+            (x-big_valve_shift <= -R/2) & (x-big_valve_shift >= -R)
 
-    second_conuse = ((x-x0 - big_valve_width) >= -np.sqrt((y-y0)**2 + (z-z0)**2)*tan(alpha)) &\
-            (x-x0 - big_valve_width <= -R/3) & (x-x0 - big_valve_width >= -R)
+    second_conuse = ((x-big_valve_shift - big_valve_width) >= -np.sqrt((y-y0)**2 + (z-z0)**2)*tan(alpha)) &\
+            (x-big_valve_shift - big_valve_width <= -R/3) & (x-big_valve_shift - big_valve_width >= -R)
 
     array = np.zeros((nx, ny, nz))
 
