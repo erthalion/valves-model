@@ -37,6 +37,11 @@ def build_area():
     second_conuse = ((x-big_valve_shift - big_valve_width) >= -np.sqrt((y-y0)**2 + (z-z0)**2)*tan(alpha)) &\
             (x-big_valve_shift - big_valve_width <= -R/3) & (x-big_valve_shift - big_valve_width >= -R)
 
+    first_valve = ((z-z0) > 0) & ((y-y0) > -0.5*(z-z0))
+    second_valve = ((z-z0) < 0) & ((y-y0) > 0.5*(z-z0))
+    third_valve = ((y-y0) < -0.5*(z-z0)) & ((y-y0) < 0.5*(z-z0))
+    valves_width = (x >= big_valve_shift - R/2 - 2) & (x <= big_valve_shift - R/2)
+
     array = np.zeros((nx, ny, nz))
 
     array[inner_cylinder & mask] = 1
@@ -46,6 +51,15 @@ def build_area():
     """ Create big valve
     """
     array[inner_cylinder & first_conuse] = 0
+
+    """ Create three valves
+    """
+    array[inner_cylinder & first_valve & valves_width] = 0
+    array[inner_cylinder & second_valve & valves_width] = 0
+    array[inner_cylinder & third_valve & valves_width] = 0
+
+    """ Close big valve
+    """
     array[inner_cylinder & second_conuse] = 1
 
     """ Write mask file
