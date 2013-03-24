@@ -13,12 +13,15 @@ def build_area():
     ny = int(area.get('Area', 'Ny'))
     nz = int(area.get('Area', 'dNz'))
     R = ny/2 - 2
+    R_valves = ny*2/5-2
     x0 = nx/2
     y0 = ny/2
     z0 = nz/2
     alpha = pi/4
-    big_valve_width = 3
+    big_valve_width = 6
     big_valve_shift = nx*2/3
+    width = 3
+    valves_open = 1
 
     x, y, z = np.ogrid[0:nx, 0:ny, 0:nz]
 
@@ -37,15 +40,31 @@ def build_area():
     second_conuse = ((x-big_valve_shift - big_valve_width) >= -np.sqrt((y-y0)**2 + (z-z0)**2)*tan(alpha)) &\
             (x-big_valve_shift - big_valve_width <= -R/3) & (x-big_valve_shift - big_valve_width >= -R)
 
+    first_valve = ((z-z0-valves_open) >= 0) & ((y-y0-valves_open) >= -0.5*(z-z0))
+    second_valve = ((z-z0+valves_open) <= 0) & ((y-y0-valves_open) >= 0.5*(z-z0))
+    third_valve = ((y-y0+valves_open) <= -0.5*(z-z0)) & ((y-y0+valves_open) <= 0.5*(z-z0))
+    valves_width = ((x-nx/2+5)**2 + (y-y0)**2 + (z-z0)**2 >= (R_valves-width)**2) &\
+            ((x-nx/2+5)**2 + (y-y0)**2 + (z-z0)**2 <= R_valves**2) &\
+            (x-big_valve_shift >= -R/2)
+
     array = np.zeros((nx, ny, nz))
 
     array[inner_cylinder & mask] = 1
-    array[in_boundary & mask & inner_cylinder] = 2
-    array[out_boundary & mask & inner_cylinder] = 3
+    array[in_boundary & inner_cylinder] = 2
+    array[out_boundary & inner_cylinder] = 3
 
     """ Create big valve
     """
     array[inner_cylinder & first_conuse] = 0
+
+    """ Create three valves
+    """
+    array[inner_cylinder & first_valve & valves_width] = 0
+    array[inner_cylinder & second_valve & valves_width] = 0
+    array[inner_cylinder & third_valve & valves_width] = 0
+
+    """ Close big valve
+    """
     array[inner_cylinder & second_conuse] = 1
 
     """ Write mask file

@@ -13,12 +13,15 @@ def build_area():
     ny = int(area.get('Area', 'Ny'))
     nz = int(area.get('Area', 'dNz'))
     R = ny/2 - 2
+    R_valves = ny*2/5-2
     x0 = nx/2
     y0 = ny/2
     z0 = nz/2
     alpha = pi/4
-    big_valve_width = 2
+    big_valve_width = 6
     big_valve_shift = nx*2/3
+    width = 3
+    valves_open = 1
 
     x, y, z = np.ogrid[0:nx, 0:ny, 0:nz]
 
@@ -31,16 +34,18 @@ def build_area():
 
     inner_cylinder = ((y-y0)**2 + (z-z0)**2 < (R+1)**2)
 
-    first_conuse = ((x-big_valve_shift) >= -np.sqrt((y-y0)**2 + (z-z0)**2)*tan(alpha)) &\
-            (x-big_valve_shift <= -R/2) & (x-big_valve_shift >= -R)
+    first_conuse = ((x-big_valve_shift) > -np.sqrt((y-y0)**2 + (z-z0)**2)*tan(alpha)) &\
+            (x-big_valve_shift < -R/2) & (x-big_valve_shift > -R)
 
-    second_conuse = ((x-big_valve_shift - big_valve_width) >= -np.sqrt((y-y0)**2 + (z-z0)**2)*tan(alpha)) &\
-            (x-big_valve_shift - big_valve_width <= -R/3) & (x-big_valve_shift - big_valve_width >= -R)
+    second_conuse = ((x-big_valve_shift - big_valve_width) > -np.sqrt((y-y0)**2 + (z-z0)**2)*tan(alpha)) &\
+            (x-big_valve_shift - big_valve_width < -R/3) & (x-big_valve_shift - big_valve_width > -R)
 
-    first_valve = ((z-z0) > 0) & ((y-y0) > -0.5*(z-z0))
-    second_valve = ((z-z0) < 0) & ((y-y0) > 0.5*(z-z0))
-    third_valve = ((y-y0) < -0.5*(z-z0)) & ((y-y0) < 0.5*(z-z0))
-    valves_width = (x >= big_valve_shift - R/2 - 2) & (x <= big_valve_shift - R/2)
+    first_valve = ((z-z0-valves_open) > 0) & ((y-y0-valves_open) > -0.5*(z-z0))
+    second_valve = ((z-z0+valves_open) < 0) & ((y-y0-valves_open) > 0.5*(z-z0))
+    third_valve = ((y-y0+valves_open) < -0.5*(z-z0)) & ((y-y0+valves_open) < 0.5*(z-z0))
+    valves_width = ((x-nx/2+5)**2 + (y-y0)**2 + (z-z0)**2 > (R_valves-width)**2) &\
+            ((x-nx/2+5)**2 + (y-y0)**2 + (z-z0)**2 < R_valves**2) &\
+            (x-big_valve_shift > -R/2)
 
     array = np.zeros((nx, ny, nz))
 
