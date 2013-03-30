@@ -15,6 +15,11 @@
 #define M_2PI 2*M_PI
 using namespace std;
 
+const int VELOCITY_U = 0;
+const int VELOCITY_V = 1;
+const int VELOCITY_W = 2;
+const int PRESSURE = 3;
+
 // Типы
 struct indexes
 {
@@ -1240,13 +1245,30 @@ void load_coords(const char *file_x_name,
 /*
  * Загрузка маски из файла
  */
-void load_u_mask(const char *file_name)
+void load_mask(const int type, const char *file_name)
 {
     FILE *f = fopen(file_name,"r");
     if (!f)
     {
-        printf("u mask file not found!\n");
+        printf("Mask file for type %d not found!\n", type);
         exit(1);
+    }
+
+    int level = 0;
+    switch(type)
+    {
+        case VELOCITY_U:
+            level = 0;
+            break;
+        case VELOCITY_V:
+            level = 1;
+            break;
+        case VELOCITY_W:
+            level = 2;
+            break;
+        case PRESSURE:
+            level = 3;
+            break;
     }
 
     for(int i=0; i<Nx; ++i)
@@ -1255,91 +1277,12 @@ void load_u_mask(const char *file_name)
         {
             for(int k=0; k<dNz; ++k)
             {
-                // маска для компоненты u
-                fscanf(f,"%d ", &G[i][j][k]);
+                fscanf(f,"%d ", &G[i][j][k + level*dNz]);
             }
         }
     }
     fclose(f);
-    printf("U mask has been loaded\n");
-}
-
-void load_v_mask(const char *file_name)
-{
-    FILE *f = fopen(file_name,"r");
-    if (!f)
-    {
-        printf("v mask file not found!\n");
-        exit(1);
-    }
-
-    for(int i=0; i<Nx; ++i)
-    {
-        for(int j=0; j<Ny; ++j)
-        {
-            for(int k=0; k<dNz; ++k)
-            {
-                // маска для компоненты u
-                fscanf(f,"%d ", &G[i][j][k + 2*dNz]);
-            }
-        }
-    }
-    fclose(f);
-    printf("V mask has been loaded\n");
-}
-
-void load_w_mask(const char *file_name)
-{
-    FILE *f = fopen(file_name,"r");
-    if (!f)
-    {
-        printf("w mask file not found!\n");
-        exit(1);
-    }
-
-    for(int i=0; i<Nx; ++i)
-    {
-        for(int j=0; j<Ny; ++j)
-        {
-            for(int k=0; k<dNz; ++k)
-            {
-                // маска для компоненты u
-                fscanf(f,"%d ", &G[i][j][k + 3*dNz]);
-            }
-        }
-    }
-    fclose(f);
-    printf("W mask has been loaded\n");
-}
-
-
-void load_pressure_mask(const char *file_name)
-{
-    FILE *f = fopen(file_name,"r");
-    if (!f)
-    {
-        printf("pressure mask file not found!\n");
-        exit(1);
-    }
-
-    for(int i=0; i<Nx; ++i)
-    {
-        for(int j=0; j<Ny; ++j)
-        {
-            for(int k=0; k<dNz; ++k)
-            {
-                // маска для компоненты давления
-                fscanf(f,"%d ", &G[i][j][k + 3*dNz]);
-                //printf("%d ", G[i][j][k+3*dNz]);
-            }
-            //printf("\n");
-        }
-        //printf("\n");
-    }
-
-    //getchar();
-    fclose(f);
-    printf("Pressure mask has been loaded\n");
+    printf("Mask for type %d has been loaded\n", type);
 }
 
 /*
@@ -1664,10 +1607,10 @@ void init()
     Cy = new long double [Ny];
     Cz = new long double [Nz];
 
-    load_u_mask("u_area.mask");
-    load_v_mask("v_area.mask");
-    load_w_mask("w_area.mask");
-    load_pressure_mask("pressure.mask");
+    load_mask(VELOCITY_U, "u_area.mask");
+    load_mask(VELOCITY_V, "v_area.mask");
+    load_mask(VELOCITY_W, "w_area.mask");
+    load_mask(PRESSURE, "pressure.mask");
     load_coords("area.x.coord","area.y.coord","area.z.coord");
     h_init();
     U_init();
