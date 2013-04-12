@@ -10,15 +10,10 @@
 #include <string.h>
 #include <iostream>
 #include <time.h>
-#include "lib/inih/INIReader.h"
 
-#define M_2PI 2*M_PI
+#include "constants.h"
+
 using namespace std;
-
-const int VELOCITY_U = 0;
-const int VELOCITY_V = 1;
-const int VELOCITY_W = 2;
-const int PRESSURE = 3;
 
 // Типы
 struct indexes
@@ -29,25 +24,16 @@ typedef indexes matrix_ind[25];
 
 // Глобальные переменные
 long double
-x_L, y_L, z_L, r_L, // размеры канала
-    x1_L, x2_L, x3_L, x4_L, x5_L,
     *Hx, *Hy, *Hz, // шаги
     *Cx, *Cy, *Cz, // координаты
-    nu, // кинематическая вязкость
-    rho, // плотность
     Rn, R0,
     Rn_1, Rn_2,
-    eps,
-    p_left, p_right, // давление
     ***U, // Вектор неизвестных
     ***U_1, ***U_2, // для ускорения
     ***R, // Невязка
     ***Z; // для метода н/а
 
 int
-Nx, Ny, Nz, dNz, Rd, Rd_2, Rd_4, // Количество узлов
-    Nx1, Nx2, Nx3, Nx4, Nx5,
-    Nz1, Nz2, Nz3,
     iters,
     ***G; // Маска узлов
 
@@ -59,8 +45,6 @@ int ***carg;
 
 int ***groups;
 int num;
-
-bool generate_groups = false;
 
 // Методы проекта
 long double norm(long double*** v);
@@ -1548,34 +1532,10 @@ void U_init()
     }
 }
 
-void vars_init()
-{
-    eps = 0.001;
-
-    nu = 1e-2;
-    rho = 1;
-
-    p_left = 1;
-    p_right = 0;
-}
-
-void load_config()
-{
-    INIReader config("area.config");
-
-    Nx = config.GetInteger("Area", "Nx", 10);
-    Ny = config.GetInteger("Area", "Ny", 10);
-    dNz = config.GetInteger("Area", "dNz", 10);
-    Nz = config.GetInteger("Area", "Nz", 10);
-
-    printf("config has been loaded\n");
-}
-
 // Инициализация
 void init()
 {
     load_config();
-    vars_init();
 
     alloc(arg,Nx,Ny,Nz);
     alloc(func,Nx,Ny,Nz);
