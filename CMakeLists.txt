@@ -8,11 +8,11 @@ aux_source_directory(${SOURCE_ROOT} SOURCES)
 link_directories("lib")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(CMAKE_CXX_FLAGS "-o0 -g -DDEBUG")
+    set(CMAKE_CXX_FLAGS "-o0 -g -DDEBUG -Wno-unused-result")
 endif(CMAKE_BUILD_TYPE STREQUAL Debug)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    set(CMAKE_CXX_FLAGS "-o3 -march=native -mtune=native -funsafe-math-optimizations -fforce-addr -fomit-frame-pointer -foptimize-sibling-calls -fno-stack-protector -finline-small-functions -fprefetch-loop-arrays -funsafe-loop-optimizations -funroll-loops")
+    set(CMAKE_CXX_FLAGS "-o3 -march=native -mtune=native -funsafe-math-optimizations -fforce-addr -fomit-frame-pointer -foptimize-sibling-calls -fno-stack-protector -finline-small-functions -fprefetch-loop-arrays -funsafe-loop-optimizations -funroll-loops -Wno-unused-result")
 endif(CMAKE_BUILD_TYPE STREQUAL "Release")
 
 if(CMAKE_PROFILE_TYPE STREQUAL "Generate")

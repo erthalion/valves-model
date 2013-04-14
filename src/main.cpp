@@ -11,16 +11,18 @@
 #include <iostream>
 #include <time.h>
 
-#include "constants.h"
+#include "constants.hpp"
+#include "utils.hpp"
 
 using namespace std;
 
-// Типы
-struct indexes
-{
-    int i,j,k;
-};
-typedef indexes matrix_ind[25];
+/*
+ * Variable type for U array
+ */
+const int VELOCITY_U = 0;
+const int VELOCITY_V = 1;
+const int VELOCITY_W = 2;
+const int PRESSURE = 3;
 
 // Глобальные переменные
 long double
@@ -46,17 +48,13 @@ int ***carg;
 int ***groups;
 int num;
 
+Utils *utils;
+
 // Методы проекта
 long double norm(long double*** v);
 long double norm(long double*** v1, long double*** v2);
 void residual();
 void residual(int i, int j, int k);
-void alloc(int ***&a, int x, int y, int z);
-void alloc(matrix_ind ***&a, int x, int y, int z);
-void alloc(long double ***&a, int x, int y, int z);
-void del(int ***&a, int x, int y, int z);
-void del(long double ***&a, int x, int y, int z);
-void del(matrix_ind ***&a, int x, int y, int z);
 long double A1(long double ***U1, long double ***U2, int i, int j, int k);
 long double A2(long double ***U, int i, int j, int k);
 long double A(long double ***U1, long double ***U2, int i, int j, int k);
@@ -149,80 +147,6 @@ void residual(int i, int j, int k)
         if(G[ii][jj][kk])
             R[ii][jj][kk] = A(U,U,ii,jj,kk);
     }
-}
-
-// Выделение памяти под динамический массив
-void alloc(int ***&a, int x, int y, int z)
-{
-    a = new int **[x];
-    for(int i=0; i<x; ++i)
-    {
-        a[i] = new int *[y];
-        for(int j=0; j<Ny; ++j)
-        {
-            a[i][j] = new int [z];
-            for(int k=0; k<Nz; ++k)
-                a[i][j][k] = 0;
-        }
-    }
-}
-
-void alloc(matrix_ind ***&a, int x, int y, int z)
-{
-    a = new matrix_ind **[x];
-    for(int i=0; i<x; ++i)
-    {
-        a[i] = new matrix_ind *[y];
-        for(int j=0; j<Ny; ++j)
-            a[i][j] = new matrix_ind [z];
-    }
-}
-
-void alloc(long double ***&a, int x, int y, int z)
-{
-    a = new long double **[x];
-    for(int i=0; i<x; ++i)
-    {
-        a[i] = new long double *[y];
-        for(int j=0; j<Ny; ++j)
-        {
-            a[i][j] = new long double [z];
-            for(int k=0; k<Nz; ++k)
-                a[i][j][k] = 0;
-        }
-    }
-}
-// Удаление памяти под динамический массив
-void del(int ***&a, int x, int y, int z)
-{
-    for(int i=0; i<x; ++i)
-    {
-        for(int j=0; j<y; ++j)
-            delete [] a[i][j];
-        delete [] a[i];
-    }
-    delete [] a;
-}
-
-void del(long double ***&a, int x, int y, int z)
-{
-    for(int i=0; i<x; ++i)
-    {
-        for(int j=0; j<y; ++j)
-            delete [] a[i][j];
-        delete [] a[i];
-    }
-    delete [] a;
-}
-void del(matrix_ind ***&a, int x, int y, int z)
-{
-    for(int i=0; i<x; ++i)
-    {
-        for(int j=0; j<y; ++j)
-            delete [] a[i][j];
-        delete [] a[i];
-    }
-    delete [] a;
 }
 
 
@@ -409,7 +333,7 @@ long double A(long double ***U1, long double ***U2, int i, int j, int k)
 void set_gr()
 {
     int ***field;
-    alloc(field,Nx,Ny,Nz);
+    field = utils->alloc_and_fill<int>(Nx,Ny,Nz);
     bool cells; // наличие компоненты, которой не назначена группа
     do
     {
@@ -458,7 +382,7 @@ void set_gr()
     }
     while(cells);
     ++num;
-    del(field,Nx,Ny,Nz);
+    utils->del(field,Nx,Ny,Nz);
 }
 
 void print_gr()
@@ -558,8 +482,8 @@ void init_gr()
     srand( (unsigned)time( NULL ) );
 
     long double ***e, ***y;
-    alloc(e,Nx,Ny,Nz);
-    alloc(y,Nx,Ny,Nz);
+    e = utils->alloc_and_fill<long double>(Nx,Ny,Nz);
+    y = utils->alloc_and_fill<long double>(Nx,Ny,Nz);
 
     for(int i=0; i<Nx; ++i)
         for(int j=0; j<Ny; ++j)
@@ -623,8 +547,8 @@ void init_gr()
             }
         }
     }
-    del(e,Nx,Ny,Nz);
-    del(y,Nx,Ny,Nz);
+    utils->del(e,Nx,Ny,Nz);
+    utils->del(y,Nx,Ny,Nz);
 
     printf("groups has been initialized\n");
 }
@@ -1536,19 +1460,20 @@ void U_init()
 void init()
 {
     load_config();
+    utils = new Utils(Nx, Ny, Nz);
 
-    alloc(arg,Nx,Ny,Nz);
-    alloc(func,Nx,Ny,Nz);
-    alloc(carg,Nx,Ny,Nz);
-    alloc(groups,Nx,Ny,Nz);
+    arg = utils->alloc<matrix_ind>(Nx,Ny,Nz);
+    func = utils->alloc<matrix_ind>(Nx,Ny,Nz);
+    carg = utils->alloc_and_fill<int>(Nx,Ny,Nz);
+    groups = utils->alloc_and_fill<int>(Nx,Ny,Nz);
 
-    alloc(U,Nx,Ny,Nz);
-    alloc(R,Nx,Ny,Nz);
-    alloc(G,Nx,Ny,Nz);
-    alloc(Z,Nx,Ny,Nz);
+    U = utils->alloc_and_fill<long double>(Nx,Ny,Nz);
+    R = utils->alloc_and_fill<long double>(Nx,Ny,Nz);
+    G = utils->alloc_and_fill<int>(Nx,Ny,Nz);
+    Z = utils->alloc_and_fill<long double>(Nx,Ny,Nz);
 
-    alloc(U_1,Nx,Ny,Nz);
-    alloc(U_2,Nx,Ny,Nz);
+    U_1 = utils->alloc_and_fill<long double>(Nx,Ny,Nz);
+    U_2 = utils->alloc_and_fill<long double>(Nx,Ny,Nz);
 
     Rn_1 = Rn_2 = 0;
 
@@ -1668,15 +1593,15 @@ void run()
 // Деструктор
 void down()
 {
-    del(arg,Nx,Ny,Nz);
-    del(func,Nx,Ny,Nz);
-    del(carg,Nx,Ny,Nz);
-    del(groups,Nx,Ny,Nz);
+    utils->del(arg,Nx,Ny,Nz);
+    utils->del(func,Nx,Ny,Nz);
+    utils->del(carg,Nx,Ny,Nz);
+    utils->del(groups,Nx,Ny,Nz);
 
-    del(U,Nx,Ny,Nz);
-    del(R,Nx,Ny,Nz);
-    del(G,Nx,Ny,Nz);
-    del(Z,Nx,Ny,Nz);
+    utils->del(U,Nx,Ny,Nz);
+    utils->del(R,Nx,Ny,Nz);
+    utils->del(G,Nx,Ny,Nz);
+    utils->del(Z,Nx,Ny,Nz);
 
     delete [] Hx;
     delete [] Hy;

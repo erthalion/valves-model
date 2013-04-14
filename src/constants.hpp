@@ -1,13 +1,8 @@
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
+
 #include "lib/inih/INIReader.h"
 #define M_2PI 2*M_PI
-
-/*
- * Variable type for U array
- */
-const int VELOCITY_U = 0;
-const int VELOCITY_V = 1;
-const int VELOCITY_W = 2;
-const int PRESSURE = 3;
 
 /*
  * Kinematical viscosity
@@ -47,7 +42,6 @@ void load_config()
     Nz = config.GetInteger("Area", "Nz", 10);
 
     generate_groups = config.GetBoolean("Main", "GenerateGroups", false);
-    printf("Generate groups is %s\n", (generate_groups) ? "true" : "false");
-
-    printf("config has been loaded\n");
 }
+
+#endif
