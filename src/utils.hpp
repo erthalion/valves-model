@@ -1,7 +1,6 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <typeinfo>
 #include <iostream>
 
 // Типы
@@ -28,6 +27,10 @@ public:
         this->Nx = Nx;
         this->Ny = Ny;
         this->Nz = Nz;
+    }
+
+    ~Utils()
+    {
     }
 
     template<typename T>
