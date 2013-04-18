@@ -17,10 +17,15 @@ Output::Output(int Nx, int Ny, int Nz, int dNz
     this->Nx = Nx;
     this->Ny = Ny;
     this->Nz = Nz;
+    this->dNz = dNz;
 
     this->Cx = Cx;
     this->Cy = Cy;
     this->Cz = Cz;
+
+    this->Hx = Hx;
+    this->Hy = Hy;
+    this->Hz = Hz;
 
     this->U = U;
     this->R = R;
