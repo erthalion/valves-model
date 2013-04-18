@@ -14,6 +14,7 @@
 #include "constants.hpp"
 #include "utils.hpp"
 #include "groups.h"
+#include "output.h"
 
 using namespace std;
 
@@ -48,6 +49,7 @@ int ***carg;
 
 Utils *utils;
 GroupsGenerator *groupGenerator;
+Output *output;
 
 // Методы проекта
 long double norm(long double*** v);
@@ -61,17 +63,7 @@ void eval_scalars(long double ***u, long double ***R, int i1, int j1, int k1, lo
 long double calc_alpha(long double Rn_F1, long double Rn_F2, long double F1_F1, long double F2_F2, long double F1_F2);
 int cubic(long double *x, long double a, long double b, long double c);
 void alpha_iter();
-void print_info();
-void print_texplot_matrix();
-void print_vtk_header(char *output_path, int sizeX, int sizeY, int sizeZ);
-void print_vtk_data_header(char *output_path, int sizeX, int sizeY, int sizeZ);
-void print_area();
-void print_vtk_header_points(char *output_path, int sizeX, int sizeY, int sizeZ);
-void print_area_points();
-void print_vtk_streamline_header(char *output_path, int sizeX, int sizeY, int sizeZ);
-void print_vtk();
-void print_vtk_streamline_vector_header(char *output_path, int sizeX, int sizeY, int sizeZ);
-void print_vtk_streamline_scalar_header(char *output_path, int sizeX, int sizeY, int sizeZ);
+
 
 // Норма вектора
 long double norm(long double*** v)
@@ -595,280 +587,6 @@ void speed_work()
     }
 }
 
-void print_texplot_matrix()
-{
-    char name[40];
-    sprintf(name, "Matrixdata%6d.dat", iters);
-    FILE *f = fopen(name,"w");
-
-    fprintf(f,"TITLE = Test\n");
-    fprintf(f,"VARIABLES = X,Y,Z,U,V,W,P\n");
-    fprintf(f,"ZONE T=Test,I=%d, J=%d, K=%d, F=POINT\n", Nx, Ny, dNz);
-    for(int k=0; k<dNz; ++k)
-    {
-        for(int j=0; j<Ny; ++j)
-        {
-            for(int i=0; i<Nx; ++i)
-            {
-                fprintf(f,"%LF, %LF, %LF,", Cx[i], Cy[j], Cz[k]);
-
-                fprintf(f,"%LF,", U[i][j][k]);
-
-                fprintf(f,"%LF,", U[i][j][k+dNz]);
-
-                fprintf(f,"%LF,", U[i][j][k+2*dNz]);
-
-                fprintf(f,"%LF\n", U[i][j][k+3*dNz]);
-            }
-        }
-    }
-
-    fclose(f);
-
-    strcpy(name,"");
-    sprintf(name, "Res%6d.dat", iters);
-    f = fopen(name,"w");
-
-    fprintf(f,"TITLE = Test\n");
-    fprintf(f,"VARIABLES = X,Y,Z,RU,RV,RW,P\n");
-    fprintf(f,"ZONE T=Test,I=%d, J=%d, K=%d, F=POINT\n", Nx, Ny, dNz);
-    for(int k=0; k<dNz; ++k)
-    {
-        for(int j=0; j<Ny; ++j)
-        {
-            for(int i=0; i<Nx; ++i)
-            {
-                fprintf(f,"%LF, %LF, %LF,", Cx[i], Cy[j], Cz[k]);
-
-                fprintf(f,"%LF,", R[i][j][k]);
-
-                fprintf(f,"%LF,", R[i][j][k+dNz]);
-
-                fprintf(f,"%LF,", R[i][j][k+2*dNz]);
-
-                fprintf(f,"%LF\n", R[i][j][k+3*dNz]);
-            }
-        }
-    }
-
-    fclose(f);
-
-}
-
-void print_vtk()
-{
-    char output_path[] = "streamlines.vtk";
-    //print_vtk_streamline_header(output_path, Nx, Ny-1, dNz-1);
-    print_vtk_header(output_path, Nx, Ny-1, dNz-1);
-
-    FILE *f = fopen(output_path,"a");
-
-    for(int k=0; k<dNz-1; ++k)
-    {
-        for(int j=0; j<Ny-1; ++j)
-        {
-            for(int i=0; i<Nx; ++i)
-            {
-                fprintf(f,"%LF %LF %LF\n", Cx[i], Cy[j], Cz[k]);
-                //fprintf(f,"%LF\n",U[i][j][k+3*dNz]);
-            }
-        }
-    }
-
-    fclose(f);
-
-    print_vtk_streamline_scalar_header(output_path, Nx, Ny-1, dNz-1);
-    f = fopen(output_path,"a");
-
-    for(int k=0; k<dNz-1; ++k)
-    {
-        for(int j=0; j<Ny-1; ++j)
-        {
-            for(int i=0; i<Nx; ++i)
-            {
-                fprintf(f,"%LF\n", U[i][j][k+3*dNz]);
-            }
-        }
-    }
-
-    fclose(f);
-
-    print_vtk_streamline_vector_header(output_path, Nx, Ny-1, dNz-1);
-
-    f = fopen(output_path,"a");
-    for(int k=0; k<dNz-1; ++k)
-    {
-        for(int j=0; j<Ny-1; ++j)
-        {
-            for(int i=0; i<Nx; ++i)
-            {
-                if(i==0)
-                    fprintf(f,"%LF ",U[i+1][j][k]);
-                else if(i==Nx-1)
-                    fprintf(f,"%LF ",U[i][j][k]);
-                else
-                    fprintf(f,"%LF ", Hx[i]/(Hx[i+1]+Hx[i])*U[i+1][j][k]+Hx[i+1]/(Hx[i+1]+Hx[i])*U[i][j][k] );
-
-                if(j==0)
-                    fprintf(f,"%LF ",U[i][j][k+dNz]);
-                else if(j==Ny-2)
-                    fprintf(f,"%LF ",U[i][j+1][k+dNz]);
-                else
-                    fprintf(f,"%LF ", Hy[j]/(Hy[j]+Hy[j+1])*U[i][j+1][k+dNz]+
-                            Hy[j+1]/(Hy[j]+Hy[j+1])*U[i][j][k+dNz]);
-
-                if(k==0)
-                    fprintf(f,"%LF ",U[i][j][k+2*dNz]);
-                else if(k==dNz-2)
-                    fprintf(f,"%LF ",U[i][j][k+1+2*dNz]);
-                else
-                    fprintf(f,"%LF ", Hz[k]/(Hz[k]+Hz[k+1])*U[i][j][k+1+2*dNz]+
-                            Hz[k+1]/(Hz[k]+Hz[k+1])*U[i][j][k+2*dNz]);
-
-                fprintf(f, "\n");
-            }
-        }
-    }
-
-    fclose(f);
-}
-
-// TODO: move all plot functions into other file/class/namespace
-void print_vtk_streamline_vector_header(char *output_path, int sizeX, int sizeY, int sizeZ)
-{
-#pragma region HEADER
-    string header;
-    char line [50];
-
-    sprintf(line,"\nVECTORS uvw float\n");
-    header.append(line);
-#pragma endregion Подготовка строки с заголовком vtk файла
-
-#pragma region WRITE_FILE
-    ofstream output_data;
-    output_data.open(output_path,std::ios_base::app | std::ios_base::out);
-    output_data << header;
-    output_data.close();
-#pragma endregion Запись заголовка в файл
-}
-
-void print_vtk_streamline_scalar_header(char *output_path, int sizeX, int sizeY, int sizeZ)
-{
-#pragma region HEADER
-    string header;
-    char line [50];
-
-    sprintf(line,"\nPOINT_DATA %d\n", sizeX * sizeY * sizeZ);
-    header.append(line);
-
-    sprintf(line,"SCALARS p float\n");
-    header.append(line);
-
-    sprintf(line,"LOOKUP_TABLE default\n");
-    header.append(line);
-#pragma endregion Подготовка строки с заголовком vtk файла
-
-#pragma region WRITE_FILE
-    ofstream output_data;
-    output_data.open(output_path,std::ios_base::app | std::ios_base::out);
-    output_data << header;
-    output_data.close();
-#pragma endregion Запись заголовка в файл
-}
-
-void print_vtk_streamline_header(char *output_path, int sizeX, int sizeY, int sizeZ)
-{
-#pragma region HEADER
-    string header;
-    char line [50];
-
-    sprintf(line,"# vtk DataFile Version 1.0\n");
-    header.append(line);
-
-    sprintf(line,"Data file for valves model\n");
-    header.append(line);
-
-    sprintf(line,"ASCII\n");
-    header.append(line);
-
-    sprintf(line,"DATASET STRUCTURED_POINTS\n");
-    header.append(line);
-
-    sprintf(line,"DIMENSIONS %d %d %d\n",sizeX,sizeY,sizeZ);
-    header.append(line);
-
-    sprintf(line,"ORIGIN %f %f %f\n", 0.0, 0.0, 0.0);
-    header.append(line);
-
-    sprintf(line,"ASPECT_RATIO %f %f %f\n", 1.0, 1.0, 1.0);
-    header.append(line);
-
-    sprintf(line,"\nPOINT_DATA %d\n", sizeX*sizeY*sizeZ);
-    header.append(line);
-
-    sprintf(line,"SCALARS xyz double 3\n");
-    header.append(line);
-
-    sprintf(line,"LOOKUP_TABLE default\n");
-    header.append(line);
-#pragma endregion Подготовка строки с заголовком vtk файла
-
-#pragma region WRITE_FILE
-    ofstream output_data;
-    output_data.open(output_path);
-    output_data << header;
-    output_data.close();
-#pragma endregion Запись заголовка в файл
-}
-
-void print_texplot()
-{
-    char name[20];
-    sprintf(name, "data%6d.dat", iters);
-    FILE *f = fopen(name,"w");
-
-    fprintf(f,"TITLE = Test\n");
-    fprintf(f,"VARIABLES = X,Y,Z,U,V,W,P\n");
-    fprintf(f,"ZONE T=Test,I=%d, J=%d, K=%d, F=POINT\n", Nx, Ny-1, dNz-1);
-    for(int k=0; k<dNz-1; ++k)
-    {
-        for(int j=0; j<Ny-1; ++j)
-        {
-            for(int i=0; i<Nx; ++i)
-            {
-                fprintf(f,"%LF, %LF, %LF,", Cx[i], Cy[j], Cz[k]);
-
-                if(i==0)
-                    fprintf(f,"%LF,",U[i+1][j][k]);
-                else if(i==Nx-1)
-                    fprintf(f,"%LF,",U[i][j][k]);
-                else
-                    fprintf(f,"%LF,", Hx[i]/(Hx[i+1]+Hx[i])*U[i+1][j][k]+Hx[i+1]/(Hx[i+1]+Hx[i])*U[i][j][k] );
-
-                if(j==0)
-                    fprintf(f,"%LF,",U[i][j][k+dNz]);
-                else if(j==Ny-2)
-                    fprintf(f,"%LF,",U[i][j+1][k+dNz]);
-                else
-                    fprintf(f,"%LF,", Hy[j]/(Hy[j]+Hy[j+1])*U[i][j+1][k+dNz]+
-                            Hy[j+1]/(Hy[j]+Hy[j+1])*U[i][j][k+dNz]);
-
-                if(k==0)
-                    fprintf(f,"%LF,",U[i][j][k+2*dNz]);
-                else if(k==dNz-2)
-                    fprintf(f,"%LF,",U[i][j][k+1+2*dNz]);
-                else
-                    fprintf(f,"%LF,", Hz[k]/(Hz[k]+Hz[k+1])*U[i][j][k+1+2*dNz]+
-                            Hz[k+1]/(Hz[k]+Hz[k+1])*U[i][j][k+2*dNz]);
-
-                fprintf(f,"%LF\n",U[i][j][k+3*dNz]);
-            }
-        }
-    }
-
-    fclose(f);
-}
-
 /*
  * Загрузка координат из файла
  */
@@ -965,215 +683,6 @@ void load_mask(const int type, const char *file_name)
     printf("Mask for type %d has been loaded\n", type);
 }
 
-/*
- * Визуализация расчетной области
- */
-void print_area()
-{
-    char output_path[] = "surface.vtk";
-    print_vtk_header(output_path, Nx, Ny-1, dNz-1);
-
-    FILE *f = fopen(output_path,"a");
-
-    for(int k=0; k<dNz-1; ++k)
-    {
-        for(int j=0; j<Ny-1; ++j)
-        {
-            for(int i=0; i<Nx; ++i)
-            {
-                fprintf(f,"%LF %LF %LF\n", Cx[i],Cy[j],Cz[k]);
-            }
-        }
-    }
-
-    fclose(f);
-
-    print_vtk_data_header(output_path, Nx, Ny-1, dNz-1);
-
-    f = fopen(output_path,"a");
-    for(int k=0; k<dNz-1; ++k)
-    {
-        for(int j=0; j<Ny-1; ++j)
-        {
-            for(int i=0; i<Nx; ++i)
-            {
-                fprintf(f,"%d\n", G[i][j][k]);
-            }
-        }
-    }
-
-    fclose(f);
-}
-
-/*
- * Визуализация расчетной области в STRUCTURED_POINTS
- */
-void print_area_points()
-{
-    char output_path[] = "surface.vtk";
-    print_vtk_header_points(output_path, Nx, Ny-1, dNz-1);
-    print_vtk_data_header(output_path, Nx, Ny-1, dNz-1);
-
-    FILE *f = fopen(output_path,"a");
-    for(int k=0; k<dNz-1; ++k)
-    {
-        for(int j=0; j<Ny-1; ++j)
-        {
-            for(int i=0; i<Nx; ++i)
-            {
-                fprintf(f,"%d\n", G[i][j][k]);
-            }
-        }
-    }
-
-    fclose(f);
-}
-
-/*
- * Запись в файл заголовка данных vtk
- */
-void print_vtk_data_header(char *output_path, int sizeX, int sizeY, int sizeZ)
-{
-#pragma region HEADER
-    string header;
-    char line [50];
-
-    sprintf(line,"POINT_DATA %d\n",sizeX*sizeY*sizeZ);
-    header.append(line);
-
-    sprintf(line,"SCALARS scalars int\n");
-    header.append(line);
-
-    sprintf(line,"LOOKUP_TABLE default\n");
-    header.append(line);
-#pragma endregion Подготовка строки с заголовком vtk файла
-
-#pragma region WRITE_FILE
-    ofstream output_data;
-    output_data.open(output_path,std::ios_base::app | std::ios_base::out);
-    output_data << header;
-    output_data.close();
-#pragma endregion Запись заголовка в файл
-}
-
-
-/*
- * Запись в файл заголовка vtk
- */
-void print_vtk_header(char *output_path, int sizeX, int sizeY, int sizeZ)
-{
-#pragma region HEADER
-    string header;
-    char line [50];
-
-    sprintf(line,"# vtk DataFile Version 1.0\n");
-    header.append(line);
-
-    sprintf(line,"Data file for valves model\n");
-    header.append(line);
-
-    sprintf(line,"ASCII\n");
-    header.append(line);
-
-    sprintf(line,"DATASET STRUCTURED_GRID\n");
-    header.append(line);
-
-    sprintf(line,"DIMENSIONS %d %d %d\n",sizeX,sizeY,sizeZ);
-    header.append(line);
-
-    sprintf(line,"POINTS %d double\n",sizeX*sizeY*sizeZ);
-    header.append(line);
-#pragma endregion Подготовка строки с заголовком vtk файла
-
-#pragma region WRITE_FILE
-    ofstream output_data;
-    output_data.open(output_path);
-    output_data << header;
-    output_data.close();
-#pragma endregion Запись заголовка в файл
-}
-
-/*
- * Запись в файл заголовка vtk STRUCTURED_POINTS
- */
-void print_vtk_header_points(char *output_path, int sizeX, int sizeY, int sizeZ)
-{
-#pragma region HEADER
-    string header;
-    char line [50];
-
-    sprintf(line,"# vtk DataFile Version 1.0\n");
-    header.append(line);
-
-    sprintf(line,"Data file for valves model\n");
-    header.append(line);
-
-    sprintf(line,"ASCII\n");
-    header.append(line);
-
-    sprintf(line,"DATASET STRUCTURED_POINTS\n");
-    header.append(line);
-
-    sprintf(line,"DIMENSIONS %d %d %d\n",sizeX,sizeY,sizeZ);
-    header.append(line);
-
-    sprintf(line,"ORIGIN %d %d %d\n",0,0,0);
-    header.append(line);
-
-    sprintf(line,"SPACING %d %d %d\n",1,1,1);
-    header.append(line);
-#pragma endregion Подготовка строки с заголовком vtk файла
-
-#pragma region WRITE_FILE
-    ofstream output_data;
-    output_data.open(output_path);
-    output_data << header;
-    output_data.close();
-#pragma endregion Запись заголовка в файл
-}
-
-
-void print_info()
-{
-    print_texplot();
-    print_texplot_matrix();
-
-    char fn [20];
-    sprintf(fn, "info%6d.txt", iters);
-    FILE *f = fopen(fn,"w");
-    fprintf(f,"iters = %d\n\n", iters);
-    fprintf(f,"r0 = %LF\n", R0);
-    fprintf(f,"rn = %LF\n", Rn);
-    fprintf(f,"rn/ro = %LF\n", Rn/R0);
-
-    long double max_ri = fabs(R[0][0][0]);
-    int im = 0, jm = 0, km = 0;
-    for(int i=0; i<Nx; ++i)
-        for(int j=0; j<Ny; ++j)
-            for(int k=0; k<Nz; ++k)
-                if( max_ri < fabs(R[i][j][k]) )
-                {
-                    max_ri = fabs(R[i][j][k]);
-                    im = i;
-                    jm = j;
-                    km = k;
-                }
-    fprintf(f,"max_ri = %LF at (%d,%d,%d)\n\n", max_ri, im, jm, km);
-
-    long double s1=0, s2=0;
-    for(int j=0; j<Ny; ++j)
-        for(int k=0; k<dNz; ++k)
-        {
-            s1 += U[1][j][k]*Hy[j]*Hz[k];
-            s2 += U[Nx-1][j][k]*Hy[j]*Hz[k];
-        }
-
-    fprintf(f,"s1 = %LF\n", s1);
-    fprintf(f,"s2 = %LF\n", s2);
-    fprintf(f,"ds = %lf\n", fabs(s1-s2));
-    fclose(f);
-
-}
 
 // Инициализирующие функции
 void h_init()
@@ -1233,9 +742,11 @@ void init()
 {
     load_config();
     utils = new Utils(Nx, Ny, Nz);
+    
     groupGenerator = new GroupsGenerator(Nx, Ny, Nz);
     groupGenerator->operator_nonlin = &A1;
     groupGenerator->operator_lin = &A2;
+
 
     U = utils->alloc_and_fill<long double>(Nx,Ny,Nz);
     R = utils->alloc_and_fill<long double>(Nx,Ny,Nz);
@@ -1286,6 +797,7 @@ void init()
         }
     }
 
+    output = new Output(Nx, Ny, Nz, dNz, U, Cx, Cy, Cz, R, Hx, Hy, Hz, G);
     // группы
     if(generate_groups)
     {
@@ -1310,7 +822,7 @@ void run()
     {
 
 #ifdef DEBUG
-    print_vtk();
+    output->print_vtk();
     printf("next step...");
     getchar();
 #endif
@@ -1357,7 +869,7 @@ void run()
 
     time_t end_time = time(NULL);
     printf("Time is %ld\n", end_time - start_time);
-    print_vtk();
+    output->print_vtk();
 }
 
 // Деструктор
