@@ -30,6 +30,8 @@ class GroupsGenerator
        void init_gr();
        void load_groups();
 
+       int*** get_carg() {return carg;}
+       matrix_ind*** get_arg() {return arg;}
 };
 
 #endif

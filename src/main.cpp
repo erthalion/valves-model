@@ -746,6 +746,8 @@ void init()
     groupGenerator = new GroupsGenerator(Nx, Ny, Nz);
     groupGenerator->operator_nonlin = &A1;
     groupGenerator->operator_lin = &A2;
+    carg = groupGenerator->get_carg();
+    arg = groupGenerator->get_arg();
 
 
     U = utils->alloc_and_fill<long double>(Nx,Ny,Nz);
