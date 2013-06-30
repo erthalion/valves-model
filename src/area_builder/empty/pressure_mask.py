@@ -18,9 +18,14 @@ def build_area():
             (y >= 0) & (y <= ny-2) &\
             (z >= 0) & (z <= ny-2)
 
+    in_boundary = (x == 1)
+    out_boundary = (x == nx-2)
+
     array = np.zeros((nx, ny, nz))
 
     array[mask] = 1
+    array[in_boundary & mask] = 2
+    array[out_boundary & mask] = 3
 
     """ Write mask file
     """

@@ -732,9 +732,15 @@ void U_init()
                 }
 
                 /* Pressure on in/out boundaries must be set and not calculated */
-                if(G[i][j][k + 3*dNz] == 2 || G[i][j][k + 3*dNz] == 3)
+                if(G[i][j][k + 3*dNz] == 2)
                 {
                     U[i][j][k + 3*dNz] = p;
+                    G[i][j][k + 3*dNz] = 0;
+                }
+
+                if(G[i][j][k + 3*dNz] == 3)
+                {
+                    U[i][j][k + 3*dNz] = 0;
                     G[i][j][k + 3*dNz] = 0;
                 }
             }
