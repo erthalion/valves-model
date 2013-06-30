@@ -13,15 +13,15 @@ def build_area():
     ny = int(area.get('Area', 'Ny'))
     nz = int(area.get('Area', 'dNz'))
     R = ny/2 - 2
-    R_valves = ny*2/5-2
+    R_valves = ny/3
     x0 = nx/2
     y0 = ny/2
     z0 = nz/2
     alpha = pi/4
     big_valve_width = 6
     big_valve_shift = nx*2/3
-    width = 3
-    valves_open = 1
+    width = 1
+    valves_open = 2
 
     x, y, z = np.ogrid[0:nx, 0:ny, 0:nz]
 
@@ -43,8 +43,8 @@ def build_area():
     first_valve = ((z-z0-valves_open) > 0) & ((y-y0-valves_open) > -0.5*(z-z0))
     second_valve = ((z-z0+valves_open) < 0) & ((y-y0-valves_open) > 0.5*(z-z0))
     third_valve = ((y-y0+valves_open) < -0.5*(z-z0)) & ((y-y0+valves_open) < 0.5*(z-z0))
-    valves_width = ((x-nx/2+5)**2 + (y-y0)**2 + (z-z0)**2 > (R_valves-width)**2) &\
-            ((x-nx/2+5)**2 + (y-y0)**2 + (z-z0)**2 < R_valves**2) &\
+    valves_width = ((x-nx*2/3+8)**2 + (y-y0)**2 + (z-z0)**2 > (R_valves-width)**2) &\
+            ((x-nx*2/3+8)**2 + (y-y0)**2 + (z-z0)**2 < R_valves**2) &\
             (x-big_valve_shift > -R/2)
 
     array = np.zeros((nx, ny, nz))
