@@ -40,7 +40,7 @@ public:
         for(int i=0; i<x; ++i)
         {
             a[i] = new T *[y];
-            for(int j=0; j<Ny; ++j)
+            for(int j=0; j<y; ++j)
             {
                 a[i][j] = new T [z];
             }
@@ -56,10 +56,10 @@ public:
         for(int i=0; i<x; ++i)
         {
             a[i] = new T *[y];
-            for(int j=0; j<Ny; ++j)
+            for(int j=0; j<y; ++j)
             {
                 a[i][j] = new T [z];
-                for(int k=0; k<Nz; ++k)
+                for(int k=0; k<z; ++k)
                 {
                     a[i][j][k] = 0;
                 }

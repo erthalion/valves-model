@@ -7,9 +7,9 @@ GroupsGenerator::GroupsGenerator(int Nx, int Ny, int Nz)
     this->Ny = Ny;
     this->Nz = Nz;
 
-    utils = new Utils(Nx, Ny, Nz);
+    Utils *utils = new Utils(Nx, Ny, Nz);
     groups = utils->alloc_and_fill<int>(Nx,Ny,Nz);
-    carg = utils->alloc_and_fill<int>(Nx,Ny,Nz);
+    group_carg = utils->alloc_and_fill<int>(Nx,Ny,Nz);
     arg = utils->alloc<matrix_ind>(Nx,Ny,Nz);
     func = utils->alloc<matrix_ind>(Nx,Ny,Nz);
 }
@@ -19,7 +19,7 @@ GroupsGenerator::~GroupsGenerator()
     utils->del(groups,Nx,Ny,Nz);
     utils->del(arg,Nx,Ny,Nz);
     utils->del(func,Nx,Ny,Nz);
-    utils->del(carg,Nx,Ny,Nz);
+    utils->del(group_carg,Nx,Ny,Nz);
 }
 
 double GroupsGenerator::random_gr()
@@ -54,7 +54,7 @@ void GroupsGenerator::init_gr()
             for(int k=0; k<Nz; ++k)
             {
                 e[i][j][k] = 0;
-                carg[i][j][k] = 0;
+                group_carg[i][j][k] = 0;
                 arg[i][j][k][0].i = 0;
                 arg[i][j][k][0].j = 0;
                 arg[i][j][k][0].k = 0;
@@ -94,13 +94,13 @@ void GroupsGenerator::init_gr()
                                         (fabs( (*operator_lin)(e,l,s,t)) > 1e-20))
                                 {
                                     bool d = true;
-                                    for(int c=0; (c<carg[i][j][k])&&d; ++c)
+                                    for(int c=0; (c<group_carg[i][j][k])&&d; ++c)
                                         if((arg[i][j][k][c].i==l)&&
                                                 (arg[i][j][k][c].j==s)&&
                                                 (arg[i][j][k][c].k==t)) d=false;
                                     if(d)
                                     {
-                                        add_gr(arg,carg[i][j][k],i,j,k,l,s,t);
+                                        add_gr(arg,group_carg[i][j][k],i,j,k,l,s,t);
                                     }
                                 }
                             }
@@ -134,8 +134,8 @@ void GroupsGenerator::load_groups()
             {
                 int ii,jj,kk;
                 fscanf(f, "%3d %3d %3d", &ii, &jj, &kk);
-                fscanf(f, "%3d\n", &carg[ii][jj][kk]);
-                for(int cc = 0; cc < carg[ii][jj][kk]; ++cc)
+                fscanf(f, "%3d\n", &group_carg[ii][jj][kk]);
+                for(int cc = 0; cc < group_carg[ii][jj][kk]; ++cc)
                     fscanf(f, "%4d %4d %4d\n", &arg[ii][jj][kk][cc].i, &arg[ii][jj][kk][cc].j, &arg[ii][jj][kk][cc].k);
             };
     fclose(f);
@@ -169,9 +169,9 @@ void GroupsGenerator::print_gr()
         for(int j=0; j<Ny; ++j)
             for(int k=0; k<Nz; ++k)
             {
-                // current indexes (i,j,k) and count of chanched indexes(carg)
-                fprintf(f, "%3d %3d %3d %3d\n", i, j, k, carg[i][j][k]);
-                for(int c = 0; c<carg[i][j][k]; ++c)
+                // current indexes (i,j,k) and count of chanched indexes(group_carg)
+                fprintf(f, "%3d %3d %3d %3d\n", i, j, k, group_carg[i][j][k]);
+                for(int c = 0; c<group_carg[i][j][k]; ++c)
                     fprintf(f, "%4d %4d %4d\n", arg[i][j][k][c].i, arg[i][j][k][c].j, arg[i][j][k][c].k);
             };
     fclose(f);
@@ -223,7 +223,7 @@ void GroupsGenerator::set_gr()
                             cells = true;
                             ++num;
                         }
-                        int count = carg[i][j][k];
+                        int count = group_carg[i][j][k];
                         indexes *t = arg[i][j][k];
                         bool push = true;
                         for(int c=0; (c<count)&&push; ++c)

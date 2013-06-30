@@ -12,7 +12,7 @@ class GroupsGenerator
    Utils *utils;
    matrix_ind ***arg;
    matrix_ind ***func;
-   int ***carg;
+   int ***group_carg;
    int Nx, Ny, Nz;
 
 
@@ -30,7 +30,7 @@ class GroupsGenerator
        void init_gr();
        void load_groups();
 
-       int*** get_carg() {return carg;}
+       int*** get_carg() {return group_carg;}
        matrix_ind*** get_arg() {return arg;}
 };
 

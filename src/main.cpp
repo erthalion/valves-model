@@ -16,6 +16,8 @@
 #include "groups.h"
 #include "output.h"
 
+#include "ndarray.h"
+
 using namespace std;
 
 /*
@@ -45,7 +47,7 @@ int
 matrix_ind ***arg, ***func;
 
 // Массив содержит количество элементов, которые изменяться (и будут пересчитаны), если изменить i,j,k элемент
-int ***carg;
+int ***global_carg;
 
 Utils *utils;
 GroupsGenerator *groupGenerator;
@@ -58,6 +60,9 @@ void residual();
 void residual(int i, int j, int k);
 long double A1(long double ***U1, long double ***U2, int i, int j, int k);
 long double A2(long double ***U, int i, int j, int k);
+extern "C" {
+    int main();
+}
 long double A(long double ***U1, long double ***U2, int i, int j, int k);
 void eval_scalars(long double ***u, long double ***R, int i1, int j1, int k1, long double &Rn_F1, long double &Rn_F2, long double &F1_F1, long double &F2_F2, long double &F1_F2);
 long double calc_alpha(long double Rn_F1, long double Rn_F2, long double F1_F1, long double F2_F2, long double F1_F2);
@@ -123,7 +128,7 @@ void residual()
  */
 void residual(int i, int j, int k)
 {
-    int count_changed = carg[i][j][k];
+    int count_changed = global_carg[i][j][k];
     for(int oc=0; oc<count_changed; ++oc)
     {
         indexes &changed=arg[i][j][k][oc];
@@ -328,7 +333,7 @@ void eval_scalars(long double ***u, long double ***R, int i1, int j1,
     F2_F2 = 0;
     F1_F2 = 0;
 
-    int c = carg[i1][j1][k1];
+    int c = global_carg[i1][j1][k1];
     for(int oc=0; oc<c; ++oc)
     {
         indexes &a = arg[i1][j1][k1][oc];
@@ -746,9 +751,6 @@ void init()
     groupGenerator = new GroupsGenerator(Nx, Ny, Nz);
     groupGenerator->operator_nonlin = &A1;
     groupGenerator->operator_lin = &A2;
-    carg = groupGenerator->get_carg();
-    arg = groupGenerator->get_arg();
-
 
     U = utils->alloc_and_fill<long double>(Nx,Ny,Nz);
     R = utils->alloc_and_fill<long double>(Nx,Ny,Nz);
@@ -811,6 +813,9 @@ void init()
     {
         groupGenerator->load_groups();
     }
+
+    global_carg = groupGenerator->get_carg();
+    arg = groupGenerator->get_arg();
 }
 
 // Основной цикл
@@ -889,7 +894,6 @@ void down()
 // Точка входа
 int main()
 {
-    init();
     if(generate_groups)
     {
         return 0;
@@ -916,4 +920,11 @@ void printm(long double ***m, int size_x, int size_y, int size_z)
         }
         printf("\n");
     }
+}
+
+/*
+ * Library initialization
+ */
+__attribute__((constructor)) void init_lib(void) {
+    init();
 }
