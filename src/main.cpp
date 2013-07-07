@@ -5,6 +5,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
+#include <signal.h>
 #include <csignal>
 #include <fstream>
 #include <string.h>
@@ -54,6 +55,7 @@ GroupsGenerator *groupGenerator;
 Output *output;
 
 // Методы проекта
+void stop_handler();
 long double norm(long double*** v);
 long double norm(long double*** v1, long double*** v2);
 void residual();
@@ -928,9 +930,28 @@ void printm(long double ***m, int size_x, int size_y, int size_z)
     }
 }
 
+
+void stop_handler(int s)
+{
+    printf("Caught signal %d\n",s);
+    output->print_info(iters, R0, Rn);
+    output->print_vtk();
+    down();
+    exit(1); 
+}
+
+
 /*
  * Library initialization
  */
 __attribute__((constructor)) void init_lib(void) {
+    struct sigaction sigIntHandler;
+
+    sigIntHandler.sa_handler = stop_handler;
+    sigemptyset(&sigIntHandler.sa_mask);
+    sigIntHandler.sa_flags = 0;
+
+    sigaction(SIGINT, &sigIntHandler, NULL);
+
     init();
 }

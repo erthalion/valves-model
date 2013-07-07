@@ -452,8 +452,8 @@ void Output::print_vtk_header_points(char *output_path, int sizeX, int sizeY, in
 
 void Output::print_info(int iters, long double R0, long double Rn)
 {
-    print_texplot(iters);
-    print_texplot_matrix(iters);
+    //print_texplot(iters);
+    //print_texplot_matrix(iters);
 
     char fn [20];
     sprintf(fn, "info%6d.txt", iters);
@@ -478,13 +478,41 @@ void Output::print_info(int iters, long double R0, long double Rn)
     fprintf(f,"max_ri = %LF at (%d,%d,%d)\n\n", max_ri, im, jm, km);
 
     long double s1=0, s2=0;
-    for(int j=0; j<Ny; ++j)
+    for(int i=0; i<Nx; ++i)
+        for(int k=0; k<dNz; ++k)
+        {
+            s1 += U[i][1][k]*Hx[i]*Hz[k];
+            s2 += U[i][Ny-3][k]*Hx[i]*Hz[k];
+        }
+
+    /*for(int j=0; j<Ny; ++j)
         for(int k=0; k<dNz; ++k)
         {
             s1 += U[1][j][k]*Hy[j]*Hz[k];
             s2 += U[Nx-1][j][k]*Hy[j]*Hz[k];
         }
+*/
+    /*for (int i = 0; i < Nx; i++)
+    {
+        for (int k = 0; k < dNz; k++)
+        {
+            printf("%LF ", U[i][1][k]);
+        }
+        printf("\n");
+    }
+    printf("\n");
 
+    for (int i = 0; i < Nx; i++)
+    {
+        for (int k = 0; k < dNz; k++)
+        {
+            printf("%LF ", U[i][Ny-3][k]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+    getchar();
+*/
     fprintf(f,"s1 = %LF\n", s1);
     fprintf(f,"s2 = %LF\n", s2);
     fprintf(f,"ds = %lf\n", fabs(s1-s2));
