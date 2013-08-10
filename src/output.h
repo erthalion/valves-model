@@ -31,6 +31,7 @@ class Output {
     void print_vtk();
     void print_vtk_streamline_vector_header(char *output_path, int sizeX, int sizeY, int sizeZ);
     void print_vtk_streamline_scalar_header(char *output_path, int sizeX, int sizeY, int sizeZ);
+    void print_pressure();
 };
 
 #endif

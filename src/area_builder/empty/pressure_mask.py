@@ -14,12 +14,12 @@ def build_area():
 
     x, y, z = np.ogrid[0:nx, 0:ny, 0:nz]
 
-    mask = (x >= 1) & (x <= nx-2) &\
+    mask = (x >= 0) & (x <= nx-1) &\
             (y >= 0) & (y <= ny-2) &\
             (z >= 0) & (z <= ny-2)
 
-    in_boundary = (x == 1)
-    out_boundary = (x == nx-2)
+    in_boundary = (x == 0)
+    out_boundary = (x == nx-1)
 
     array = np.zeros((nx, ny, nz))
 

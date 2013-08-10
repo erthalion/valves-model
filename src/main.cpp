@@ -727,8 +727,18 @@ void U_init()
         {
             for(int k=0; k< dNz; ++k)
             {
-                long double p = p_left - (p_left-p_right)*i/(Nx-1);
-                if(G[i][j][k + 3*dNz] == 1)
+                //raise(SIGINT);
+                long double p = 0;
+                if (i == 0 || i == Nx-1)
+                {
+                    p = 0;
+                }
+                else
+                {
+                    p = p_left - (p_left-p_right)*(i-1)/(Nx-2);
+                }
+
+                if(G[i][j][k + 3*dNz] == 1 || G[i][j][k + 3*dNz] == 2 || G[i][j][k + 3*dNz] == 3)
                 {
                     U[i][j][k + 3*dNz] = p;
                 }
@@ -736,7 +746,7 @@ void U_init()
                 /* Pressure on in/out boundaries must be set and not calculated */
                 if(G[i][j][k + 3*dNz] == 2)
                 {
-                    U[i][j][k + 3*dNz] = p;
+                    U[i][j][k + 3*dNz] = p_left;
                     G[i][j][k + 3*dNz] = 0;
                 }
 
@@ -745,8 +755,13 @@ void U_init()
                     U[i][j][k + 3*dNz] = 0;
                     G[i][j][k + 3*dNz] = 0;
                 }
+
+                //printf("%d ", G[i][j][k + 3*dNz]);
             }
+            //printf("\n");
         }
+        //printf("\n");
+        //getchar();
     }
 }
 
@@ -835,11 +850,15 @@ void run()
 
     do
     {
+        //output->print_vtk();
+        //output->print_pressure();
+        //printf("next step\n");
+        //getchar();
 
 #ifdef DEBUG
-    output->print_vtk();
-    printf("next step...");
-    getchar();
+    //output->print_vtk();
+    //printf("next step...");
+    //getchar();
 #endif
          ++iters;
         speed_first();
@@ -879,8 +898,13 @@ void run()
         {
             printf("%5d: %3.8LF %3.8LF\n", iters, Rn, Rn/R0);
         }
+
     }
     while (Rn/R0>eps);
+
+#ifdef DEBUG
+    output->print_info(iters, R0, Rn);
+#endif
 
     time_t end_time = time(NULL);
     printf("Time is %ld\n", end_time - start_time);
@@ -951,6 +975,7 @@ __attribute__((constructor)) void init_lib(void) {
     sigemptyset(&sigIntHandler.sa_mask);
     sigIntHandler.sa_flags = 0;
 
+    // TODO: Need SIGTERM
     sigaction(SIGINT, &sigIntHandler, NULL);
 
     init();
