@@ -44,29 +44,8 @@ def build_area():
     array[in_boundary & inner_cylinder] = 2
     array[out_boundary & inner_cylinder] = 3
 
-    output = open("mask.vtk","w")
-
-    header = "# vtk DataFile Version 1.0\n\
-    Data file for valves model\n\
-    ASCII\n\
-    DATASET STRUCTURED_GRID\n\
-    DIMENSIONS %d %d %d\n\
-    POINTS %d double\n" % (nx, ny, nz, nx*ny*nz)
-
-    output.write(header)
-
-    for k in range(0, nz):
-        for j in range(0, ny):
-            for i in range(0, nx):
-                output.write('%0.10f %0.10f %0.10f\n' %(x_coord.item(i), y_coord.item(j), z_coord.item(k)))
-
-    data_header = "POINT_DATA %d\n\
-    SCALARS scalars int\n\
-    LOOKUP_TABLE default\n" % (nx*ny*nz)
-    output.write(data_header)
-    for k in range(0, nz):
-        for j in range(0, ny):
-            for i in range(0, nx):
-                output.write('%d\n' % int(array.item((i, j, k))))
-
-    output.close()
+    """ Write mask file
+    """
+    with file('pressure.mask', 'w') as outfile:
+        for slice_2d in array:
+            np.savetxt(outfile, slice_2d, fmt="%i")

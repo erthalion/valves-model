@@ -12,6 +12,9 @@ def build_area():
     ny = int(area.get('Area', 'Ny'))
     nz = int(area.get('Area', 'dNz'))
     R = ny/2 - 2
+    x0 = nx/2
+    y0 = ny/2
+    z0 = nz/2
 
     r = float(area.get('Circle', 'R'))
     Y0 = 0.5
@@ -27,16 +30,15 @@ def build_area():
     Y = np.reshape(y_coord, (1, ny, 1))
     Z = np.reshape(z_coord, (1, 1, nz))
 
-
     in_boundary = (x == 0)
     out_boundary = (x == nx-1)
 
     mask = (x >= 0) & (x <= nx-1) &\
-            (y >= 0) & (y <= ny-2) &\
-            (z >= 0) & (z <= ny-2)
+            (y >= 1) & (y <= ny-3) &\
+            (z >= 1) & (z <= nz-2)
 
-    inner_cylinder = ((Y-Y0)**2 + (Z-Z0)**2 <= (r-0.01)**2)
-    #inner_cylinder = ((y-y0)**2 + (z-z0)**2 < (R+1)**2)
+    inner_cylinder = ((Y-Y0)**2 + (Z-Z0)**2 < (r-0.1)**2)
+    #inner_cylinder = ((y-y0)**2 + (z-z0)**2 < R**2)
 
     array = np.zeros((nx, ny, nz))
 
@@ -44,29 +46,8 @@ def build_area():
     array[in_boundary & inner_cylinder] = 2
     array[out_boundary & inner_cylinder] = 3
 
-    output = open("mask.vtk","w")
-
-    header = "# vtk DataFile Version 1.0\n\
-    Data file for valves model\n\
-    ASCII\n\
-    DATASET STRUCTURED_GRID\n\
-    DIMENSIONS %d %d %d\n\
-    POINTS %d double\n" % (nx, ny, nz, nx*ny*nz)
-
-    output.write(header)
-
-    for k in range(0, nz):
-        for j in range(0, ny):
-            for i in range(0, nx):
-                output.write('%0.10f %0.10f %0.10f\n' %(x_coord.item(i), y_coord.item(j), z_coord.item(k)))
-
-    data_header = "POINT_DATA %d\n\
-    SCALARS scalars int\n\
-    LOOKUP_TABLE default\n" % (nx*ny*nz)
-    output.write(data_header)
-    for k in range(0, nz):
-        for j in range(0, ny):
-            for i in range(0, nx):
-                output.write('%d\n' % int(array.item((i, j, k))))
-
-    output.close()
+    """ Write mask file
+    """
+    with file('w_area.mask', 'w') as outfile:
+        for slice_2d in array:
+            np.savetxt(outfile, slice_2d, fmt="%i")
