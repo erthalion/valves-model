@@ -36,7 +36,6 @@ def build_area():
             (z >= 0) & (z <= ny-2)
 
     inner_cylinder = ((Y-Y0)**2 + (Z-Z0)**2 <= (r-0.01)**2)
-    #inner_cylinder = ((y-y0)**2 + (z-z0)**2 < (R+1)**2)
 
     array = np.zeros((nx, ny, nz))
 

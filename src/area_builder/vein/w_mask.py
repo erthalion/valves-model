@@ -37,8 +37,16 @@ def build_area():
             (y >= 1) & (y <= ny-3) &\
             (z >= 1) & (z <= nz-2)
 
-    inner_cylinder = ((Y-Y0)**2 + (Z-Z0)**2 < (r-0.1)**2)
-    #inner_cylinder = ((y-y0)**2 + (z-z0)**2 < R**2)
+    inner_cylinder = ((Y-Y0)**2 + (Z-Z0)**2 <= (r-0.01)**2)
+    rows = []
+    for row in inner_cylinder[0,::]:
+        row = np.logical_and(
+                np.roll(row, 1),
+                np.roll(row, -1)
+                )
+        rows.append(row)
+
+    inner_cylinder = np.array(rows)
 
     array = np.zeros((nx, ny, nz))
 
