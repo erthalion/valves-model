@@ -14,8 +14,15 @@ def build_area():
     R = ny/2 - 2
 
     r = float(area.get('Circle', 'R'))
+    r_valves = 0.3
+    X0 = 0.7
     Y0 = 0.5
     Z0 = 0.5
+
+    valve_width = 0.2
+    width = 0.5
+    height = 0.3
+
 
     x, y, z = np.ogrid[0:nx, 0:ny, 0:nz]
 
@@ -36,11 +43,20 @@ def build_area():
             (z >= 0) & (z <= ny-2)
 
     inner_cylinder = ((Y-Y0)**2 + (Z-Z0)**2 <= (r-0.01)**2)
-    #inner_cylinder = ((y-y0)**2 + (z-z0)**2 < (R+1)**2)
+
+    bottom_valve = ((X-X0)**2 + (Y-0*Y0)**2 <= (r_valves - 0.01)**2) &\
+            (X < X0)
+            #((X-X0 + valve_width)**2 + (Y-0*Y0)**2 <= (r_valves - 0.01)**2) &\
+
+    top_valve = ((X-X0)**2 + (Y-2*Y0)**2 <= (r_valves - 0.01)**2) &\
+            (X < X0)
+            #((X-X0 + valve_width)**2 + (Y-1*Y0)**2 <= (r_valves - 0.01)**2) &\
 
     array = np.zeros((nx, ny, nz))
 
     array[inner_cylinder & mask] = 1
+    array[inner_cylinder & mask & bottom_valve] = 0
+    array[inner_cylinder & mask & top_valve] = 0
     array[in_boundary & inner_cylinder] = 2
     array[out_boundary & inner_cylinder] = 3
 

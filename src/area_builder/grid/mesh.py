@@ -20,8 +20,14 @@ def build_area():
     lz = float(area.get('Area', 'Lz'))
 
     R = float(area.get('Circle', 'R'))
-    z0 = float(area.get('Circle', 'x0'))
+    x0 = float(area.get('Circle', 'x0'))
     y0 = float(area.get('Circle', 'y0'))
+    z0 = float(area.get('Circle', 'z0'))
+
+    r_valves = 0.3
+    valve_width = 0.2
+    width = 0.3
+    height = 0.3
 
     if R is None or z0 is None or y0 is None:
         raise Exception("There is no circle parameters!")
@@ -37,6 +43,14 @@ def build_area():
     y2 = np.unique(y2)
     y2.sort()
     y = y2
+
+    y_valves = y[y < height]
+    x_valves = x[(x > 0.4) & (x < 0.7)]
+    x[np.in1d(x, x_valves)] = (
+            -np.sqrt(r_valves**2 - (y_valves -0*y0)**2) + 0.7
+            )[::-1][:x_valves.shape[0]]
+    x = np.unique(x)
+    x.sort()
 
     #z1_array = -np.sqrt(R**2 - (y-y0)**2) + y0
     #z2_array = np.sqrt(R**2 - (y-y0)**2) + y0
@@ -54,12 +68,14 @@ def build_area():
     #y = np.unique(y)
     #y.sort()
 
-    #Z, Y = np.meshgrid(z,y)
-    #circle = plt.Circle((0.5, 0.5), radius=0.5)
-    #figure = plt.gcf()
-    #figure.gca().add_artist(circle)
-    #plt.plot(Z, Y, 'ro')
-    #plt.show()
+    X, Y = np.meshgrid(x,y)
+    circle_bottom = plt.Circle((0.7, 0.0), radius=0.3)
+    circle_top = plt.Circle((0.7, 1.0), radius=0.3)
+    figure = plt.gcf()
+    figure.gca().add_artist(circle_bottom)
+    figure.gca().add_artist(circle_top)
+    plt.plot(X, Y, 'ro')
+    plt.show()
 
     np.savetxt('area.x.coord', x, delimiter='\n', fmt='%2.8f')
     np.savetxt('area.y.coord', y, delimiter='\n', fmt='%2.8f')
