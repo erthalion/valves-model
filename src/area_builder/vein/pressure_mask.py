@@ -15,7 +15,7 @@ def build_area():
 
     r = float(area.get('Circle', 'R'))
     r_valves = 0.3
-    X0 = 0.5
+    X0 = 0.7
     Y0 = 0.5
     Z0 = 0.5
 

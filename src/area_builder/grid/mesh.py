@@ -12,7 +12,7 @@ def build_area():
     ny = int(area.get('Area', 'Ny'))
     nz = int(area.get('Area', 'dNz'))
 
-    if nx != ny:
+    if nz != ny:
         raise Exception("This method expects that nx == ny!")
 
     lx = float(area.get('Area', 'Lx'))

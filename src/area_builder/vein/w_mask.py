@@ -3,7 +3,6 @@
 
 import numpy as np
 import ConfigParser
-from utils import take_one_layer
 
 def build_area():
     area = ConfigParser.RawConfigParser()
@@ -19,7 +18,7 @@ def build_area():
 
     r = float(area.get('Circle', 'R'))
     r_valves = 0.3
-    X0 = 0.5
+    X0 = 0.7
     Y0 = 0.5
     Z0 = 0.5
 
@@ -47,9 +46,31 @@ def build_area():
     top_valve = ((X-X0)**2 + (Y-2*Y0)**2 <= (r_valves - 0.01)**2) &\
             (X < X0)
 
-    take_one_layer(inner_cylinder)
-    take_one_layer(bottom_valve)
-    take_one_layer(top_valve)
+    inner_cylinder = np.logical_and(
+            np.roll(inner_cylinder, 1),
+            np.roll(inner_cylinder, -1),
+            )
+    inner_cylinder = inner_cylinder.reshape((30, 30))
+    inner_cylinder[inner_cylinder.any(axis=1).nonzero()[0][[0, -1]]] = False
+    inner_cylinder = inner_cylinder.reshape((1, 30, 30))
+
+    bottom_valve = np.logical_or(
+            np.roll(bottom_valve, 1, axis=1),
+            np.roll(bottom_valve, -1, axis=1),
+            )
+    bottom_valve = np.logical_or(
+            np.roll(bottom_valve, 1, axis=0),
+            bottom_valve
+            )
+
+    top_valve = np.logical_or(
+            np.roll(top_valve, 1, axis=1),
+            np.roll(top_valve, -1, axis=1),
+            )
+    top_valve = np.logical_or(
+            np.roll(top_valve, 1, axis=0),
+            top_valve
+            )
 
     array = np.zeros((nx, ny, nz))
 
