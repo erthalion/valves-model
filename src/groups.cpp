@@ -1,6 +1,8 @@
 #include "groups.h"
 #include <math.h>
 #include <csignal>
+#include <omp.h>
+
 
 GroupsGenerator::GroupsGenerator(int Nx, int Ny, int Nz)
 {
@@ -46,15 +48,14 @@ void GroupsGenerator::init_gr()
     num = -1;
     srand( (unsigned)time( NULL ) );
 
-    long double ***e, ***y;
-    e = utils->alloc_and_fill<long double>(Nx,Ny,Nz);
+    long double ***y;
     y = utils->alloc_and_fill<long double>(Nx,Ny,Nz);
 
     for(int i=0; i<Nx; ++i)
         for(int j=0; j<Ny; ++j)
             for(int k=0; k<Nz; ++k)
             {
-                e[i][j][k] = 0;
+                //e[i][j][k] = 0;
                 group_carg[i][j][k] = 0;
                 arg[i][j][k][0].i = 0;
                 arg[i][j][k][0].j = 0;
@@ -75,7 +76,13 @@ void GroupsGenerator::init_gr()
                 for(int c=0; c<Nz; ++c)
                     y[a][b][c] = random_gr();
 
-        #pragma omp parallel for
+        #pragma omp parallel
+        {
+
+        long double ***e;
+        e = utils->alloc_and_fill<long double>(Nx,Ny,Nz);
+
+        #pragma omp for
         for(int i=0; i<Nx; ++i)
         {
             for(int j=0; j<Ny; ++j)
