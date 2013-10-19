@@ -9,7 +9,7 @@ aux_source_directory(${SOURCE_ROOT} SOURCES)
 link_directories("${PROJECT_SOURCE_DIR}/lib//")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(CMAKE_CXX_FLAGS "-o0 -g -DDEBUG -Wno-unused-result")
+    set(CMAKE_CXX_FLAGS "-o0 -g -DDEBUG -Wno-unused-result -fopenmp")
 endif(CMAKE_BUILD_TYPE STREQUAL Debug)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
@@ -28,3 +28,9 @@ endif(CMAKE_PROFILE_TYPE STREQUAL "Use")
 
 add_library( ${BIN}.${CMAKE_BUILD_TYPE} SHARED ${SOURCES} )
 target_link_libraries (${BIN}.${CMAKE_BUILD_TYPE} inih)
+
+add_custom_command(
+    TARGET ${BIN}.${CMAKE_BUILD_TYPE}
+    POST_BUILD
+    COMMAND echo lib${BIN}.${CMAKE_BUILD_TYPE}.so > ${BUILD_ROOT}/.build-info
+    )
