@@ -686,6 +686,7 @@ void load_mask(const int type, const char *file_name)
             }
         }
     }
+
     fclose(f);
     printf("Mask for type %d has been loaded\n", type);
 }

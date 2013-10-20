@@ -63,11 +63,11 @@ def build_area():
     output = open("mask.vtk","w")
 
     header = "# vtk DataFile Version 1.0\n\
-    Data file for valves model\n\
-    ASCII\n\
-    DATASET STRUCTURED_GRID\n\
-    DIMENSIONS %d %d %d\n\
-    POINTS %d double\n" % (nx, ny, nz, nx*ny*nz)
+Data file for valves model\n\
+ASCII\n\
+DATASET STRUCTURED_GRID\n\
+DIMENSIONS %d %d %d\n\
+POINTS %d double\n" % (nx, ny, nz, nx*ny*nz)
 
     output.write(header)
 

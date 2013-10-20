@@ -117,11 +117,12 @@ void GroupsGenerator::init_gr()
                 }
             }
         }
+
+        utils->del(e,Nx,Ny,Nz);
+        }
     }
 
-    utils->del(e,Nx,Ny,Nz);
     utils->del(y,Nx,Ny,Nz);
-
     printf("groups has been initialized\n");
 }
 
