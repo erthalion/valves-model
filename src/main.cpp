@@ -40,6 +40,8 @@ long double
     ***R, // Невязка
     ***Z; // для метода н/а
 
+long double ***force_X, ***force_Y, ***force_Z;
+
 int
     iters,
     ***G; // Маска узлов
@@ -55,6 +57,8 @@ GroupsGenerator *groupGenerator;
 Output *output;
 
 // Методы проекта
+long double force(int i, int j, int k);
+
 void stop_handler();
 long double norm(long double*** v);
 long double norm(long double*** v1, long double*** v2);
@@ -71,6 +75,17 @@ long double calc_alpha(long double Rn_F1, long double Rn_F2, long double F1_F1, 
 int cubic(long double *x, long double a, long double b, long double c);
 void alpha_iter();
 
+
+#define SQ(x) ((x) * (x)) // square function; replaces SQ(x) by ((x) * (x)) in the code
+
+long double force(int i, int j, int k)
+{
+    return sqrt(
+            SQ(force_X[i][j][k]) +
+            SQ(force_Y[i][j][k]) +
+            SQ(force_Z[i][j][k])
+            );
+}
 
 // Норма вектора
 long double norm(long double*** v)
@@ -320,7 +335,7 @@ long double A2(long double ***U, int i, int j, int k)
 
 long double A(long double ***U1, long double ***U2, int i, int j, int k)
 {
-    return A1(U1,U2,i,j,k)+A2(U2,i,j,k);
+    return A1(U1,U2,i,j,k)+A2(U2,i,j,k) + force(i, j, k);
 }
 
 
@@ -766,6 +781,20 @@ void U_init()
     }
 }
 
+void check(const char* message)
+{
+    long double f = 0;
+    for (int i = 0; i < Nx; i++) {
+        for (int j = 0; j < Ny; j++) {
+            for (int k = 0; k < Nz; k++) {
+                f += force(i, j, k);
+            }
+        }
+    }
+    printf("%s: force %lf\n", message, f);
+    getchar();
+}
+
 // Инициализация
 void init()
 {
@@ -780,6 +809,10 @@ void init()
     R = utils->alloc_and_fill<long double>(Nx,Ny,Nz);
     G = utils->alloc_and_fill<int>(Nx,Ny,Nz);
     Z = utils->alloc_and_fill<long double>(Nx,Ny,Nz);
+
+    force_X = utils->alloc_and_fill<long double>(Nx, Ny, Nz);
+    force_Y = utils->alloc_and_fill<long double>(Nx, Ny, Nz);
+    force_Z = utils->alloc_and_fill<long double>(Nx, Ny, Nz);
 
     U_1 = utils->alloc_and_fill<long double>(Nx,Ny,Nz);
     U_2 = utils->alloc_and_fill<long double>(Nx,Ny,Nz);
@@ -919,6 +952,10 @@ void down()
     utils->del(R,Nx,Ny,Nz);
     utils->del(G,Nx,Ny,Nz);
     utils->del(Z,Nx,Ny,Nz);
+
+    utils->del(force_X, Nx, Ny, Nz);
+    utils->del(force_Y, Nx, Ny, Nz);
+    utils->del(force_Z, Nx, Ny, Nz);
 
     delete [] Hx;
     delete [] Hy;

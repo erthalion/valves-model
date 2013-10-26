@@ -9,7 +9,7 @@ aux_source_directory(${SOURCE_ROOT} SOURCES)
 link_directories("${PROJECT_SOURCE_DIR}/lib//")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(CMAKE_CXX_FLAGS "-o0 -g -DDEBUG -Wno-unused-result -fopenmp")
+    set(CMAKE_CXX_FLAGS "-o0 -g -DDEBUG -Wno-unused-result -Wno-format -fopenmp")
 endif(CMAKE_BUILD_TYPE STREQUAL Debug)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
