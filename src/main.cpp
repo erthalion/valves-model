@@ -58,6 +58,7 @@ Output *output;
 
 // Методы проекта
 long double force(int i, int j, int k);
+void compute_particle_forces(ImmersedBoundary boundary);
 
 void stop_handler();
 long double norm(long double*** v);
