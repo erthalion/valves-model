@@ -58,7 +58,10 @@ Output *output;
 
 // Методы проекта
 long double force(int i, int j, int k);
-void compute_particle_forces(ImmersedBoundary boundary);
+void compute_boundary_forces(ImmersedBoundary *boundary);
+void spread_force(ImmersedBoundary *boundary);
+void interpolate(ImmersedBoundary *boundary);
+void update_boundary_position(ImmersedBoundary *boundary);
 
 void stop_handler();
 long double norm(long double*** v);
@@ -895,7 +898,12 @@ void run()
     //printf("next step...");
     //getchar();
 #endif
-         ++iters;
+        ++iters;
+            
+        ImmersedBoundary *boundary = new ImmersedBoundary();
+        compute_boundary_forces(boundary);
+        spread_force(boundary);
+
         speed_first();
         long double R1 = norm(R);
 
@@ -912,6 +920,10 @@ void run()
             speed_work();
             residual();
         }
+
+        interpolate(boundary);
+        update_boundary_position(boundary);
+
         long double R4 = norm(R);
 
         if( (R4>R3) )
@@ -936,6 +948,7 @@ void run()
 
     }
     while (Rn/R0>eps);
+    check("at the end of loop");
 
 #ifdef DEBUG
     output->print_info(iters, R0, Rn);
@@ -1018,4 +1031,131 @@ __attribute__((constructor)) void init_lib(void) {
     sigaction(SIGINT, &sigIntHandler, NULL);
 
     init();
+}
+
+void compute_boundary_forces(ImmersedBoundary *boundary)
+{
+    for(int n = 0; n < boundary->nodes_count; ++n) {
+        boundary->nodes[n].x_force = 0;
+        boundary->nodes[n].y_force = 0;
+        boundary->nodes[n].z_force = 0;
+    }
+
+    const double area = 2 * M_PI * boundary->radius / boundary->nodes_count;
+
+    for(int n = 0; n < boundary->nodes_count; ++n) {
+        boundary->nodes[n].x_force += -boundary->stiffness * (boundary->nodes[n].x - boundary->nodes[n].x_ref) * area;
+        boundary->nodes[n].y_force += -boundary->stiffness * (boundary->nodes[n].y - boundary->nodes[n].y_ref) * area;
+        boundary->nodes[n].z_force += -boundary->stiffness * (boundary->nodes[n].z - boundary->nodes[n].z_ref) * area;
+    }
+
+    return;
+}
+
+
+void spread_force(ImmersedBoundary *boundary)
+{
+    for(int i = 0; i < Nx; ++i) {
+        for(int j = 1; j < Ny - 1; ++j) {
+            for(int k = 1; k < Nz - 1; ++k) {
+                force_X[i][j][k] = 0;
+                force_Y[i][j][k] = 0;
+                force_Z[i][j][k] = 0;
+            }
+        }
+    }
+
+    for(int n = 0; n < boundary->nodes_count; ++n) {
+
+        int x_int = (int) (boundary->nodes[n].x - 0.5 + Nx) - Nx;
+        int y_int = (int) (boundary->nodes[n].y + 0.5 );
+        int z_int = (int) (boundary->nodes[n].z + 0.5 );
+
+        for(int i = x_int; i <= x_int + 1; ++i) {
+            for(int j = y_int; j <= y_int + 1; ++j) {
+                for(int k = z_int; k <= z_int + 1; ++k) {
+
+                    const double dist_x = boundary->nodes[n].x - 0.5 - i;
+                    const double dist_y = boundary->nodes[n].y + 0.5 - j;
+                    const double dist_z = boundary->nodes[n].z + 0.5 - k;
+
+                    const double weight_x = 1 - abs(dist_x);
+                    const double weight_y = 1 - abs(dist_y);
+                    const double weight_z = 1 - abs(dist_z);
+
+                    force_X[(i + Nx) % Nx][j][k] += (boundary->nodes[n].x_force * weight_x * weight_y * weight_z);
+                    force_Y[(i + Nx) % Nx][j][k] += (boundary->nodes[n].y_force * weight_x * weight_y * weight_z);
+                    force_Z[(i + Nx) % Nx][j][k] += (boundary->nodes[n].z_force * weight_x * weight_y * weight_z);
+                }
+            }
+        }
+
+    }
+
+    return;
+}
+
+
+void interpolate(ImmersedBoundary *boundary)
+{
+    for(int n = 0; n < boundary->nodes_count; ++n)
+    {
+        boundary->nodes[n].x_vel = 0;
+        boundary->nodes[n].y_vel = 0;
+        boundary->nodes[n].z_vel = 0;
+
+        int x_int = (int) (boundary->nodes[n].x - 0.5 + Nx) - Nx;
+        int y_int = (int) (boundary->nodes[n].y + 0.5 );
+        int z_int = (int) (boundary->nodes[n].z + 0.5 );
+
+        for(int i = x_int; i <= x_int + 1; ++i)
+        {
+            for(int j = y_int; j <= y_int + 1; ++j)
+            {
+                for(int k = z_int; k <= z_int + 1; ++k)
+                {
+
+                    const double dist_x = boundary->nodes[n].x - 0.5 - i;
+                    const double dist_y = boundary->nodes[n].y + 0.5 - j;
+                    const double dist_z = boundary->nodes[n].z + 0.5 - k;
+
+                    const double weight_x = 1 - abs(dist_x);
+                    const double weight_y = 1 - abs(dist_y);
+                    const double weight_z = 1 - abs(dist_z);
+
+                    boundary->nodes[n].x_vel += (
+                            (
+                             U[(i + Nx) % Nx][j][k + VELOCITY_U*dNz] + 
+                             0.5 * force_X[(i + Nx) % Nx][j][k] / 1
+                            ) * weight_x * weight_y);
+
+                    boundary->nodes[n].y_vel += (
+                            (
+                             U[(i + Nx) % Nx][j][k + VELOCITY_V*dNz] + 
+                             0.5 * (force_Y[(i + Nx) % Nx][j][k]) / 1
+                            ) * weight_x * weight_y);
+                    boundary->nodes[n].z_vel += (
+                            (
+                             U[(i + Nx) % Nx][j][k + VELOCITY_W*dNz] + 
+                             0.5 * (force_Z[(i + Nx) % Nx][j][k]) / 1
+                            ) * weight_x * weight_y);
+                }
+            }
+        }
+    }
+
+    return;
+}
+
+
+void update_boundary_position(ImmersedBoundary *boundary)
+{
+    for(int n = 0; n < boundary->nodes_count; ++n)
+    {
+        boundary->nodes[n].x += boundary->nodes[n].x_vel;
+        boundary->nodes[n].y += boundary->nodes[n].y_vel;
+        boundary->nodes[n].z += boundary->nodes[n].z_vel;
+    }
+
+    return;
 }
