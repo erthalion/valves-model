@@ -2,11 +2,11 @@
 # -*- coding: utf8 -*-
 
 import mask
-from grid import mesh
-from vein import pressure_mask, u_mask, v_mask, w_mask
+import coord
+from empty import pressure_mask, u_mask, v_mask, w_mask
 
 if __name__ == '__main__':
-    mesh.build_area()
+    coord.build_area()
     mask.build_area()
     pressure_mask.build_area()
     u_mask.build_area()

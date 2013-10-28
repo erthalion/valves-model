@@ -12,9 +12,15 @@ def build_area():
     ny = int(area.get('Area', 'Ny'))
     nz = int(area.get('Area', 'dNz'))
 
+    lx = float(area.get('Area', 'Lx'))
+    ly = float(area.get('Area', 'Ly'))
+    lz = float(area.get('Area', 'Lz'))
+
     """ Generate 3d array of coordinates
     """
-    Hx = Hy = Hz = 0.01
+    Hx = lx / nx
+    Hy = ly / ny
+    Hz = lz / nz
     x_coord = np.zeros((nx))
     y_coord = np.zeros((ny))
     z_coord = np.zeros((nz))

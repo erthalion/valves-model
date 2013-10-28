@@ -29,6 +29,10 @@ const int VELOCITY_V = 1;
 const int VELOCITY_W = 2;
 const int PRESSURE = 3;
 
+const int COORD_X = 0;
+const int COORD_Y = 1;
+const int COORD_Z = 2;
+
 // Глобальные переменные
 long double
     *Hx, *Hy, *Hz, // шаги
@@ -81,6 +85,60 @@ void alpha_iter();
 
 
 #define SQ(x) ((x) * (x)) // square function; replaces SQ(x) by ((x) * (x)) in the code
+
+/*
+ * @brief
+ *      Return integer index of node by the coordinate.
+ *      Assumed temporary that spatial steps is equals
+ *      by Ox, Oy, Oz and grid is uniform.
+ * @param coord
+ *      Coordinate of node by Ox/Oy/Oz
+ * @param type
+ *      One of COORD_X, COORD_Y, COORD_Z
+ * @return 
+ *      Index of fluid node, that coordinate is lower than coord by selected axis
+*/
+int index(const long double coord, const int type)
+{
+    switch(type)
+    {
+        case COORD_X:
+            return floor(coord / Hx[0]);
+        case COORD_Y:
+            return floor(coord / Hy[0]);
+        case COORD_Z:
+            return floor(coord / Hz[0]);
+        default:
+            throw "Incorrect type of axis";
+    }
+}
+
+/*
+ * @brief
+ *      Return coordinate of node by the index.
+ *      Assumed temporary that spatial steps is equals
+ *      by Ox, Oy, Oz and grid is uniform.
+ * @param index
+ *      Index of node by Ox/Oy/Oz
+ * @param type
+ *      One of COORD_X, COORD_Y, COORD_Z
+ * @return 
+ *      Coordinate of fluid node
+*/
+long double coord(const int index, const int type)
+{
+    switch(type)
+    {
+        case COORD_X:
+            return index * Hx[0];
+        case COORD_Y:
+            return index * Hy[0];
+        case COORD_Z:
+            return index * Hz[0];
+        default:
+            throw "Incorrect type of axis";
+    }
+}
 
 long double force(int i, int j, int k)
 {
@@ -799,6 +857,23 @@ void check(const char* message)
     getchar();
 }
 
+void check_boundary(const char* message, ImmersedBoundary *boundary)
+{
+    printf("%s\n", message);
+    for(int n = 0; n < boundary->nodes_count; ++n)
+    {
+        printf("node %d: %lf, %lf\t %lf, %lf\t %lf, %lf\n", n,
+                boundary->nodes[n].x,
+                boundary->nodes[n].x_ref,
+                boundary->nodes[n].y,
+                boundary->nodes[n].y_ref,
+                boundary->nodes[n].z,
+                boundary->nodes[n].z_ref
+              );
+    }
+    getchar();
+}
+
 // Инициализация
 void init()
 {
@@ -882,6 +957,7 @@ void init()
 // Основной цикл
 void run()
 {
+    ImmersedBoundary *boundary = new ImmersedBoundary();
     residual();
     iters = 0;
     time_t start_time = time(NULL);
@@ -899,8 +975,8 @@ void run()
     //getchar();
 #endif
         ++iters;
+        printf("iter %d\n", iters);
             
-        ImmersedBoundary *boundary = new ImmersedBoundary();
         compute_boundary_forces(boundary);
         spread_force(boundary);
 
@@ -1047,6 +1123,7 @@ void compute_boundary_forces(ImmersedBoundary *boundary)
         boundary->nodes[n].x_force += -boundary->stiffness * (boundary->nodes[n].x - boundary->nodes[n].x_ref) * area;
         boundary->nodes[n].y_force += -boundary->stiffness * (boundary->nodes[n].y - boundary->nodes[n].y_ref) * area;
         boundary->nodes[n].z_force += -boundary->stiffness * (boundary->nodes[n].z - boundary->nodes[n].z_ref) * area;
+
     }
 
     return;
@@ -1067,21 +1144,21 @@ void spread_force(ImmersedBoundary *boundary)
 
     for(int n = 0; n < boundary->nodes_count; ++n) {
 
-        int x_int = (int) (boundary->nodes[n].x - 0.5 + Nx) - Nx;
-        int y_int = (int) (boundary->nodes[n].y + 0.5 );
-        int z_int = (int) (boundary->nodes[n].z + 0.5 );
+        int x_int = index(boundary->nodes[n].x, COORD_X);
+        int y_int = index(boundary->nodes[n].y, COORD_Y);
+        int z_int = index(boundary->nodes[n].z, COORD_Z);
 
         for(int i = x_int; i <= x_int + 1; ++i) {
             for(int j = y_int; j <= y_int + 1; ++j) {
                 for(int k = z_int; k <= z_int + 1; ++k) {
 
-                    const double dist_x = boundary->nodes[n].x - 0.5 - i;
-                    const double dist_y = boundary->nodes[n].y + 0.5 - j;
-                    const double dist_z = boundary->nodes[n].z + 0.5 - k;
+                    const double dist_x = fabs(boundary->nodes[n].x - coord(i, COORD_X));
+                    const double dist_y = fabs(boundary->nodes[n].y - coord(j, COORD_Y));
+                    const double dist_z = fabs(boundary->nodes[n].z - coord(k, COORD_Z));
 
-                    const double weight_x = 1 - abs(dist_x);
-                    const double weight_y = 1 - abs(dist_y);
-                    const double weight_z = 1 - abs(dist_z);
+                    const double weight_x = 1 - dist_x;
+                    const double weight_y = 1 - dist_y;
+                    const double weight_z = 1 - dist_z;
 
                     force_X[(i + Nx) % Nx][j][k] += (boundary->nodes[n].x_force * weight_x * weight_y * weight_z);
                     force_Y[(i + Nx) % Nx][j][k] += (boundary->nodes[n].y_force * weight_x * weight_y * weight_z);

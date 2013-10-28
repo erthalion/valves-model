@@ -50,9 +50,9 @@ def build_area():
             np.roll(inner_cylinder, 1),
             np.roll(inner_cylinder, -1),
             )
-    inner_cylinder = inner_cylinder.reshape((30, 30))
+    inner_cylinder = inner_cylinder.reshape((nx, ny))
     inner_cylinder[inner_cylinder.any(axis=1).nonzero()[0][[0, -1]]] = False
-    inner_cylinder = inner_cylinder.reshape((1, 30, 30))
+    inner_cylinder = inner_cylinder.reshape((1, nx, ny))
 
     #bottom_valve = bottom_valve.reshape((30, 30))
     bottom_valve = np.logical_or(

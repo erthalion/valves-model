@@ -2,6 +2,7 @@
 #define UTILS_H
 
 #include <iostream>
+#include <csignal>
 #include <cmath>
 
 // Типы
@@ -54,8 +55,8 @@ class ImmersedBoundary
                 this->nodes[n].y_vel = 0;
                 this->nodes[n].y_force = 0;
         
-                this->nodes[n].z = 0.5 + this->radius * cos(2. * M_PI * (double) n / this->nodes_count);
-                this->nodes[n].z_ref = 0.5 + this->radius * cos(2. * M_PI * (double) n / this->nodes_count);
+                this->nodes[n].z = 0.3 + 0.4 * n / 36 ;
+                this->nodes[n].z_ref = 0.3 + 0.4 * n / 36 ;
                 this->nodes[n].z_vel = 0;
                 this->nodes[n].z_force = 0;
             }
