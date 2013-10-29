@@ -1,6 +1,8 @@
 #ifndef OUTPUT_H
 #define OUTPUT_H
 
+#include "utils.hpp"
+
 class Output {
     int Nx, Ny, Nz, dNz;
     long double *Cx, *Cy, *Cz;
@@ -32,6 +34,7 @@ class Output {
     void print_vtk_streamline_vector_header(char *output_path, int sizeX, int sizeY, int sizeZ);
     void print_vtk_streamline_scalar_header(char *output_path, int sizeX, int sizeY, int sizeZ);
     void print_pressure();
+    void print_boundary(int iter, ImmersedBoundary *boundary);
 };
 
 #endif

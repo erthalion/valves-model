@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <math.h>
+#include "utils.hpp"
 
 using namespace std;
 
@@ -588,4 +589,17 @@ void Output::print_info(int iters, long double R0, long double Rn)
     fprintf(f,"ds = %0.18LF\n", (long double)fabs(s1-s2));
     fclose(f);
 
+}
+
+void Output::print_boundary(int iter, ImmersedBoundary *boundary)
+{
+    char output_path[20];
+    sprintf(output_path, "boundary%d.dat", iter);
+    FILE *f = fopen(output_path,"a");
+
+    for(int n = 0; n < boundary->nodes_count; ++n)
+    {
+        fprintf(f, "%1.8lf %1.8lf %1.8lf\n", boundary->nodes[n].x, boundary->nodes[n].y, boundary->nodes[n].z);
+    }
+    fclose(f);
 }

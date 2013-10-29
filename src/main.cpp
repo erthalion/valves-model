@@ -1021,6 +1021,7 @@ void run()
         {
             printf("%5d: %3.8LF %3.8LF\n", iters, Rn, Rn/R0);
         }
+        output->print_boundary(iters, boundary);
 
     }
     while (Rn/R0>eps);
@@ -1204,18 +1205,18 @@ void interpolate(ImmersedBoundary *boundary)
                             (
                              U[(i + Nx) % Nx][j][k + VELOCITY_U*dNz] + 
                              0.5 * force_X[(i + Nx) % Nx][j][k] / 1
-                            ) * weight_x * weight_y);
+                            ) * weight_x * weight_y * weight_z);
 
                     boundary->nodes[n].y_vel += (
                             (
                              U[(i + Nx) % Nx][j][k + VELOCITY_V*dNz] + 
                              0.5 * (force_Y[(i + Nx) % Nx][j][k]) / 1
-                            ) * weight_x * weight_y);
+                            ) * weight_x * weight_y * weight_z);
                     boundary->nodes[n].z_vel += (
                             (
                              U[(i + Nx) % Nx][j][k + VELOCITY_W*dNz] + 
                              0.5 * (force_Z[(i + Nx) % Nx][j][k]) / 1
-                            ) * weight_x * weight_y);
+                            ) * weight_x * weight_y * weight_z);
                 }
             }
         }
