@@ -1181,9 +1181,9 @@ void interpolate(ImmersedBoundary *boundary)
         boundary->nodes[n].y_vel = 0;
         boundary->nodes[n].z_vel = 0;
 
-        int x_int = (int) (boundary->nodes[n].x - 0.5 + Nx) - Nx;
-        int y_int = (int) (boundary->nodes[n].y + 0.5 );
-        int z_int = (int) (boundary->nodes[n].z + 0.5 );
+        int x_int = index(boundary->nodes[n].x, COORD_X);
+        int y_int = index(boundary->nodes[n].y, COORD_Y);
+        int z_int = index(boundary->nodes[n].z, COORD_Z);
 
         for(int i = x_int; i <= x_int + 1; ++i)
         {
@@ -1192,9 +1192,9 @@ void interpolate(ImmersedBoundary *boundary)
                 for(int k = z_int; k <= z_int + 1; ++k)
                 {
 
-                    const double dist_x = boundary->nodes[n].x - 0.5 - i;
-                    const double dist_y = boundary->nodes[n].y + 0.5 - j;
-                    const double dist_z = boundary->nodes[n].z + 0.5 - k;
+                    const double dist_x = fabs(boundary->nodes[n].x - coord(i, COORD_X));
+                    const double dist_y = fabs(boundary->nodes[n].y - coord(j, COORD_Y));
+                    const double dist_z = fabs(boundary->nodes[n].z - coord(k, COORD_Z));
 
                     const double weight_x = 1 - abs(dist_x);
                     const double weight_y = 1 - abs(dist_y);
