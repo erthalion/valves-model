@@ -94,10 +94,10 @@ void Output::print_texplot_matrix(int iters)
 
 }
 
-void Output::print_vtk()
+void Output::print_vtk(int iteration)
 {
-    char output_path[] = "streamlines.vtk";
-    //print_vtk_streamline_header(output_path, Nx, Ny-1, dNz-1);
+    char output_path[20];
+    sprintf(output_path, "streamlines%d.vtk", iteration);
     print_vtk_header(output_path, Nx, Ny-1, dNz-1);
 
     FILE *f = fopen(output_path,"a");

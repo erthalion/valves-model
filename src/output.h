@@ -30,7 +30,7 @@ class Output {
     void print_vtk_header_points(char *output_path, int sizeX, int sizeY, int sizeZ);
     void print_area_points();
     void print_vtk_streamline_header(char *output_path, int sizeX, int sizeY, int sizeZ);
-    void print_vtk();
+    void print_vtk(int iteration);
     void print_vtk_streamline_vector_header(char *output_path, int sizeX, int sizeY, int sizeZ);
     void print_vtk_streamline_scalar_header(char *output_path, int sizeX, int sizeY, int sizeZ);
     void print_pressure();

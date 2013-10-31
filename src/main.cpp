@@ -954,32 +954,13 @@ void init()
     arg = groupGenerator->get_arg();
 }
 
-// Основной цикл
-void run()
+void compute_fluid(int iteration)
 {
-    ImmersedBoundary *boundary = new ImmersedBoundary();
     residual();
     iters = 0;
-    time_t start_time = time(NULL);
-
     do
     {
-        //output->print_vtk();
-        //output->print_pressure();
-        //printf("next step\n");
-        //getchar();
-
-#ifdef DEBUG
-    //output->print_vtk();
-    //printf("next step...");
-    //getchar();
-#endif
         ++iters;
-        printf("iter %d\n", iters);
-            
-        compute_boundary_forces(boundary);
-        spread_force(boundary);
-
         speed_first();
         long double R1 = norm(R);
 
@@ -996,9 +977,6 @@ void run()
             speed_work();
             residual();
         }
-
-        interpolate(boundary);
-        update_boundary_position(boundary);
 
         long double R4 = norm(R);
 
@@ -1021,19 +999,30 @@ void run()
         {
             printf("%5d: %3.8LF %3.8LF\n", iters, Rn, Rn/R0);
         }
-        output->print_boundary(iters, boundary);
 
     }
     while (Rn/R0>eps);
-    check("at the end of loop");
 
-#ifdef DEBUG
     output->print_info(iters, R0, Rn);
-#endif
+    output->print_vtk(iteration);
+}
 
-    time_t end_time = time(NULL);
-    printf("Time is %ld\n", end_time - start_time);
-    output->print_vtk();
+// Основной цикл
+void run()
+{
+    ImmersedBoundary *boundary = new ImmersedBoundary();
+    int iterations_count = 10;
+
+    for (int i = 0; i < iterations_count; i++) {
+        output->print_boundary(i, boundary);
+        printf("Iteration %d\n", i);
+        compute_boundary_forces(boundary);
+        spread_force(boundary);
+        compute_fluid(i);
+        interpolate(boundary);
+        update_boundary_position(boundary);
+    }
+
 }
 
 // Деструктор
@@ -1088,7 +1077,7 @@ void stop_handler(int s)
 {
     printf("Caught signal %d\n",s);
     output->print_info(iters, R0, Rn);
-    output->print_vtk();
+    output->print_vtk(99999999);
     down();
     exit(1); 
 }
@@ -1118,7 +1107,8 @@ void compute_boundary_forces(ImmersedBoundary *boundary)
         boundary->nodes[n].z_force = 0;
     }
 
-    const double area = 2 * M_PI * boundary->radius / boundary->nodes_count;
+    // Compute area for 3d!!!
+    const double area = 4 * M_PI * SQ(boundary->radius) / boundary->nodes_count;
 
     for(int n = 0; n < boundary->nodes_count; ++n) {
         boundary->nodes[n].x_force += -boundary->stiffness * (boundary->nodes[n].x - boundary->nodes[n].x_ref) * area;

@@ -39,26 +39,29 @@ class ImmersedBoundary
 
         ImmersedBoundary()
         {
-            this->nodes_count = 36;
+            this->nodes_count = 50;
             this->radius = 0.3;
-            this->stiffness = 0.1;
+            this->stiffness = 100;
             this->nodes = new Node[this->nodes_count];
         
-            for(int n = 0; n < this->nodes_count; ++n) {
-                this->nodes[n].x = 0.5 + this->radius * sin(2. * M_PI * (double) n / this->nodes_count);
-                this->nodes[n].x_ref = 0.5 + this->radius * sin(2. * M_PI * (double) n / this->nodes_count);
-                this->nodes[n].x_vel = 0;
-                this->nodes[n].x_force = 0;
-        
-                this->nodes[n].y = 0.5 + this->radius * cos(2. * M_PI * (double) n / this->nodes_count);
-                this->nodes[n].y_ref = 0.5 + this->radius * cos(2. * M_PI * (double) n / this->nodes_count);
-                this->nodes[n].y_vel = 0;
-                this->nodes[n].y_force = 0;
-        
-                this->nodes[n].z = 0.3 + 0.4 * n / 36 ;
-                this->nodes[n].z_ref = 0.3 + 0.4 * n / 36 ;
-                this->nodes[n].z_vel = 0;
-                this->nodes[n].z_force = 0;
+            // In 5 circles by 10 nodes
+            for(int n = 0; n < 5; ++n) {
+                for (int i = 0; i < 10; i++) {
+                    this->nodes[i+n*10].x = 0.5 + this->radius * sin(2. * M_PI * (double) i / 10);
+                    this->nodes[i+n*10].x_ref = this->nodes[n].x;
+                    this->nodes[i+n*10].x_vel = 0;
+                    this->nodes[i+n*10].x_force = 0;
+
+                    this->nodes[i+n*10].y = 0.5 + this->radius * cos(2. * M_PI * (double) i / 10);
+                    this->nodes[i+n*10].y_ref = this->nodes[n].y;
+                    this->nodes[i+n*10].y_vel = 0;
+                    this->nodes[i+n*10].y_force = 0;
+
+                    this->nodes[i+n*10].z = 0.3 + 0.4 * n / 5 ;
+                    this->nodes[i+n*10].z_ref = this->nodes[n].z;
+                    this->nodes[i+n*10].z_vel = 0;
+                    this->nodes[i+n*10].z_force = 0;
+                }
             }
 
         }
