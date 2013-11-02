@@ -140,15 +140,6 @@ long double coord(const int index, const int type)
     }
 }
 
-long double force(int i, int j, int k)
-{
-    return sqrt(
-            SQ(force_X[i][j][k]) +
-            SQ(force_Y[i][j][k]) +
-            SQ(force_Z[i][j][k])
-            );
-}
-
 // Норма вектора
 long double norm(long double*** v)
 {
@@ -311,6 +302,7 @@ long double A1(long double ***U1, long double ***U2, int i, int j, int k)
     return (ddx+ddy+ddz);
 }
 // линейная часть оператора
+// TODO: Add force terms to x, y, z equation accordingly
 long double A2(long double ***U, int i, int j, int k)
 {
     int g=G[i][j][k];
@@ -397,7 +389,7 @@ long double A2(long double ***U, int i, int j, int k)
 
 long double A(long double ***U1, long double ***U2, int i, int j, int k)
 {
-    return A1(U1,U2,i,j,k)+A2(U2,i,j,k) + force(i, j, k);
+    return A1(U1,U2,i,j,k)+A2(U2,i,j,k);
 }
 
 
@@ -1107,7 +1099,6 @@ void compute_boundary_forces(ImmersedBoundary *boundary)
         boundary->nodes[n].z_force = 0;
     }
 
-    // Compute area for 3d!!!
     const double area = 4 * M_PI * SQ(boundary->radius) / boundary->nodes_count;
 
     for(int n = 0; n < boundary->nodes_count; ++n) {
