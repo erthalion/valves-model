@@ -376,14 +376,25 @@ long double A2(long double ***U, int i, int j, int k)
     }
 
     long double grad_p = 0;
+    long double force_term = 0;
     if(k==uk)
+    {
         grad_p=(U[i][j][pk]-U[i-1][j][pk])/Hx[i];
+        force_term = force_X[i][j][pk];
+    }
     else if(k==vk)
+    {
         grad_p=(U[i][j][pk]-U[i][j-1][pk])/Hy[j];
+        force_term = force_Y[i][j][pk];
+    }
     else if(k==wk)
+    {
         grad_p=(U[i][j][pk]-U[i][j][pk-1])/Hz[k];
+        force_term = force_Z[i][j][pk];
+    }
 
-    return grad_p/rho - lap_u;
+    // TODO: Calculate force term like grad_p by k value
+    return grad_p/rho - lap_u - force_term;
 }
 
 
@@ -833,20 +844,6 @@ void U_init()
         //printf("\n");
         //getchar();
     }
-}
-
-void check(const char* message)
-{
-    long double f = 0;
-    for (int i = 0; i < Nx; i++) {
-        for (int j = 0; j < Ny; j++) {
-            for (int k = 0; k < Nz; k++) {
-                f += force(i, j, k);
-            }
-        }
-    }
-    printf("%s: force %lf\n", message, f);
-    getchar();
 }
 
 void check_boundary(const char* message, ImmersedBoundary *boundary)

@@ -47,18 +47,21 @@ class ImmersedBoundary
             // In 5 circles by 10 nodes
             for(int n = 0; n < 5; ++n) {
                 for (int i = 0; i < 10; i++) {
-                    this->nodes[i+n*10].x = 0.5 + this->radius * sin(2. * M_PI * (double) i / 10);
-                    this->nodes[i+n*10].x_ref = this->nodes[n].x;
+                    long double x = 0.5 + this->radius * sin(2. * M_PI * (double) i / 10);
+                    this->nodes[i+n*10].x = x;
+                    this->nodes[i+n*10].x_ref = x;
                     this->nodes[i+n*10].x_vel = 0;
                     this->nodes[i+n*10].x_force = 0;
 
-                    this->nodes[i+n*10].y = 0.5 + this->radius * cos(2. * M_PI * (double) i / 10);
-                    this->nodes[i+n*10].y_ref = this->nodes[n].y;
+                    long double y = 0.5 + this->radius * cos(2. * M_PI * (double) i / 10);
+                    this->nodes[i+n*10].y = y;
+                    this->nodes[i+n*10].y_ref = y;
                     this->nodes[i+n*10].y_vel = 0;
                     this->nodes[i+n*10].y_force = 0;
 
-                    this->nodes[i+n*10].z = 0.3 + 0.4 * n / 5 ;
-                    this->nodes[i+n*10].z_ref = this->nodes[n].z;
+                    long double z = 0.3 + 0.4 * n / 5 ;
+                    this->nodes[i+n*10].z = z;
+                    this->nodes[i+n*10].z_ref = z;
                     this->nodes[i+n*10].z_vel = 0;
                     this->nodes[i+n*10].z_force = 0;
                 }
