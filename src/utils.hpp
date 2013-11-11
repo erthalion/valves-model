@@ -15,10 +15,10 @@ typedef indexes matrix_ind[25];
 class Node
 {
     public:
-        double x,y,z;
-        double x_ref, y_ref, z_ref;
-        double x_force, y_force, z_force;
-        double x_vel, y_vel, z_vel;
+        long double x,y,z;
+        long double x_ref, y_ref, z_ref;
+        long double x_force, y_force, z_force;
+        long double x_vel, y_vel, z_vel;
 
         Node()
         {
@@ -41,19 +41,19 @@ class ImmersedBoundary
         {
             this->nodes_count = 50;
             this->radius = 0.3;
-            this->stiffness = 100;
+            this->stiffness = 1;
             this->nodes = new Node[this->nodes_count];
         
             // In 5 circles by 10 nodes
             for(int n = 0; n < 5; ++n) {
                 for (int i = 0; i < 10; i++) {
-                    long double x = 0.5 + this->radius * sin(2. * M_PI * (double) i / 10);
+                    long double x = 0.5 + this->radius * sin(2. * M_PI * (double) i / 9);
                     this->nodes[i+n*10].x = x;
                     this->nodes[i+n*10].x_ref = x;
                     this->nodes[i+n*10].x_vel = 0;
                     this->nodes[i+n*10].x_force = 0;
 
-                    long double y = 0.5 + this->radius * cos(2. * M_PI * (double) i / 10);
+                    long double y = 0.5 + this->radius * cos(2. * M_PI * (double) i / 9);
                     this->nodes[i+n*10].y = y;
                     this->nodes[i+n*10].y_ref = y;
                     this->nodes[i+n*10].y_vel = 0;

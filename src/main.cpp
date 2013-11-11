@@ -926,7 +926,7 @@ void init()
         }
     }
 
-    output = new Output(Nx, Ny, Nz, dNz, U, Cx, Cy, Cz, R, Hx, Hy, Hz, G);
+    output = new Output(Nx, Ny, Nz, dNz, U, Cx, Cy, Cz, force_X, force_Y, force_Z, R, Hx, Hy, Hz, G);
     // группы
     if(generate_groups)
     {
@@ -992,8 +992,8 @@ void compute_fluid(int iteration)
     }
     while (Rn/R0>eps);
 
-    output->print_info(iters, R0, Rn);
-    output->print_vtk(iteration);
+    //output->print_info(iters, R0, Rn);
+    //output->print_vtk(iteration);
 }
 
 // Основной цикл
@@ -1003,13 +1003,14 @@ void run()
     int iterations_count = 10;
 
     for (int i = 0; i < iterations_count; i++) {
-        output->print_boundary(i, boundary);
         printf("Iteration %d\n", i);
         compute_boundary_forces(boundary);
         spread_force(boundary);
         compute_fluid(i);
         interpolate(boundary);
         update_boundary_position(boundary);
+        output->print_vtk(i);
+        output->print_boundary(i, boundary, U, dNz);
     }
 
 }
@@ -1122,7 +1123,6 @@ void spread_force(ImmersedBoundary *boundary)
     }
 
     for(int n = 0; n < boundary->nodes_count; ++n) {
-
         int x_int = index(boundary->nodes[n].x, COORD_X);
         int y_int = index(boundary->nodes[n].y, COORD_Y);
         int z_int = index(boundary->nodes[n].z, COORD_Z);
@@ -1179,21 +1179,26 @@ void interpolate(ImmersedBoundary *boundary)
                     const double weight_y = 1 - abs(dist_y);
                     const double weight_z = 1 - abs(dist_z);
 
+                    // interpolation from staggered grid before computation
+
+                    // I don't know, why j-1 is needed..., may be it's related with fictive shapes?
+                    long double velocity_U = U[i][j-1][k+VELOCITY_U*dNz];
+                    long double velocity_V = U[i][j-1][k+VELOCITY_V*dNz];
+                    long double velocity_W = U[i][j-1][k+VELOCITY_W*dNz];
+
+                    // 1 is a density
                     boundary->nodes[n].x_vel += (
                             (
-                             U[(i + Nx) % Nx][j][k + VELOCITY_U*dNz] + 
-                             0.5 * force_X[(i + Nx) % Nx][j][k] / 1
-                            ) * weight_x * weight_y * weight_z);
+                             velocity_U*SQ(Hx[i]) + 0.5 * force_X[(i + Nx) % Nx][j][k] / 1
+                             ) * weight_x * weight_y * weight_z);
 
                     boundary->nodes[n].y_vel += (
                             (
-                             U[(i + Nx) % Nx][j][k + VELOCITY_V*dNz] + 
-                             0.5 * (force_Y[(i + Nx) % Nx][j][k]) / 1
+                             velocity_V*SQ(Hy[j]) + 0.5 * (force_Y[(i + Nx) % Nx][j][k]) / 1
                             ) * weight_x * weight_y * weight_z);
                     boundary->nodes[n].z_vel += (
                             (
-                             U[(i + Nx) % Nx][j][k + VELOCITY_W*dNz] + 
-                             0.5 * (force_Z[(i + Nx) % Nx][j][k]) / 1
+                             velocity_W*SQ(Hz[k]) + 0.5 * (force_Z[(i + Nx) % Nx][j][k]) / 1
                             ) * weight_x * weight_y * weight_z);
                 }
             }

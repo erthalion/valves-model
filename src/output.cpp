@@ -5,12 +5,14 @@
 #include <fstream>
 #include <math.h>
 #include "utils.hpp"
+#include <csignal>
 
 using namespace std;
 
 Output::Output(int Nx, int Ny, int Nz, int dNz
             , long double ***U
             , long double *Cx, long double *Cy, long double *Cz
+            , long double ***force_X, long double ***force_Y, long double ***force_Z
             , long double ***R
             , long double *Hx, long double *Hy, long double *Hz
             , int ***G)
@@ -23,6 +25,10 @@ Output::Output(int Nx, int Ny, int Nz, int dNz
     this->Cx = Cx;
     this->Cy = Cy;
     this->Cz = Cz;
+
+    this->force_X = force_X;
+    this->force_Y = force_Y;
+    this->force_Z = force_Z;
 
     this->Hx = Hx;
     this->Hy = Hy;
@@ -116,7 +122,7 @@ void Output::print_vtk(int iteration)
 
     fclose(f);
 
-    print_vtk_streamline_scalar_header(output_path, Nx, Ny-1, dNz-1);
+    print_vtk_streamline_scalar_header(output_path, "p",  Nx, Ny-1, dNz-1);
     f = fopen(output_path,"a");
 
     for(int k=0; k<dNz-1; ++k)
@@ -132,7 +138,7 @@ void Output::print_vtk(int iteration)
 
     fclose(f);
 
-    print_vtk_streamline_vector_header(output_path, Nx, Ny-1, dNz-1);
+    print_vtk_streamline_vector_header(output_path, "uvw", Nx, Ny-1, dNz-1);
 
     f = fopen(output_path,"a");
     for(int k=0; k<dNz-1; ++k)
@@ -170,14 +176,31 @@ void Output::print_vtk(int iteration)
     }
 
     fclose(f);
+
+    print_vtk_streamline_vector_header(output_path, "force", Nx, Ny-1, dNz-1);
+
+    f = fopen(output_path,"a");
+    for(int k=0; k<dNz-1; ++k)
+    {
+        for(int j=0; j<Ny-1; ++j)
+        {
+            for(int i=0; i<Nx; ++i)
+            {
+                fprintf(f, "%LF %LF %LF\n", force_X[i][j][k], force_Y[i][j][k], force_Z[i][j][k]);
+            }
+        }
+    }
+
+    fclose(f);
+
 }
 
-void Output::print_vtk_streamline_vector_header(char *output_path, int sizeX, int sizeY, int sizeZ)
+void Output::print_vtk_streamline_vector_header(char *output_path, const char *name, int sizeX, int sizeY, int sizeZ)
 {
     string header;
     char line [50];
 
-    sprintf(line,"\nVECTORS uvw float\n");
+    sprintf(line,"\nVECTORS %s float\n", name);
     header.append(line);
 
     ofstream output_data;
@@ -186,7 +209,7 @@ void Output::print_vtk_streamline_vector_header(char *output_path, int sizeX, in
     output_data.close();
 }
 
-void Output::print_vtk_streamline_scalar_header(char *output_path, int sizeX, int sizeY, int sizeZ)
+void Output::print_vtk_streamline_scalar_header(char *output_path, const char *name, int sizeX, int sizeY, int sizeZ)
 {
     string header;
     char line [50];
@@ -194,7 +217,7 @@ void Output::print_vtk_streamline_scalar_header(char *output_path, int sizeX, in
     sprintf(line,"\nPOINT_DATA %d\n", sizeX * sizeY * sizeZ);
     header.append(line);
 
-    sprintf(line,"SCALARS p float\n");
+    sprintf(line,"SCALARS %s float\n", name);
     header.append(line);
 
     sprintf(line,"LOOKUP_TABLE default\n");
@@ -591,15 +614,137 @@ void Output::print_info(int iters, long double R0, long double Rn)
 
 }
 
-void Output::print_boundary(int iter, ImmersedBoundary *boundary)
+// debug puposes
+const int COORD_X = 0;
+const int COORD_Y = 1;
+const int COORD_Z = 2;
+
+const int VELOCITY_U = 0;
+const int VELOCITY_V = 1;
+const int VELOCITY_W = 2;
+const int PRESSURE = 3;
+
+const long double hx = 0.2;
+const long double hy = 0.1;
+const long double hz = 0.1;
+
+int debug_index(const long double coord, const int type)
+{
+    switch(type)
+    {
+        case COORD_X:
+            return floor(coord / hx);
+        case COORD_Y:
+            return floor(coord / hy);
+        case COORD_Z:
+            return floor(coord / hz);
+        default:
+            throw "Incorrect type of axis";
+    }
+}
+
+long double debug_coord(const int index, const int type)
+{
+    switch(type)
+    {
+        case COORD_X:
+            return index * hx;
+        case COORD_Y:
+            return index * hy;
+        case COORD_Z:
+            return index * hz;
+        default:
+            throw "Incorrect type of axis";
+    }
+}
+
+void Output::print_boundary(int iter, ImmersedBoundary *boundary, long double ***U, int dNz)
 {
     char output_path[20];
     sprintf(output_path, "boundary%d.dat", iter);
     FILE *f = fopen(output_path,"a");
 
+    // get middle circle of cylinder
+    int circle = 2;
+    for (int n = 0; n < 10; n++) {
+        Node node = boundary->nodes[n + circle*10];
+
+        fprintf(f, "%LF %LF %LF %LF %LF %LF", node.x, node.y, node.x_force, node.y_force, node.x_ref, node.y_ref);
+
+        int x_int = debug_index(node.x, COORD_X);
+        int y_int = debug_index(node.y, COORD_Y);
+        int z_int = debug_index(node.z, COORD_Z);
+
+        for(int i = x_int; i <= x_int + 1; ++i)
+        {
+            for(int j = y_int; j <= y_int + 1; ++j)
+            {
+                fprintf(f, " %LF %LF %LF %LF",
+                        debug_coord(i, COORD_X),
+                        debug_coord(j, COORD_Y),
+                        U[i][j-1][z_int + VELOCITY_U*dNz],
+                        U[i][j-1][z_int + VELOCITY_V*dNz]);
+            }
+        }
+        fprintf(f, "\n");
+
+    }
+    fclose(f);
+
+
+    sprintf(output_path, "velocity%d.dat", iter);
+    f = fopen(output_path,"a");
+
+    Node node = boundary->nodes[circle*10];
+    int z_int = debug_index(node.z, COORD_Z);
+
+    for (int i = 0; i < Nx; i++) {
+        for (int j = 0; j < Ny-1; j++) {
+            int k = z_int;
+
+            //if(i==0)
+                //fprintf(f,"%LF ",U[i+1][j][k]);
+            //else if(i==Nx-1)
+                //fprintf(f,"%LF ",U[i][j][k]);
+            //else
+                //fprintf(f,"%LF ", Hx[i]/(Hx[i+1]+Hx[i])*U[i+1][j][k]+Hx[i+1]/(Hx[i+1]+Hx[i])*U[i][j][k] );
+
+            //if(j==0)
+                //fprintf(f,"%LF",U[i][j][k+dNz]);
+            //else if(j==Ny-2)
+                //fprintf(f,"%LF",U[i][j+1][k+dNz]);
+            //else
+                //fprintf(f,"%LF", Hy[j]/(Hy[j]+Hy[j+1])*U[i][j+1][k+dNz]+Hy[j+1]/(Hy[j]+Hy[j+1])*U[i][j][k+dNz]);
+
+            fprintf(f, "%lf %lf", U[i][j][k + VELOCITY_U*dNz], U[i][j][k + VELOCITY_V*dNz]);
+
+            fprintf(f, "\n");
+        }
+    }
+
+    fclose(f);
+}
+
+void Output::print_boundary_vtk(int iter, ImmersedBoundary *boundary)
+{
+    char output_path[20];
+    sprintf(output_path, "boundary%d.vtk", iter);
+    FILE *f = fopen(output_path,"a");
+
+    print_vtk_unstructured_header(output_path, boundary->nodes_count);
+
     for(int n = 0; n < boundary->nodes_count; ++n)
     {
-        fprintf(f, "%1.8lf %1.8lf %1.8lf\n", boundary->nodes[n].x, boundary->nodes[n].y, boundary->nodes[n].z);
+        fprintf(f, "%lf %lf %lf\n", boundary->nodes[n].x, boundary->nodes[n].y, boundary->nodes[n].z);
+    }
+    fclose(f);
+
+    print_vtk_streamline_vector_header(output_path, "force", boundary->nodes_count, boundary->nodes_count, boundary->nodes_count);
+
+    f = fopen(output_path,"a");
+    for(int n = 0; n < boundary->nodes_count; ++n)
+    {
+        fprintf(f, "%lf %lf %lf\n", boundary->nodes[n].x_force, boundary->nodes[n].y_force, boundary->nodes[n].z_force);
     }
     fclose(f);
 }
