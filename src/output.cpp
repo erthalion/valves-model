@@ -702,27 +702,53 @@ void Output::print_boundary(int iter, ImmersedBoundary *boundary, long double **
         for (int j = 0; j < Ny-1; j++) {
             int k = z_int;
 
-            //if(i==0)
-                //fprintf(f,"%LF ",U[i+1][j][k]);
-            //else if(i==Nx-1)
-                //fprintf(f,"%LF ",U[i][j][k]);
-            //else
-                //fprintf(f,"%LF ", Hx[i]/(Hx[i+1]+Hx[i])*U[i+1][j][k]+Hx[i+1]/(Hx[i+1]+Hx[i])*U[i][j][k] );
-
-            //if(j==0)
-                //fprintf(f,"%LF",U[i][j][k+dNz]);
-            //else if(j==Ny-2)
-                //fprintf(f,"%LF",U[i][j+1][k+dNz]);
-            //else
-                //fprintf(f,"%LF", Hy[j]/(Hy[j]+Hy[j+1])*U[i][j+1][k+dNz]+Hy[j+1]/(Hy[j]+Hy[j+1])*U[i][j][k+dNz]);
-
-            fprintf(f, "%lf %lf", U[i][j][k + VELOCITY_U*dNz], U[i][j][k + VELOCITY_V*dNz]);
-
-            fprintf(f, "\n");
+            fprintf(f, "%LF %LF\n", U[i][j][k + VELOCITY_U*dNz], U[i][j][k + VELOCITY_V*dNz]);
         }
     }
 
     fclose(f);
+
+    sprintf(output_path, "force%d.dat", iter);
+    f = fopen(output_path,"a");
+
+    for (int i = 0; i < Nx; i++) {
+        for (int j = 0; j < Ny-1; j++) {
+            int k = z_int;
+
+            fprintf(f, "%LF %LF\n", force_X[i][j][k], force_Y[i][j][k]);
+        }
+    }
+
+
+    fclose(f);
+    sprintf(output_path, "boundary_force%d.dat", iter);
+    f = fopen(output_path,"a");
+
+    for (int n = 0; n < 10; n++) {
+        Node node = boundary->nodes[n + circle*10];
+
+        fprintf(f, "%LF %LF %LF %LF %LF %LF", node.x, node.y, node.x_force, node.y_force, node.x_ref, node.y_ref);
+
+        int x_int = debug_index(node.x, COORD_X);
+        int y_int = debug_index(node.y, COORD_Y);
+        int z_int = debug_index(node.z, COORD_Z);
+
+        for(int i = x_int; i <= x_int + 1; ++i)
+        {
+            for(int j = y_int; j <= y_int + 1; ++j)
+            {
+                fprintf(f, " %LF %LF %LF %LF",
+                        debug_coord(i, COORD_X),
+                        debug_coord(j, COORD_Y),
+                        force_X[i][j-1][z_int],
+                        force_Y[i][j-1][z_int]);
+            }
+        }
+        fprintf(f, "\n");
+
+    }
+    fclose(f);
+
 }
 
 void Output::print_boundary_vtk(int iter, ImmersedBoundary *boundary)

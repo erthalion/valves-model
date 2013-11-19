@@ -7,19 +7,19 @@
 /*
  * Kinematical viscosity
  */
-const long double nu = 1e-2;
+const long double nu = 1e-1;
 
 /*
  * Density
  */
-const long double rho = 1;
+const long double rho = 0.1;
 
-const long double eps = 0.001;
+const long double eps = 0.01;
 
 /*
  * Boundary conditions for pressure
  */
-const long double p_left = 1;
+const long double p_left = 0.1;
 const long double p_right = 0;
 
 /*

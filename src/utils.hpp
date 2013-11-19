@@ -41,19 +41,19 @@ class ImmersedBoundary
         {
             this->nodes_count = 50;
             this->radius = 0.3;
-            this->stiffness = 1;
+            this->stiffness = 30000;
             this->nodes = new Node[this->nodes_count];
         
-            // In 5 circles by 10 nodes
+            // In 5 half circles by 10 nodes
             for(int n = 0; n < 5; ++n) {
                 for (int i = 0; i < 10; i++) {
-                    long double x = 0.5 + this->radius * sin(2. * M_PI * (double) i / 9);
+                    long double x = 1.0 + this->radius * sin(-2. * M_PI * (double) i / 19);
                     this->nodes[i+n*10].x = x;
                     this->nodes[i+n*10].x_ref = x;
                     this->nodes[i+n*10].x_vel = 0;
                     this->nodes[i+n*10].x_force = 0;
 
-                    long double y = 0.5 + this->radius * cos(2. * M_PI * (double) i / 9);
+                    long double y = 0.5 + this->radius * cos(-2. * M_PI * (double) i / 19);
                     this->nodes[i+n*10].y = y;
                     this->nodes[i+n*10].y_ref = y;
                     this->nodes[i+n*10].y_vel = 0;

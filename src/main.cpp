@@ -379,18 +379,21 @@ long double A2(long double ***U, int i, int j, int k)
     long double force_term = 0;
     if(k==uk)
     {
+        //printf("force_X[%d][%d][%d] = %LF\n", i, j, k, force_X[i][j][pk]);
         grad_p=(U[i][j][pk]-U[i-1][j][pk])/Hx[i];
-        force_term = force_X[i][j][pk];
+        force_term = force_X[i][j][uk];
     }
     else if(k==vk)
     {
+        //printf("force_Y[%d][%d][%d] = %LF\n", i, j, k, force_Y[i][j][pk]);
         grad_p=(U[i][j][pk]-U[i][j-1][pk])/Hy[j];
-        force_term = force_Y[i][j][pk];
+        force_term = force_Y[i][j][uk];
     }
     else if(k==wk)
     {
+        //printf("force_Z[%d][%d][%d] = %LF\n", i, j, k, force_Z[i][j][pk]);
         grad_p=(U[i][j][pk]-U[i][j][pk-1])/Hz[k];
-        force_term = force_Z[i][j][pk];
+        force_term = force_Z[i][j][uk];
     }
 
     // TODO: Calculate force term like grad_p by k value
@@ -878,9 +881,9 @@ void init()
     G = utils->alloc_and_fill<int>(Nx,Ny,Nz);
     Z = utils->alloc_and_fill<long double>(Nx,Ny,Nz);
 
-    force_X = utils->alloc_and_fill<long double>(Nx, Ny, Nz);
-    force_Y = utils->alloc_and_fill<long double>(Nx, Ny, Nz);
-    force_Z = utils->alloc_and_fill<long double>(Nx, Ny, Nz);
+    force_X = utils->alloc_and_fill<long double>(Nx, Ny, dNz);
+    force_Y = utils->alloc_and_fill<long double>(Nx, Ny, dNz);
+    force_Z = utils->alloc_and_fill<long double>(Nx, Ny, dNz);
 
     U_1 = utils->alloc_and_fill<long double>(Nx,Ny,Nz);
     U_2 = utils->alloc_and_fill<long double>(Nx,Ny,Nz);
@@ -1066,7 +1069,7 @@ void printm(long double ***m, int size_x, int size_y, int size_z)
 void stop_handler(int s)
 {
     printf("Caught signal %d\n",s);
-    output->print_info(iters, R0, Rn);
+    //output->print_info(iters, R0, Rn);
     output->print_vtk(99999999);
     down();
     exit(1); 
@@ -1114,7 +1117,7 @@ void spread_force(ImmersedBoundary *boundary)
 {
     for(int i = 0; i < Nx; ++i) {
         for(int j = 1; j < Ny - 1; ++j) {
-            for(int k = 1; k < Nz - 1; ++k) {
+            for(int k = 1; k < dNz - 1; ++k) {
                 force_X[i][j][k] = 0;
                 force_Y[i][j][k] = 0;
                 force_Z[i][j][k] = 0;
@@ -1139,9 +1142,9 @@ void spread_force(ImmersedBoundary *boundary)
                     const double weight_y = 1 - dist_y;
                     const double weight_z = 1 - dist_z;
 
-                    force_X[(i + Nx) % Nx][j][k] += (boundary->nodes[n].x_force * weight_x * weight_y * weight_z);
-                    force_Y[(i + Nx) % Nx][j][k] += (boundary->nodes[n].y_force * weight_x * weight_y * weight_z);
-                    force_Z[(i + Nx) % Nx][j][k] += (boundary->nodes[n].z_force * weight_x * weight_y * weight_z);
+                    force_X[i][j-1][k] += (boundary->nodes[n].x_force * weight_x * weight_y * weight_z)/boundary->nodes_count;
+                    force_Y[i][j-1][k] += (boundary->nodes[n].y_force * weight_x * weight_y * weight_z)/boundary->nodes_count;
+                    force_Z[i][j-1][k] += (boundary->nodes[n].z_force * weight_x * weight_y * weight_z)/boundary->nodes_count;
                 }
             }
         }
@@ -1187,19 +1190,23 @@ void interpolate(ImmersedBoundary *boundary)
                     long double velocity_W = U[i][j-1][k+VELOCITY_W*dNz];
 
                     // 1 is a density
-                    boundary->nodes[n].x_vel += (
-                            (
-                             velocity_U*SQ(Hx[i]) + 0.5 * force_X[(i + Nx) % Nx][j][k] / 1
-                             ) * weight_x * weight_y * weight_z);
+                    //boundary->nodes[n].x_vel += (
+                            //(
+                             //velocity_U*SQ(Hx[i]) + 0.5 * force_X[i][j-1][k] / 1
+                             //) * weight_x * weight_y * weight_z);
 
-                    boundary->nodes[n].y_vel += (
-                            (
-                             velocity_V*SQ(Hy[j]) + 0.5 * (force_Y[(i + Nx) % Nx][j][k]) / 1
-                            ) * weight_x * weight_y * weight_z);
-                    boundary->nodes[n].z_vel += (
-                            (
-                             velocity_W*SQ(Hz[k]) + 0.5 * (force_Z[(i + Nx) % Nx][j][k]) / 1
-                            ) * weight_x * weight_y * weight_z);
+                    //boundary->nodes[n].y_vel += (
+                            //(
+                             //velocity_V*SQ(Hy[j]) + 0.5 * (force_Y[i][j-1][k]) / 1
+                            //) * weight_x * weight_y * weight_z);
+                    //boundary->nodes[n].z_vel += (
+                            //(
+                             //velocity_W*SQ(Hz[k]) + 0.5 * (force_Z[i][j-1][k]) / 1
+                            //) * weight_x * weight_y * weight_z);
+
+                    boundary->nodes[n].x_vel += (velocity_U*SQ(Hx[i]) * weight_x * weight_y * weight_z);
+                    boundary->nodes[n].y_vel += (velocity_V*SQ(Hy[j]) * weight_x * weight_y * weight_z);
+                    boundary->nodes[n].z_vel += (velocity_W*SQ(Hz[k]) * weight_x * weight_y * weight_z);
                 }
             }
         }
