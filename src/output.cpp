@@ -438,6 +438,33 @@ void Output::print_vtk_header(char *output_path, int sizeX, int sizeY, int sizeZ
     output_data.close();
 }
 
+void Output::print_vtk_unstructured_header(char *output_path, int size)
+{
+    string header;
+    char line [50];
+
+    sprintf(line,"# vtk DataFile Version 1.0\n");
+    header.append(line);
+
+    sprintf(line,"Data file for valves model\n");
+    header.append(line);
+
+    sprintf(line,"ASCII\n");
+    header.append(line);
+
+    sprintf(line,"DATASET UNSTRUCTURED_GRID\n");
+    header.append(line);
+
+    sprintf(line,"POINTS %d double\n", size);
+    header.append(line);
+
+    ofstream output_data;
+    output_data.open(output_path);
+    output_data << header;
+    output_data.close();
+}
+
+
 /*
  * Запись в файл заголовка vtk STRUCTURED_POINTS
  */
@@ -761,16 +788,44 @@ void Output::print_boundary_vtk(int iter, ImmersedBoundary *boundary)
 
     for(int n = 0; n < boundary->nodes_count; ++n)
     {
-        fprintf(f, "%lf %lf %lf\n", boundary->nodes[n].x, boundary->nodes[n].y, boundary->nodes[n].z);
+        fprintf(f, "%LF %LF %LF\n", boundary->nodes[n].x, boundary->nodes[n].y, boundary->nodes[n].z);
     }
     fclose(f);
 
-    print_vtk_streamline_vector_header(output_path, "force", boundary->nodes_count, boundary->nodes_count, boundary->nodes_count);
+    f = fopen(output_path,"a");
+    // there is 5 * 10 surface by 4 point to each cell
+    int cells = (5-1)*(10-1);
+    fprintf(f, "\nCELLS %d %d\n", cells, 5*cells);
+    for (int i = 1; i < 5; i++) {
+        for(int j = 0; j < 9; ++j)
+        {
+            fprintf(f, "4 %d %d %d %d\n", j, j+1, j+10*i, j+1+10*i);
+        }
+    }
+    fclose(f);
+
+    //f = fopen(output_path,"a");
+    //fprintf(f, "\nCELLS_TYPES %d\n", cells);
+    //for (int i = 0; i < 4; i++) {
+        //fprintf(f, "9 ");
+    //}
+    //fprintf(f, "\n");
+    //fclose(f);
 
     f = fopen(output_path,"a");
+    fprintf(f, "\nPOINT_DATA %d\n", boundary->nodes_count);
+    //fprintf(f, "SCALARS fake double\n");
+    //for(int n = 0; n < boundary->nodes_count; ++n)
+    //{
+        //fprintf(f, "1\n");
+    //}
+    fclose(f);
+    
+    f = fopen(output_path,"a");
+    fprintf(f, "\nVECTORS force double\n");
     for(int n = 0; n < boundary->nodes_count; ++n)
     {
-        fprintf(f, "%lf %lf %lf\n", boundary->nodes[n].x_force, boundary->nodes[n].y_force, boundary->nodes[n].z_force);
+        fprintf(f, "%LF %LF %LF\n", boundary->nodes[n].x, boundary->nodes[n].y, boundary->nodes[n].z);
     }
     fclose(f);
 }

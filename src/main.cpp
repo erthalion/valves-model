@@ -1013,7 +1013,8 @@ void run()
         interpolate(boundary);
         update_boundary_position(boundary);
         output->print_vtk(i);
-        output->print_boundary(i, boundary, U, dNz);
+        output->print_boundary_vtk(i, boundary);
+        //output->print_boundary(i, boundary, U, dNz);
     }
 
 }
