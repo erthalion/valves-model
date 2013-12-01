@@ -13,3 +13,8 @@ groups
 *.mask
 *.o
 *.so
+
+docs/*.aux
+docs/*.log
+docs/*.nav
+docs/*.snm
