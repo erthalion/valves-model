@@ -1143,9 +1143,9 @@ void spread_force(ImmersedBoundary *boundary)
                     const double weight_y = 1 - dist_y;
                     const double weight_z = 1 - dist_z;
 
-                    force_X[i][j-1][k] += (boundary->nodes[n].x_force * weight_x * weight_y * weight_z)/boundary->nodes_count;
-                    force_Y[i][j-1][k] += (boundary->nodes[n].y_force * weight_x * weight_y * weight_z)/boundary->nodes_count;
-                    force_Z[i][j-1][k] += (boundary->nodes[n].z_force * weight_x * weight_y * weight_z)/boundary->nodes_count;
+                    force_X[i][j][k] += (boundary->nodes[n].x_force * weight_x * weight_y * weight_z)/boundary->nodes_count;
+                    force_Y[i][j][k] += (boundary->nodes[n].y_force * weight_x * weight_y * weight_z)/boundary->nodes_count;
+                    force_Z[i][j][k] += (boundary->nodes[n].z_force * weight_x * weight_y * weight_z)/boundary->nodes_count;
                 }
             }
         }
