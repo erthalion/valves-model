@@ -85,6 +85,7 @@ void alpha_iter();
 
 
 #define SQ(x) ((x) * (x)) // square function; replaces SQ(x) by ((x) * (x)) in the code
+#define CB(x) ((x) * (x) * (x))
 
 /*
  * @brief
@@ -972,18 +973,18 @@ void compute_fluid(int iteration)
 
         long double R4 = norm(R);
 
-        if( (R4>R3) )
-        {
-            printf("Error on speed\n");
-        }
-        else if ( (R3>R2) )
-        {
-            printf("Error on alpha\n");
-        }
-        else if ( (R2>R1) )
-        {
-            printf("Error on tau\n");
-        }
+        //if( (R4>R3) )
+        //{
+            //printf("Error on speed\n");
+        //}
+        //else if ( (R3>R2) )
+        //{
+            //printf("Error on alpha\n");
+        //}
+        //else if ( (R2>R1) )
+        //{
+            //printf("Error on tau\n");
+        //}
 
         Rn = norm(R);
 
@@ -1002,7 +1003,7 @@ void compute_fluid(int iteration)
 // Основной цикл
 void run()
 {
-    ImmersedBoundary *boundary = new ImmersedBoundary();
+    ImmersedBoundary *boundary = new RectangleBoundary();
     int iterations_count = 10;
 
     for (int i = 0; i < iterations_count; i++) {
@@ -1095,18 +1096,16 @@ __attribute__((constructor)) void init_lib(void) {
 
 void compute_boundary_forces(ImmersedBoundary *boundary)
 {
-    for(int n = 0; n < boundary->nodes_count; ++n) {
-        boundary->nodes[n].x_force = 0;
-        boundary->nodes[n].y_force = 0;
-        boundary->nodes[n].z_force = 0;
-    }
-
-    const double area = 4 * M_PI * SQ(boundary->radius) / boundary->nodes_count;
+    const double area = 2 * M_PI * boundary->radius * boundary->height / boundary->nodes_count;
 
     for(int n = 0; n < boundary->nodes_count; ++n) {
-        boundary->nodes[n].x_force += -boundary->stiffness * (boundary->nodes[n].x - boundary->nodes[n].x_ref) * area;
-        boundary->nodes[n].y_force += -boundary->stiffness * (boundary->nodes[n].y - boundary->nodes[n].y_ref) * area;
-        boundary->nodes[n].z_force += -boundary->stiffness * (boundary->nodes[n].z - boundary->nodes[n].z_ref) * area;
+        // for the RectangleBoundary
+        //boundary->nodes[n].x_force = -boundary->stiffness * (boundary->nodes[n].x - boundary->nodes[n].x_ref) * (0.4/10) * (0.4/10);// * area;
+        //boundary->nodes[n].y_force = -boundary->stiffness * (boundary->nodes[n].y - boundary->nodes[n].y_ref) * (0.4/10) * (0.4/10);// * area;
+        //boundary->nodes[n].z_force = -boundary->stiffness * (boundary->nodes[n].z - boundary->nodes[n].z_ref) * (0.4/10) * (0.4/10);// * area;
+        boundary->nodes[n].x_force = -boundary->stiffness * (boundary->nodes[n].x - boundary->nodes[n].x_ref) * area;
+        boundary->nodes[n].y_force = -boundary->stiffness * (boundary->nodes[n].y - boundary->nodes[n].y_ref) * area;
+        boundary->nodes[n].z_force = -boundary->stiffness * (boundary->nodes[n].z - boundary->nodes[n].z_ref) * area;
 
     }
 
@@ -1131,6 +1130,11 @@ void spread_force(ImmersedBoundary *boundary)
         int y_int = index(boundary->nodes[n].y, COORD_Y);
         int z_int = index(boundary->nodes[n].z, COORD_Z);
 
+        if (y_int == Ny-1)
+        {
+            y_int -= 1;
+        }
+
         for(int i = x_int; i <= x_int + 1; ++i) {
             for(int j = y_int; j <= y_int + 1; ++j) {
                 for(int k = z_int; k <= z_int + 1; ++k) {
@@ -1139,13 +1143,20 @@ void spread_force(ImmersedBoundary *boundary)
                     const double dist_y = fabs(boundary->nodes[n].y - coord(j, COORD_Y));
                     const double dist_z = fabs(boundary->nodes[n].z - coord(k, COORD_Z));
 
-                    const double weight_x = 1 - dist_x;
-                    const double weight_y = 1 - dist_y;
-                    const double weight_z = 1 - dist_z;
+                    // #TODO: the correct discrete dirichlet function is needed!
+                    const double weight_x = 1;// - dist_x;///Hx[i];
+                    const double weight_y = 1;// - dist_y;///Hy[j];
+                    const double weight_z = 1;// - dist_z;///Hz[k];
 
-                    force_X[i][j][k] += (boundary->nodes[n].x_force * weight_x * weight_y * weight_z)/boundary->nodes_count;
-                    force_Y[i][j][k] += (boundary->nodes[n].y_force * weight_x * weight_y * weight_z)/boundary->nodes_count;
-                    force_Z[i][j][k] += (boundary->nodes[n].z_force * weight_x * weight_y * weight_z)/boundary->nodes_count;
+                    const double area = 2 * M_PI * boundary->radius * boundary->height / boundary->nodes_count;
+
+                    force_X[i][j][k] += (boundary->nodes[n].x_force * weight_x * weight_y * weight_z)*area;///boundary->nodes_count;
+                    force_Y[i][j][k] += (boundary->nodes[n].y_force * weight_x * weight_y * weight_z)*area;///boundary->nodes_count;
+                    force_Z[i][j][k] += (boundary->nodes[n].z_force * weight_x * weight_y * weight_z)*area;///boundary->nodes_count;
+                    // for the RectangleBoundary
+                    //force_X[i][j][k] += (boundary->nodes[n].x_force * weight_x * weight_y * weight_z)*(0.4/10)*(0.4/10);///boundary->nodes_count;
+                    //force_Y[i][j][k] += (boundary->nodes[n].y_force * weight_x * weight_y * weight_z)*(0.4/10)*(0.4/10);///boundary->nodes_count;
+                    //force_Z[i][j][k] += (boundary->nodes[n].z_force * weight_x * weight_y * weight_z)*(0.4/10)*(0.4/10);///boundary->nodes_count;
                 }
             }
         }
@@ -1168,6 +1179,11 @@ void interpolate(ImmersedBoundary *boundary)
         int y_int = index(boundary->nodes[n].y, COORD_Y);
         int z_int = index(boundary->nodes[n].z, COORD_Z);
 
+        if (y_int == Ny-1)
+        {
+            y_int -= 1;
+        }
+
         for(int i = x_int; i <= x_int + 1; ++i)
         {
             for(int j = y_int; j <= y_int + 1; ++j)
@@ -1179,18 +1195,20 @@ void interpolate(ImmersedBoundary *boundary)
                     const double dist_y = fabs(boundary->nodes[n].y - coord(j, COORD_Y));
                     const double dist_z = fabs(boundary->nodes[n].z - coord(k, COORD_Z));
 
-                    const double weight_x = 1 - abs(dist_x);
-                    const double weight_y = 1 - abs(dist_y);
-                    const double weight_z = 1 - abs(dist_z);
+                    // #TODO: the correct discrete dirichlet function is needed!
+                    const double weight_x = 1;// - dist_x;///Hx[i];
+                    const double weight_y = 1;// - dist_y;///Hy[j];
+                    const double weight_z = 1;// - dist_z;///Hz[k];
 
                     // interpolation from staggered grid before computation
 
-                    // I don't know, why j-1 is needed..., may be it's related with fictive shapes?
-                    long double velocity_U = U[i][j-1][k+VELOCITY_U*dNz];
-                    long double velocity_V = U[i][j-1][k+VELOCITY_V*dNz];
-                    long double velocity_W = U[i][j-1][k+VELOCITY_W*dNz];
+                    // I don't know, maybe j-1 is needed (fictive shapes?)
+                    long double velocity_U = U[i][j][k+VELOCITY_U*dNz];
+                    long double velocity_V = U[i][j][k+VELOCITY_V*dNz];
+                    long double velocity_W = U[i][j][k+VELOCITY_W*dNz];
 
                     // 1 is a density
+                    // this formulas are related to rigid IB method
                     //boundary->nodes[n].x_vel += (
                             //(
                              //velocity_U*SQ(Hx[i]) + 0.5 * force_X[i][j-1][k] / 1
@@ -1205,9 +1223,9 @@ void interpolate(ImmersedBoundary *boundary)
                              //velocity_W*SQ(Hz[k]) + 0.5 * (force_Z[i][j-1][k]) / 1
                             //) * weight_x * weight_y * weight_z);
 
-                    boundary->nodes[n].x_vel += (velocity_U*SQ(Hx[i]) * weight_x * weight_y * weight_z);
-                    boundary->nodes[n].y_vel += (velocity_V*SQ(Hy[j]) * weight_x * weight_y * weight_z);
-                    boundary->nodes[n].z_vel += (velocity_W*SQ(Hz[k]) * weight_x * weight_y * weight_z);
+                    boundary->nodes[n].x_vel += (velocity_U * weight_x * weight_y * weight_z)*CB(Hx[i]);
+                    boundary->nodes[n].y_vel += (velocity_V * weight_x * weight_y * weight_z)*CB(Hy[j]);
+                    boundary->nodes[n].z_vel += (velocity_W * weight_x * weight_y * weight_z)*CB(Hz[k]);
                 }
             }
         }

@@ -34,41 +34,105 @@ class ImmersedBoundary
     public:
         int nodes_count;
         long double radius;
+        long double height;
         long double stiffness;
         Node *nodes;
 
-        ImmersedBoundary()
+        ImmersedBoundary() {}
+};
+
+
+class RectangleBoundary: public ImmersedBoundary
+{
+    public:
+        RectangleBoundary()
         {
-            this->nodes_count = 50;
+            this->nodes_count = 100;
             this->radius = 0.2;
-            this->stiffness = 30000;
+            this->height = 0.8;
+            this->stiffness = 400000;
             this->nodes = new Node[this->nodes_count];
-        
-            // In 5 half circles by 10 nodes
-            for(int n = 0; n < 5; ++n) {
+
+            for (int i = 0; i < 10; i++) {
+                for (int j = 0; j < 10; j++) {
+                    this->nodes[j + i*10].x = 1;
+                    this->nodes[j + i*10].x_ref = 1;
+                    this->nodes[j + i*10].x_vel = 0;
+                    this->nodes[j + i*10].x_force = 0;
+
+                    this->nodes[j + i*10].y = 0.2 + i/9.0 * 0.4;
+                    this->nodes[j + i*10].y_ref = 0.2 + i/9.0 * 0.4;
+                    this->nodes[j + i*10].y_vel = 0;
+                    this->nodes[j + i*10].y_force = 0;
+
+                    this->nodes[j + i*10].z = 0.2 + j/9.0 * 0.4;
+                    this->nodes[j + i*10].z_ref = 0.2 + j/9.0 * 0.4;
+                    this->nodes[j + i*10].z_vel = 0;
+                    this->nodes[j + i*10].z_force = 0;
+                }
+            }
+        }
+};
+
+
+class ValvesBoundary: public ImmersedBoundary
+{
+    public:
+        ValvesBoundary()
+        {
+            this->nodes_count = 200;
+            this->radius = 0.2;
+            this->height = 0.8;
+            this->stiffness = 400000;
+            this->nodes = new Node[this->nodes_count];
+
+            //In 5 half circles by 10 nodes
+            for(int n = 0; n < 10; ++n) {
                 for (int i = 0; i < 10; i++) {
-                    long double x = 0.8 + this->radius * sin(-2. * M_PI * (double) i / 19);
-                    this->nodes[i+n*10].x = x;
-                    this->nodes[i+n*10].x_ref = x;
-                    this->nodes[i+n*10].x_vel = 0;
-                    this->nodes[i+n*10].x_force = 0;
+                    long double x = 0.8 + this->radius * sin(-M_PI * 0.5 * (double)(9-i)/9);
+                    this->nodes[i+n*20].x = x;
+                    this->nodes[i+n*20].x_ref = x;
+                    this->nodes[i+n*20].x_vel = 0;
+                    this->nodes[i+n*20].x_force = 0;
 
-                    long double y = 0.4 + this->radius * cos(-2. * M_PI * (double) i / 19);
-                    this->nodes[i+n*10].y = y;
-                    this->nodes[i+n*10].y_ref = y;
-                    this->nodes[i+n*10].y_vel = 0;
-                    this->nodes[i+n*10].y_force = 0;
+                    long double y = 0.8 - this->radius * cos(-M_PI * 0.5 * (double)(9-i)/9);
+                    this->nodes[i+n*20].y = y;
+                    this->nodes[i+n*20].y_ref = y;
+                    this->nodes[i+n*20].y_vel = 0;
+                    this->nodes[i+n*20].y_force = 0;
 
-                    long double z = 0.2 + 0.4 * n / 4 ;
-                    this->nodes[i+n*10].z = z;
-                    this->nodes[i+n*10].z_ref = z;
-                    this->nodes[i+n*10].z_vel = 0;
-                    this->nodes[i+n*10].z_force = 0;
+                    long double z = 0 + this->height * n / 9 ;
+                    this->nodes[i+n*20].z = z;
+                    this->nodes[i+n*20].z_ref = z;
+                    this->nodes[i+n*20].z_vel = 0;
+                    this->nodes[i+n*20].z_force = 0;
+                }
+
+                for (int i = 0; i < 10; i++) {
+                    long double x = 0.8 + this->radius * sin(-M_PI * 0.5 * (double)(9-i)/9);
+                    this->nodes[i+n*20+10].x = x;
+                    this->nodes[i+n*20+10].x_ref = x;
+                    this->nodes[i+n*20+10].x_vel = 0;
+                    this->nodes[i+n*20+10].x_force = 0;
+
+                    long double y = 0 + this->radius * cos(-M_PI * 0.5 * (double)(9-i)/9);
+                    this->nodes[i+n*20+10].y = y;
+                    this->nodes[i+n*20+10].y_ref = y;
+                    this->nodes[i+n*20+10].y_vel = 0;
+                    this->nodes[i+n*20+10].y_force = 0;
+
+                    long double z = 0 + this->height * n / 9 ;
+                    this->nodes[i+n*20+10].z = z;
+                    this->nodes[i+n*20+10].z_ref = z;
+                    this->nodes[i+n*20+10].z_vel = 0;
+                    this->nodes[i+n*20+10].z_force = 0;
                 }
             }
 
         }
 };
+
+
 
 class Utils
 {

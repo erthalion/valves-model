@@ -709,8 +709,8 @@ void Output::print_boundary(int iter, ImmersedBoundary *boundary, long double **
                 fprintf(f, " %LF %LF %LF %LF",
                         debug_coord(i, COORD_X),
                         debug_coord(j, COORD_Y),
-                        U[i][j-1][z_int + VELOCITY_U*dNz],
-                        U[i][j-1][z_int + VELOCITY_V*dNz]);
+                        U[i][j][z_int + VELOCITY_U*dNz],
+                        U[i][j][z_int + VELOCITY_V*dNz]);
             }
         }
         fprintf(f, "\n");
@@ -767,8 +767,8 @@ void Output::print_boundary(int iter, ImmersedBoundary *boundary, long double **
                 fprintf(f, " %LF %LF %LF %LF",
                         debug_coord(i, COORD_X),
                         debug_coord(j, COORD_Y),
-                        force_X[i][j-1][z_int],
-                        force_Y[i][j-1][z_int]);
+                        force_X[i][j][z_int],
+                        force_Y[i][j][z_int]);
             }
         }
         fprintf(f, "\n");
@@ -825,7 +825,7 @@ void Output::print_boundary_vtk(int iter, ImmersedBoundary *boundary)
     fprintf(f, "\nVECTORS force double\n");
     for(int n = 0; n < boundary->nodes_count; ++n)
     {
-        fprintf(f, "%LF %LF %LF\n", boundary->nodes[n].x, boundary->nodes[n].y, boundary->nodes[n].z);
+        fprintf(f, "%LF %LF %LF\n", boundary->nodes[n].x_force, boundary->nodes[n].y_force, boundary->nodes[n].z_force);
     }
     fclose(f);
 }
