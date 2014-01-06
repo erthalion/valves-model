@@ -18,3 +18,5 @@ docs/*.aux
 docs/*.log
 docs/*.nav
 docs/*.snm
+docs/*.pdf
+docs/images
