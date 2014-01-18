@@ -9,7 +9,7 @@ using std::string;
 /*
  * Kinematical viscosity
  */
-const long double nu = 1e-1;
+const long double nu = 1.0;//1e-1;
 
 /*
  * Density

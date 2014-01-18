@@ -84,10 +84,6 @@ long double calc_alpha(long double Rn_F1, long double Rn_F2, long double F1_F1, 
 int cubic(long double *x, long double a, long double b, long double c);
 void alpha_iter();
 
-
-#define SQ(x) ((x) * (x)) // square function; replaces SQ(x) by ((x) * (x)) in the code
-#define CB(x) ((x) * (x) * (x))
-
 /*
  * @brief
  *      Return integer index of node by the coordinate.
@@ -351,7 +347,6 @@ long double A1(long double ***U1, long double ***U2, int i, int j, int k)
     return (ddx+ddy+ddz);
 }
 // линейная часть оператора
-// TODO: Add force terms to x, y, z equation accordingly
 long double A2(long double ***U, int i, int j, int k)
 {
     int g=G[i][j][k];
@@ -428,24 +423,20 @@ long double A2(long double ***U, int i, int j, int k)
     long double force_term = 0;
     if(k==uk)
     {
-        //printf("force_X[%d][%d][%d] = %LF\n", i, j, k, force_X[i][j][pk]);
         grad_p=(U[i][j][pk]-U[i-1][j][pk])/Hx[i];
         force_term = force_X[i][j][uk];
     }
     else if(k==vk)
     {
-        //printf("force_Y[%d][%d][%d] = %LF\n", i, j, k, force_Y[i][j][pk]);
         grad_p=(U[i][j][pk]-U[i][j-1][pk])/Hy[j];
         force_term = force_Y[i][j][uk];
     }
     else if(k==wk)
     {
-        //printf("force_Z[%d][%d][%d] = %LF\n", i, j, k, force_Z[i][j][pk]);
         grad_p=(U[i][j][pk]-U[i][j][pk-1])/Hz[k];
         force_term = force_Z[i][j][uk];
     }
 
-    // TODO: Calculate force term like grad_p by k value
     return grad_p/rho - lap_u - force_term;
 }
 
@@ -1021,19 +1012,6 @@ void compute_fluid(int iteration)
 
         long double R4 = norm(R);
 
-        //if( (R4>R3) )
-        //{
-            //printf("Error on speed\n");
-        //}
-        //else if ( (R3>R2) )
-        //{
-            //printf("Error on alpha\n");
-        //}
-        //else if ( (R2>R1) )
-        //{
-            //printf("Error on tau\n");
-        //}
-
         Rn = norm(R);
 
         if(iters%100==0)
@@ -1052,16 +1030,16 @@ void compute_fluid(int iteration)
 void run()
 {
     ImmersedBoundary *boundary = utils->get_immersed_boundary(BoundaryClass);
-    int iterations_count = 100;
+    int iterations_count = 40;
 
     for (int i = 0; i < iterations_count; i++) {
         printf("Iteration %d\n", i);
-        output->print_boundary_vtk(i, boundary);
         compute_boundary_forces(boundary);
         spread_force(boundary);
         compute_fluid(i);
         interpolate(boundary);
         update_boundary_position(boundary);
+        output->print_boundary_vtk(i, boundary);
         output->print_vtk(i);
         //output->print_boundary(i, boundary, U, dNz);
     }
@@ -1245,16 +1223,16 @@ void interpolate(ImmersedBoundary *boundary)
                     // this formulas are related to rigid IB method
                     //boundary->nodes[n].x_vel += (
                             //(
-                             //velocity_U*SQ(Hx[i]) + 0.5 * force_X[i][j-1][k] / 1
+                             //velocity_U*CB(Hx[i]) + 0.5 * force_X[i][j][k] / 1.0
                              //) * weight_x * weight_y * weight_z);
 
                     //boundary->nodes[n].y_vel += (
                             //(
-                             //velocity_V*SQ(Hy[j]) + 0.5 * (force_Y[i][j-1][k]) / 1
+                             //velocity_V*CB(Hy[j]) + 0.5 * force_Y[i][j][k] / 1.0
                             //) * weight_x * weight_y * weight_z);
                     //boundary->nodes[n].z_vel += (
                             //(
-                             //velocity_W*SQ(Hz[k]) + 0.5 * (force_Z[i][j-1][k]) / 1
+                             //velocity_W*CB(Hz[k]) + 0.5 * force_Z[i][j][k] / 1.0
                             //) * weight_x * weight_y * weight_z);
 
                     boundary->nodes[n].x_vel += (velocity_U * weight_x * weight_y * weight_z)*CB(Hx[i]);

@@ -9,6 +9,9 @@
 
 using namespace std;
 
+#define SQ(x) ((x) * (x)) // square function; replaces SQ(x) by ((x) * (x)) in the code
+#define CB(x) ((x) * (x) * (x))
+
 struct indexes
 {
     int i,j,k;
@@ -96,7 +99,7 @@ class CylinderBoundary: public ImmersedBoundary
         CylinderBoundary()
         {
             this->nodes_count = 220;
-            this->stiffness = 2500;
+            this->stiffness = 2800;
             this->nodes = new Node[this->nodes_count];
             this->radius = 0.2;
             this->height = 0.4;
@@ -107,12 +110,14 @@ class CylinderBoundary: public ImmersedBoundary
             for (int i = 0; i < 10; i++) {
                 for (int j = 0; j < 20; j++) {
                     long double x = this->x_center + this->radius * sin(double(j)/19.0 * 2 * M_PI);
+                    long double x_init = this->x_center + this->radius * 0.9 * sin(double(j)/19.0 * 2 * M_PI);
                     this->nodes[j+i*20].x = x;
                     this->nodes[j+i*20].x_ref = x;
                     this->nodes[j+i*20].x_vel = 0;
                     this->nodes[j+i*20].x_force = 0;
 
                     long double y = this->y_center + this->radius * cos(double(j)/19.0 * 2 * M_PI);
+                    long double y_init = this->y_center + this->radius * 0.9 * cos(double(j)/19.0 * 2 * M_PI);
                     this->nodes[j+i*20].y = y;
                     this->nodes[j+i*20].y_ref = y;
                     this->nodes[j+i*20].y_vel = 0;
@@ -169,7 +174,7 @@ class SphereBoundary: public ImmersedBoundary
         SphereBoundary()
         {
             this->nodes_count = 100;
-            this->stiffness = 700;
+            this->stiffness = 1300;
             this->nodes = new Node[this->nodes_count];
             this->radius = 0.2;
             this->x_center = 1.0;
