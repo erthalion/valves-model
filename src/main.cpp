@@ -851,7 +851,6 @@ void U_init()
         {
             for(int k=0; k< dNz; ++k)
             {
-                //raise(SIGINT);
                 long double p = 0;
                 if (i == 0 || i == Nx-1)
                 {
@@ -880,12 +879,8 @@ void U_init()
                     G[i][j][k + 3*dNz] = 0;
                 }
 
-                //printf("%d ", G[i][j][k + 3*dNz]);
             }
-            //printf("\n");
         }
-        //printf("\n");
-        //getchar();
     }
 }
 
@@ -930,14 +925,7 @@ void init()
 
     Rn_1 = Rn_2 = 0;
 
-    for(int i=0; i<Nx; ++i)
-    {
-        for(int j=0; j<Ny; ++j)
-            for(int k=0; k<Nz; ++k)
-                U_2[i][j][k] = U_1[i][j][k] = 0;
-    }
-
-
+    
     Hx = new long double [Nx];
     Hy = new long double [Ny];
     Hz = new long double [Nz];
@@ -1043,7 +1031,6 @@ void run()
         output->print_vtk(i);
         //output->print_boundary(i, boundary, U, dNz);
     }
-
 }
 
 // Деструктор

@@ -829,3 +829,46 @@ void Output::print_boundary_vtk(int iter, ImmersedBoundary *boundary)
     }
     fclose(f);
 }
+
+/*
+ * Worked only for the contiguously allocated data
+ */
+void Output::dump_to_file(long double ***data, long data_size, const char *file_name){
+    FILE *file = fopen(file_name, "wb");
+
+    if(file != NULL) {
+        fwrite(data, data_size * sizeof(data), 1, file);
+        fclose(file);
+    }
+    else {
+        char message[100];
+        sprintf(message, "Cannot open file %s", file_name);
+        throw runtime_error(message);
+    }
+}
+
+/*
+ * Worked only for the contiguously allocated data
+ */
+long double*** Output::load_dump(long data_size, const char *file_name){
+    long double ***data;
+    long file_size = 0;
+
+    FILE *file = fopen(file_name, "wb");
+    if(file != NULL) {
+        // file size
+        //fseek(file ,0 ,SEEK_END);
+        //file_size = ftell(file);
+        //rewind(file);
+
+        fread(data, data_size * sizeof(data), 1, file);
+        fclose(file);
+
+        return data;
+    }
+    else {
+        char message[100];
+        sprintf(message, "Cannot open file %s", file_name);
+        throw runtime_error(message);
+    }
+}

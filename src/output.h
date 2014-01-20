@@ -2,6 +2,7 @@
 #define OUTPUT_H
 
 #include "utils.hpp"
+#include "ib.h"
 
 class Output {
     int Nx, Ny, Nz, dNz;
@@ -39,6 +40,8 @@ class Output {
     void print_pressure();
     void print_boundary(int iter, ImmersedBoundary *boundary, long double ***U, int dNz);
     void print_boundary_vtk(int iter, ImmersedBoundary *boundary);
+    void dump_to_file(long double ***data, long data_size, const char *file_name);
+    long double*** load_dump(long data_size, const char *file_name);
 };
 
 #endif
