@@ -6,6 +6,7 @@
 #include <cmath>
 #include <stdexcept>
 #include <stdio.h>
+#include <vector>
 
 #include "ib.h"
 
@@ -19,6 +20,22 @@ struct indexes
     int i,j,k;
 };
 typedef indexes matrix_ind[25];
+
+/*
+ * Proxy must be used http://stackoverflow.com/a/2216055/1423473
+ */
+template <class T>
+class matrix3D { 
+    std::vector<T> data;
+    int x_vector;
+    int y_vector;
+public:
+    T &operator()(int x, int y, int z) {
+        return this->data[x*x_vector*y_vector + y*y_vector + x];
+    }
+
+    matrix3D(int x, int y, int z) : data(x*y*z), x_vector(x), y_vector(y) {}
+};
 
 
 class Utils
