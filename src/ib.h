@@ -43,9 +43,8 @@ class RectangleBoundary: public ImmersedBoundary
 class CylinderBoundary: public ImmersedBoundary
 {
     public:
-        long double x_center;
+        long double z_center;
         long double y_center;
-        long double z_start;
 
         CylinderBoundary();
         long double get_area();

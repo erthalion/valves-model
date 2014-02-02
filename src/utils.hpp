@@ -19,7 +19,7 @@ struct indexes
 {
     int i,j,k;
 };
-typedef indexes matrix_ind[25];
+typedef indexes matrix_ind;
 
 /*
  * Proxy must be used http://stackoverflow.com/a/2216055/1423473

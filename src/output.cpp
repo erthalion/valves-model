@@ -10,12 +10,12 @@
 using namespace std;
 
 Output::Output(int Nx, int Ny, int Nz, int dNz
-            , long double ***U
-            , long double *Cx, long double *Cy, long double *Cz
-            , long double ***force_X, long double ***force_Y, long double ***force_Z
-            , long double ***R
-            , long double *Hx, long double *Hy, long double *Hz
-            , int ***G)
+            , Array<long double, 3> U
+            , Array<long double, 1> Cx, Array<long double, 1> Cy, Array<long double, 1> Cz
+            , Array<long double, 3> force_X, Array<long double, 3> force_Y, Array<long double, 3> force_Z
+            , Array<long double, 3> R
+            , Array<long double, 1> Hx, Array<long double, 1> Hy, Array<long double, 1> Hz
+            , Array<int, 3> G)
 {
     this->Nx = Nx;
     this->Ny = Ny;
@@ -55,15 +55,15 @@ void Output::print_texplot_matrix(int iters)
         {
             for(int i=0; i<Nx; ++i)
             {
-                fprintf(f,"%LF, %LF, %LF,", Cx[i], Cy[j], Cz[k]);
+                fprintf(f,"%LF, %LF, %LF,", Cx(i), Cy(j), Cz(k));
 
-                fprintf(f,"%LF,", U[i][j][k]);
+                fprintf(f,"%LF,", U(i, j, k));
 
-                fprintf(f,"%LF,", U[i][j][k+dNz]);
+                fprintf(f,"%LF,", U(i, j, k+dNz));
 
-                fprintf(f,"%LF,", U[i][j][k+2*dNz]);
+                fprintf(f,"%LF,", U(i, j, k+2*dNz));
 
-                fprintf(f,"%LF\n", U[i][j][k+3*dNz]);
+                fprintf(f,"%LF\n", U(i, j, k+3*dNz));
             }
         }
     }
@@ -83,15 +83,15 @@ void Output::print_texplot_matrix(int iters)
         {
             for(int i=0; i<Nx; ++i)
             {
-                fprintf(f,"%LF, %LF, %LF,", Cx[i], Cy[j], Cz[k]);
+                fprintf(f,"%LF, %LF, %LF,", Cx(i), Cy(j), Cz(k));
 
-                fprintf(f,"%LF,", R[i][j][k]);
+                fprintf(f,"%LF,", R(i, j, k));
 
-                fprintf(f,"%LF,", R[i][j][k+dNz]);
+                fprintf(f,"%LF,", R(i, j, k+dNz));
 
-                fprintf(f,"%LF,", R[i][j][k+2*dNz]);
+                fprintf(f,"%LF,", R(i, j, k+2*dNz));
 
-                fprintf(f,"%LF\n", R[i][j][k+3*dNz]);
+                fprintf(f,"%LF\n", R(i, j, k+3*dNz));
             }
         }
     }
@@ -114,7 +114,7 @@ void Output::print_vtk(int iteration)
         {
             for(int i=0; i<Nx; ++i)
             {
-                fprintf(f,"%LF %LF %LF\n", Cx[i], Cy[j], Cz[k]);
+                fprintf(f,"%LF %LF %LF\n", Cx(i), Cy(j), Cz(k));
                 //fprintf(f,"%LF\n",U[i][j][k+3*dNz]);
             }
         }
@@ -131,7 +131,7 @@ void Output::print_vtk(int iteration)
         {
             for(int i=0; i<Nx; ++i)
             {
-                fprintf(f,"%LF\n", U[i][j][k+3*dNz]);
+                fprintf(f,"%LF\n", U(i, j, k+3*dNz));
             }
         }
     }
@@ -148,27 +148,27 @@ void Output::print_vtk(int iteration)
             for(int i=0; i<Nx; ++i)
             {
                 if(i==0)
-                    fprintf(f,"%LF ",U[i+1][j][k]);
+                    fprintf(f,"%LF ",U(i+1, j, k));
                 else if(i==Nx-1)
-                    fprintf(f,"%LF ",U[i][j][k]);
+                    fprintf(f,"%LF ",U(i, j, k));
                 else
-                    fprintf(f,"%LF ", Hx[i]/(Hx[i+1]+Hx[i])*U[i+1][j][k]+Hx[i+1]/(Hx[i+1]+Hx[i])*U[i][j][k] );
+                    fprintf(f,"%LF ", Hx(i)/(Hx(i+1)+Hx(i))*U(i+1, j, k)+Hx(i+1)/(Hx(i+1)+Hx(i))*U(i, j, k) );
 
                 if(j==0)
-                    fprintf(f,"%LF ",U[i][j][k+dNz]);
+                    fprintf(f,"%LF ",U(i, j, k+dNz));
                 else if(j==Ny-2)
-                    fprintf(f,"%LF ",U[i][j+1][k+dNz]);
+                    fprintf(f,"%LF ",U(i, j+1, k+dNz));
                 else
-                    fprintf(f,"%LF ", Hy[j]/(Hy[j]+Hy[j+1])*U[i][j+1][k+dNz]+
-                            Hy[j+1]/(Hy[j]+Hy[j+1])*U[i][j][k+dNz]);
+                    fprintf(f,"%LF ", Hy(j)/(Hy(j)+Hy(j+1))*U(i, j+1, k+dNz)+
+                            Hy(j+1)/(Hy(j)+Hy(j+1))*U(i, j, k+dNz));
 
                 if(k==0)
-                    fprintf(f,"%LF ",U[i][j][k+2*dNz]);
+                    fprintf(f,"%LF ",U(i, j, k+2*dNz));
                 else if(k==dNz-2)
-                    fprintf(f,"%LF ",U[i][j][k+1+2*dNz]);
+                    fprintf(f,"%LF ",U(i, j, k+1+2*dNz));
                 else
-                    fprintf(f,"%LF ", Hz[k]/(Hz[k]+Hz[k+1])*U[i][j][k+1+2*dNz]+
-                            Hz[k+1]/(Hz[k]+Hz[k+1])*U[i][j][k+2*dNz]);
+                    fprintf(f,"%LF ", Hz(k)/(Hz(k)+Hz(k+1))*U(i, j, k+1+2*dNz)+
+                            Hz(k+1)/(Hz(k)+Hz(k+1))*U(i, j, k+2*dNz));
 
                 fprintf(f, "\n");
             }
@@ -186,7 +186,7 @@ void Output::print_vtk(int iteration)
         {
             for(int i=0; i<Nx; ++i)
             {
-                fprintf(f, "%LF %LF %LF\n", force_X[i][j][k], force_Y[i][j][k], force_Z[i][j][k]);
+                fprintf(f, "%LF %LF %LF\n", force_X(i, j, k), force_Y(i, j, k), force_Z(i, j, k));
             }
         }
     }
@@ -285,32 +285,32 @@ void Output::print_texplot(int iters)
         {
             for(int i=0; i<Nx; ++i)
             {
-                fprintf(f,"%LF, %LF, %LF,", Cx[i], Cy[j], Cz[k]);
+                fprintf(f,"%LF, %LF, %LF,", Cx(i), Cy(j), Cz(k));
 
                 if(i==0)
-                    fprintf(f,"%LF,",U[i+1][j][k]);
+                    fprintf(f,"%LF,",U(i+1, j, k));
                 else if(i==Nx-1)
-                    fprintf(f,"%LF,",U[i][j][k]);
+                    fprintf(f,"%LF,",U(i, j, k));
                 else
-                    fprintf(f,"%LF,", Hx[i]/(Hx[i+1]+Hx[i])*U[i+1][j][k]+Hx[i+1]/(Hx[i+1]+Hx[i])*U[i][j][k] );
+                    fprintf(f,"%LF,", Hx(i)/(Hx(i+1)+Hx(i))*U(i+1, j, k)+Hx(i+1)/(Hx(i+1)+Hx(i))*U(i, j, k) );
 
                 if(j==0)
-                    fprintf(f,"%LF,",U[i][j][k+dNz]);
+                    fprintf(f,"%LF,",U(i, j, k+dNz));
                 else if(j==Ny-2)
-                    fprintf(f,"%LF,",U[i][j+1][k+dNz]);
+                    fprintf(f,"%LF,",U(i, j+1, k+dNz));
                 else
-                    fprintf(f,"%LF,", Hy[j]/(Hy[j]+Hy[j+1])*U[i][j+1][k+dNz]+
-                            Hy[j+1]/(Hy[j]+Hy[j+1])*U[i][j][k+dNz]);
+                    fprintf(f,"%LF,", Hy(j)/(Hy(j)+Hy(j+1))*U(i, j+1, k+dNz)+
+                            Hy(j+1)/(Hy(j)+Hy(j+1))*U(i, j, k+dNz));
 
                 if(k==0)
-                    fprintf(f,"%LF,",U[i][j][k+2*dNz]);
+                    fprintf(f,"%LF,",U(i, j, k+2*dNz));
                 else if(k==dNz-2)
-                    fprintf(f,"%LF,",U[i][j][k+1+2*dNz]);
+                    fprintf(f,"%LF,",U(i, j, k+1+2*dNz));
                 else
-                    fprintf(f,"%LF,", Hz[k]/(Hz[k]+Hz[k+1])*U[i][j][k+1+2*dNz]+
-                            Hz[k+1]/(Hz[k]+Hz[k+1])*U[i][j][k+2*dNz]);
+                    fprintf(f,"%LF,", Hz(k)/(Hz(k)+Hz(k+1))*U(i, j, k+1+2*dNz)+
+                            Hz(k+1)/(Hz(k)+Hz(k+1))*U(i, j, k+2*dNz));
 
-                fprintf(f,"%LF\n",U[i][j][k+3*dNz]);
+                fprintf(f,"%LF\n",U(i, j, k+3*dNz));
             }
         }
     }
@@ -334,7 +334,7 @@ void Output::print_area()
         {
             for(int i=0; i<Nx; ++i)
             {
-                fprintf(f,"%LF %LF %LF\n", Cx[i],Cy[j],Cz[k]);
+                fprintf(f,"%LF %LF %LF\n", Cx(i),Cy(j),Cz(k));
             }
         }
     }
@@ -350,7 +350,7 @@ void Output::print_area()
         {
             for(int i=0; i<Nx; ++i)
             {
-                fprintf(f,"%d\n", G[i][j][k]);
+                fprintf(f,"%d\n", G(i, j, k));
             }
         }
     }
@@ -374,7 +374,7 @@ void Output::print_area_points()
         {
             for(int i=0; i<Nx; ++i)
             {
-                fprintf(f,"%d\n", G[i][j][k]);
+                fprintf(f,"%d\n", G(i, j, k));
             }
         }
     }
@@ -508,7 +508,7 @@ void Output::print_pressure()
         {
             for(int k=0; k<dNz; ++k)
             {
-                printf("%LF ", U[i][j][k+ 3*dNz]);
+                printf("%LF ", U(i, j, k+ 3*dNz));
             }
             printf("\n");
         }
@@ -530,14 +530,14 @@ void Output::print_info(int iters, long double R0, long double Rn)
     fprintf(f,"rn = %LF\n", Rn);
     fprintf(f,"rn/ro = %LF\n", Rn/R0);
 
-    long double max_ri = fabs(R[0][0][0]);
+    long double max_ri = fabs(R(0, 0, 0));
     int im = 0, jm = 0, km = 0;
     for(int i=0; i<Nx; ++i)
         for(int j=0; j<Ny; ++j)
             for(int k=0; k<Nz; ++k)
-                if( max_ri < fabs(R[i][j][k]) )
+                if( max_ri < fabs(R(i, j, k)) )
                 {
-                    max_ri = fabs(R[i][j][k]);
+                    max_ri = fabs(R(i, j, k));
                     im = i;
                     jm = j;
                     km = k;
@@ -564,8 +564,8 @@ void Output::print_info(int iters, long double R0, long double Rn)
     for(int j=0; j<Ny; ++j)
         for(int k=0; k<dNz; ++k)
         {
-            s1 += U[1][j][k]*Hy[j]*Hz[k];
-            s2 += U[Nx-1][j][k]*Hy[j]*Hz[k];
+            s1 += U(1, j, k)*Hy(j)*Hz(k);
+            s2 += U(Nx-1, j, k)*Hy(j)*Hz(k);
         }
 
     /*for (int j = 0; j < Ny; j++)
@@ -685,7 +685,7 @@ long double debug_coord(const int index, const int type)
     }
 }
 
-void Output::print_boundary(int iter, ImmersedBoundary *boundary, long double ***U, int dNz)
+void Output::print_boundary(int iter, ImmersedBoundary *boundary, Array<long double, 3> U, int dNz)
 {
     char output_path[20];
     sprintf(output_path, "boundary%d.dat", iter);
@@ -709,8 +709,8 @@ void Output::print_boundary(int iter, ImmersedBoundary *boundary, long double **
                 fprintf(f, " %LF %LF %LF %LF",
                         debug_coord(i, COORD_X),
                         debug_coord(j, COORD_Y),
-                        U[i][j][z_int + VELOCITY_U*dNz],
-                        U[i][j][z_int + VELOCITY_V*dNz]);
+                        U(i, j, z_int + VELOCITY_U*dNz),
+                        U(i, j, z_int + VELOCITY_V*dNz));
             }
         }
         fprintf(f, "\n");
@@ -729,7 +729,7 @@ void Output::print_boundary(int iter, ImmersedBoundary *boundary, long double **
         for (int j = 0; j < Ny-1; j++) {
             int k = z_int;
 
-            fprintf(f, "%LF %LF\n", U[i][j][k + VELOCITY_U*dNz], U[i][j][k + VELOCITY_V*dNz]);
+            fprintf(f, "%LF %LF\n", U(i, j, k + VELOCITY_U*dNz), U(i, j, k + VELOCITY_V*dNz));
         }
     }
 
@@ -742,7 +742,7 @@ void Output::print_boundary(int iter, ImmersedBoundary *boundary, long double **
         for (int j = 0; j < Ny-1; j++) {
             int k = z_int;
 
-            fprintf(f, "%LF %LF\n", force_X[i][j][k], force_Y[i][j][k]);
+            fprintf(f, "%LF %LF\n", force_X(i, j, k), force_Y(i, j, k));
         }
     }
 
@@ -767,8 +767,8 @@ void Output::print_boundary(int iter, ImmersedBoundary *boundary, long double **
                 fprintf(f, " %LF %LF %LF %LF",
                         debug_coord(i, COORD_X),
                         debug_coord(j, COORD_Y),
-                        force_X[i][j][z_int],
-                        force_Y[i][j][z_int]);
+                        force_X(i, j, z_int),
+                        force_Y(i, j, z_int));
             }
         }
         fprintf(f, "\n");
@@ -833,42 +833,43 @@ void Output::print_boundary_vtk(int iter, ImmersedBoundary *boundary)
 /*
  * Worked only for the contiguously allocated data
  */
-void Output::dump_to_file(long double ***data, long data_size, const char *file_name){
-    FILE *file = fopen(file_name, "wb");
+void Output::dump_to_file(Array<long double, 3> data, long data_size, const char *file_name){
+    //FILE *file = fopen(file_name, "wb");
 
-    if(file != NULL) {
-        fwrite(data, data_size * sizeof(data), 1, file);
-        fclose(file);
-    }
-    else {
-        char message[100];
-        sprintf(message, "Cannot open file %s", file_name);
-        throw runtime_error(message);
-    }
+    //if(file != NULL) {
+        //fwrite(data, data_size * sizeof(data), 1, file);
+        //fclose(file);
+    //}
+    //else {
+        //char message[100];
+        //sprintf(message, "Cannot open file %s", file_name);
+        //throw runtime_error(message);
+    //}
 }
 
 /*
  * Worked only for the contiguously allocated data
  */
-long double*** Output::load_dump(long data_size, const char *file_name){
-    long double ***data;
-    long file_size = 0;
+Array<long double, 3> Output::load_dump(long data_size, const char *file_name){
+    Array<long double, 3> data;
+    return data;
+    //long file_size = 0;
 
-    FILE *file = fopen(file_name, "wb");
-    if(file != NULL) {
-        // file size
-        //fseek(file ,0 ,SEEK_END);
-        //file_size = ftell(file);
-        //rewind(file);
+    //FILE *file = fopen(file_name, "wb");
+    //if(file != NULL) {
+        //// file size
+        ////fseek(file ,0 ,SEEK_END);
+        ////file_size = ftell(file);
+        ////rewind(file);
 
-        fread(data, data_size * sizeof(data), 1, file);
-        fclose(file);
+        //fread(data, data_size * sizeof(data), 1, file);
+        //fclose(file);
 
-        return data;
-    }
-    else {
-        char message[100];
-        sprintf(message, "Cannot open file %s", file_name);
-        throw runtime_error(message);
-    }
+        //return data;
+    //}
+    //else {
+        //char message[100];
+        //sprintf(message, "Cannot open file %s", file_name);
+        //throw runtime_error(message);
+    //}
 }

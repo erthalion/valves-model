@@ -43,59 +43,33 @@ long double RectangleBoundary::get_area()
 
 CylinderBoundary::CylinderBoundary()
 {
-    this->nodes_count = 220;
+    this->nodes_count = 600;
     this->stiffness = 2800;
     this->nodes = new Node[this->nodes_count];
-    this->radius = 0.2;
-    this->height = 0.4;
-    this->x_center = 1.0;
+    this->radius = 0.3;
+    this->height = 1.9;
     this->y_center = 0.4;
-    this->z_start = 0.2;
+    this->z_center = 0.4;
 
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 30; i++) {
         for (int j = 0; j < 20; j++) {
-            long double x = this->x_center + this->radius * sin(double(j)/19.0 * 2 * M_PI);
-            long double x_init = this->x_center + this->radius * 0.9 * sin(double(j)/19.0 * 2 * M_PI);
-            this->nodes[j+i*20].x = x;
-            this->nodes[j+i*20].x_ref = x;
-            this->nodes[j+i*20].x_vel = 0;
-            this->nodes[j+i*20].x_force = 0;
+            long double z = this->z_center + this->radius * sin(double(j)/19.0 * 2 * M_PI);
+            this->nodes[j+i*20].z = z;
+            this->nodes[j+i*20].z_ref = z;
+            this->nodes[j+i*20].z_vel = 0;
+            this->nodes[j+i*20].z_force = 0;
 
             long double y = this->y_center + this->radius * cos(double(j)/19.0 * 2 * M_PI);
-            long double y_init = this->y_center + this->radius * 0.9 * cos(double(j)/19.0 * 2 * M_PI);
             this->nodes[j+i*20].y = y;
             this->nodes[j+i*20].y_ref = y;
             this->nodes[j+i*20].y_vel = 0;
             this->nodes[j+i*20].y_force = 0;
 
-            long double z = this->z_start + this->height * double(i) / 9.0 ;
-            this->nodes[j+i*20].z = z;
-            this->nodes[j+i*20].z_ref = z;
-            this->nodes[j+i*20].z_vel = 0;
-            this->nodes[j+i*20].z_force = 0;
-        }
-    }
-
-    // front/end
-    for (int i = 0; i < 2; i++) {
-        for (int j = 0; j < 10; j++) {
-            long double x = this->x_center + this->radius/2.0 * sin(double(j)/8.0 * 2 * M_PI);
-            this->nodes[200+j+i*10].x = x;
-            this->nodes[200+j+i*10].x_ref = x;
-            this->nodes[200+j+i*10].x_vel = 0;
-            this->nodes[200+j+i*10].x_force = 0;
-
-            long double y = this->y_center + this->radius/2.0 * cos(double(j)/8.0 * 2 * M_PI);
-            this->nodes[200+j+i*10].y = y;
-            this->nodes[200+j+i*10].y_ref = y;
-            this->nodes[200+j+i*10].y_vel = 0;
-            this->nodes[200+j+i*10].y_force = 0;
-
-            long double z = this->z_start + this->height * double(i) / 1.0 ;
-            this->nodes[200+j+i*10].z = z;
-            this->nodes[200+j+i*10].z_ref = z;
-            this->nodes[200+j+i*10].z_vel = 0;
-            this->nodes[200+j+i*10].z_force = 0;
+            long double x = this->height * double(i) / 29.0 ;
+            this->nodes[j+i*20].x = x;
+            this->nodes[j+i*20].x_ref = x;
+            this->nodes[j+i*20].x_vel = 0;
+            this->nodes[j+i*20].x_force = 0;
         }
     }
 }
