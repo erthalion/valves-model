@@ -339,55 +339,22 @@ d(r) = 0, \; \|r\| \geq 2h
     \end{itemize}
 \end{frame}
 
-%ibamr: brief about source code
 \begin{frame}
-\frametitle{IBAMR}
-\setbeamercolor{normal text}{fg=gray,bg=}
-\setbeamercolor{alerted text}{fg=black,bg=}
-\usebeamercolor{normal text}
-    \begin{itemize}
-        \item \alert<+>{PETSc, the Portable, Extensible Toolkit for Scientific Computation}
-        \item \alert<+>{hypre, библиотека высокопроизводительных предобуславливателей}
-        \item \alert<+>{HDF5, библиотека, реализцующая формат хранения научных данных HDF5}
-        \item \alert<+>{Blitz++, высокопроизводительная библиотека для работы с массивами}
-        \item \alert<+>{Silo, библиотека для работы с форматом визуализации и пост-обработки данных Silo}
-    \end{itemize}
-\end{frame}
-\note{Основной вклад в разработку внесли сотрудники New York University School of Medicine. Библиотеки:
-
-\begin{itemize}
-    \item PETSc is funded primarily by the United States Department of Energy, Office of Science, by the Advanced Scientific Computing Research (ASCR) Applied Mathematics Research and SciDAC programs
-    \item hypre - Center for Applied Scientific Computing
-    \item The Blitz++ project started at the Vision and Image Processing Lab in the Dept. of Systems Design Engineering at the University of Waterloo (Canada)
-\end{itemize}
-
-Собирать из development ветки - ibamr-dev
-}
-
-%examples: aortic heart valve
-\begin{frame}
-\frametitle{Аортальный клапан}
-    \begin{center}
-	\includegraphics[width=8cm]{immersed_boundary/valve_vessel_side_crop.jpg}
-    \end{center}
-\end{frame}
-
-\begin{frame}
-\frametitle{Аортальный клапан}
+\frametitle{IBAMR: Аортальный клапан}
     \begin{center}
 	\includegraphics[width=9cm]{immersed_boundary/shot0002.png}
     \end{center}
 \end{frame}
 
 \begin{frame}
-\frametitle{Аортальный клапан}
+\frametitle{IBAMR: Аортальный клапан}
     \begin{center}
         \href{run:video/valve\_top.mov}{Демонстрация движения клапана}
     \end{center}
 \end{frame}
 
 \begin{frame}
-\frametitle{Аортальный клапан}
+\frametitle{IBAMR: Аортальный клапан}
     \begin{center}
         \href{run:video/valve\_flow\_side.mov}{Демонстрация течения жидкости}
     \end{center}
@@ -395,28 +362,28 @@ d(r) = 0, \; \|r\| \geq 2h
 
 %examples: mitral valve
 \begin{frame}
-\frametitle{Митральный клапан (протез)}
+\frametitle{IBAMR: Митральный клапан (протез)}
     \begin{center}
     \includegraphics[width=8cm]{immersed_boundary/prosthetic_MV.jpeg}
     \end{center}
 \end{frame}
 
 \begin{frame}
-\frametitle{Митральный клапан (протез)}
+\frametitle{IBAMR: Митральный клапан (протез)}
     \begin{center}
     \includegraphics[width=9cm]{immersed_boundary/MV_mesh.jpeg}
     \end{center}
 \end{frame}
 
 \begin{frame}
-\frametitle{Митральный клапан (линии тока)}
+\frametitle{IBAMR: Митральный клапан (линии тока)}
     \begin{center}
     \includegraphics[width=9cm]{immersed_boundary/MV_streamline_0030.jpeg}
     \end{center}
 \end{frame}
 
 \begin{frame}
-\frametitle{Митральный клапан}
+\frametitle{IBAMR: Митральный клапан}
     \begin{center}
         \href{run:video/MV\_side.mov}{Демонстрация движения клапана}
     \end{center}
@@ -505,5 +472,37 @@ d(r) = 0, \; \|r\| \geq 2h
     \end{itemize}
 }
 
+%ibamr: brief about source code
+\begin{frame}
+\frametitle{IBAMR}
+\setbeamercolor{normal text}{fg=gray,bg=}
+\setbeamercolor{alerted text}{fg=black,bg=}
+\usebeamercolor{normal text}
+    \begin{itemize}
+        \item \alert<+>{PETSc, the Portable, Extensible Toolkit for Scientific Computation}
+        \item \alert<+>{hypre, библиотека высокопроизводительных предобуславливателей}
+        \item \alert<+>{HDF5, библиотека, реализцующая формат хранения научных данных HDF5}
+        \item \alert<+>{Blitz++, высокопроизводительная библиотека для работы с массивами}
+        \item \alert<+>{Silo, библиотека для работы с форматом визуализации и пост-обработки данных Silo}
+    \end{itemize}
+\end{frame}
+\note{Основной вклад в разработку внесли сотрудники New York University School of Medicine. Библиотеки:
+
+\begin{itemize}
+    \item PETSc is funded primarily by the United States Department of Energy, Office of Science, by the Advanced Scientific Computing Research (ASCR) Applied Mathematics Research and SciDAC programs
+    \item hypre - Center for Applied Scientific Computing
+    \item The Blitz++ project started at the Vision and Image Processing Lab in the Dept. of Systems Design Engineering at the University of Waterloo (Canada)
+\end{itemize}
+
+Собирать из development ветки - ibamr-dev
+}
+
+%examples: aortic heart valve
+\begin{frame}
+\frametitle{IBAMR: Аортальный клапан}
+    \begin{center}
+	\includegraphics[width=8cm]{immersed_boundary/valve_vessel_side_crop.jpg}
+    \end{center}
+\end{frame}
 
 \end{document}
