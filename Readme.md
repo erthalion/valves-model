@@ -1,33 +1,32 @@
-There is program for hydrodynamic modeling valves
+# Hydrodynamic modeling valves
 
-To build the project, run
-    cmake .
-    make
+Automatically exported from code.google.com/p/valves-model . 
+Initial (and mostly for testing purposes) version of stationary proflem of fluid flow in large blood vessels.
+Significant part of this code is belongs to Geidarov N. A.
 
-Project structure:
-
-- build
+## Project structure:
+* build
     this directory contains binary files and all that is need to run program (mask files, config files, group files etc.)
 
-- CMakeFiles
+* CMakeFiles
     cmake directory for their files
 
-- cmake_install.cmake, CMakeCache.txt, Makefile
+* cmake_install.cmake, CMakeCache.txt, Makefile
     this files is needed for project build
 
-- lib
+* lib
     this directory contains all requirements libraries for project
 
-- src
+* src
     code directory
 
-- CMakeList.txt
+* CMakeList.txt
     configuration file for cmake
 
 
-Source structure:
+## Source structure:
 
-- area_builder
+* area_builder
     this directory contains all python scripts, that is need to create mask files for calculation
     they have use numpy(http://www.numpy.org/) for creation of the arrays
     build_area.py is main script
@@ -37,30 +36,32 @@ Source structure:
     v_mask.py is used for creation velocity mask (y component of velocity vector)
     w_mask.py is used for creation velocity mask (z component of velocity vector)
 
-- db
+* db
     this directory contains python script for upload calculation result into cloud mongodb storage
     at this moment there is mongolab & mongohq
 
-- lib
+* lib
     this directory contains source of libraries, which is used in project
     they used in source form for cross-platform
     at this moment there is inih library for parsing ini config files (http://code.google.com/p/inih/)
     structure of this library was slightly modified and it used as shared library
 
-- visualize
+* visualize
     this directory contains all python scripts for visualization of the calculation results with mayavi2 (http://code.enthought.com/projects/mayavi/)
     mayavi is used as wrapper on VTK
 
-- main.cpp
+* main.cpp
     main source file, which contains numerical algoryphm on c++
 
-Usefull commands:
-    Update on cluster with rsync (nusc it's short name from ssh config)
-    rsync -av valves-model/ dadolgov@nusc:~/valves-model --exclude .git --exclude results --exclude groups
+## Usefull commands:
+```bash
+Update on cluster with rsync (nusc it's short name from ssh config)
+rsync -av valves-model/ dadolgov@nusc:~/valves-model --exclude .git --exclude results --exclude groups
+```
 
-Requirements:
-    inih http://code.google.com/p/inih/ New BSD License
-    numpy http://www.numpy.org/ BSD License
-    mayavi2 http://code.enthought.com/projects/mayavi/ BSD License
-    VTK 5 http://www.vtk.org/ BSD License
-    Cmake http://www.cmake.org/ New BSD License
+## Requirements:
+* inih http://code.google.com/p/inih/ New BSD License
+* numpy http://www.numpy.org/ BSD License
+* mayavi2 http://code.enthought.com/projects/mayavi/ BSD License
+* VTK 5 http://www.vtk.org/ BSD License
+* Cmake http://www.cmake.org/ New BSD License
